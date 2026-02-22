@@ -387,6 +387,21 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   margin-left: var(--sp-sm);
 }
 
+/* ===== Sync Indicator ===== */
+.sync-indicator {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #64748b;
+  display: inline-block;
+  margin-right: 2px;
+  transition: background 0.3s;
+}
+.sync-indicator.synced { background: #22c55e; }
+.sync-indicator.syncing { background: #f59e0b; animation: pulse 1s infinite; }
+.sync-indicator.error { background: #ef4444; }
+.sync-indicator.off { background: #64748b; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
 /* ===== Modal ===== */
 .modal-overlay {
   position: fixed; inset: 0;
@@ -395,7 +410,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   z-index: 200;
   padding: var(--sp-md);
 }
-.modal-overlay[hidden] { display: none; }
+.modal-overlay[hidden] { display: none !important; }
 .modal {
   background: var(--c-surface);
   border-radius: var(--radius-lg);
@@ -448,6 +463,9 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 <header class="app-header">
   <h1 class="app-title">旅費割り勘</h1>
   <div class="header-actions">
+    <span id="sync-status" class="sync-indicator" title="同期状態"></span>
+    <button id="btn-sync" class="icon-btn" title="クラウド同期">&#x1F504;</button>
+    <button id="btn-cloud-settings" class="icon-btn" title="クラウド設定">&#x2601;</button>
     <button id="btn-export" class="icon-btn" title="データ書き出し">&#x1F4E4;</button>
     <button id="btn-import" class="icon-btn" title="データ読み込み">&#x1F4E5;</button>
     <input type="file" id="import-file" accept=".json" hidden>
@@ -678,6 +696,23 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   </div>
 </div>
 
+<!-- ===== Cloud Settings Modal ===== -->
+<div id="cloud-modal-overlay" class="modal-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <p class="modal-message" style="font-weight:700;margin-bottom:8px;">クラウド同期設定</p>
+    <p style="font-size:var(--fs-sm);color:var(--c-text2);margin-bottom:var(--sp-md);line-height:1.5;">Google Apps Script のデプロイURLを貼り付けてください。設定するとスプレッドシートとデータが自動同期されます。</p>
+    <div class="form-group">
+      <label for="gas-url-input">GAS デプロイURL</label>
+      <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off">
+    </div>
+    <div class="modal-actions">
+      <button id="cloud-modal-cancel" class="btn btn-secondary">キャンセル</button>
+      <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:var(--fs-sm)">URL削除</button>
+      <button id="cloud-modal-save" class="btn btn-primary">保存</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== Toast ===== -->
 <div id="toast" class="toast" hidden></div>
 
@@ -730,6 +765,85 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem(APP_KEY, JSON.stringify(state));
+  debouncedSyncToCloud();
+}
+
+/* ===== Cloud Sync (GAS) ===== */
+const GAS_URL_KEY = 'travel-app-gas-url';
+let syncTimer = null;
+
+function getGasUrl() {
+  return localStorage.getItem(GAS_URL_KEY) || '';
+}
+
+function setGasUrl(url) {
+  if (url) localStorage.setItem(GAS_URL_KEY, url);
+  else localStorage.removeItem(GAS_URL_KEY);
+}
+
+function setSyncStatus(status) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  el.className = 'sync-indicator ' + status;
+  const titles = { off: '未設定', syncing: '同期中...', synced: '同期済', error: '同期エラー' };
+  el.title = titles[status] || '';
+}
+
+function debouncedSyncToCloud() {
+  if (!getGasUrl()) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => syncToCloud(), 1500);
+}
+
+async function syncToCloud() {
+  const url = getGasUrl();
+  if (!url) return;
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(state),
+      signal: AbortSignal.timeout(15000)
+    });
+    const result = await res.json();
+    if (result.success) {
+      setSyncStatus('synced');
+    } else {
+      setSyncStatus('error');
+      console.error('Sync save error:', result.error);
+    }
+  } catch (e) {
+    setSyncStatus('error');
+    console.error('Sync save failed:', e);
+  }
+}
+
+async function syncFromCloud() {
+  const url = getGasUrl();
+  if (!url) { setSyncStatus('off'); return; }
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(url + '?action=load', { signal: AbortSignal.timeout(15000) });
+    const result = await res.json();
+    if (result.success && result.data) {
+      const cloud = result.data;
+      if (cloud.members && cloud.members.length > 0 || cloud.expenses && cloud.expenses.length > 0 || cloud.itinerary && cloud.itinerary.length > 0) {
+        state = cloud;
+        if (!Array.isArray(state.members)) state.members = [];
+        if (!Array.isArray(state.expenses)) state.expenses = [];
+        if (!Array.isArray(state.itinerary)) state.itinerary = [];
+        localStorage.setItem(APP_KEY, JSON.stringify(state));
+        renderAll();
+      }
+      setSyncStatus('synced');
+    } else {
+      setSyncStatus('error');
+    }
+  } catch (e) {
+    setSyncStatus('error');
+    console.error('Sync load failed:', e);
+  }
 }
 
 /* ===== Utilities ===== */
@@ -1494,6 +1608,50 @@ function initEventListeners() {
   document.getElementById('btn-export').addEventListener('click', handleExport);
   document.getElementById('btn-import').addEventListener('click', function() { document.getElementById('import-file').click(); });
   document.getElementById('import-file').addEventListener('change', handleImport);
+
+  // Cloud sync button
+  document.getElementById('btn-sync').addEventListener('click', async function() {
+    if (!getGasUrl()) { showToast('クラウド設定でURLを設定してください'); return; }
+    showToast('同期中...');
+    await syncFromCloud();
+    showToast('同期完了');
+  });
+
+  // Cloud settings modal
+  document.getElementById('btn-cloud-settings').addEventListener('click', function() {
+    document.getElementById('gas-url-input').value = getGasUrl();
+    document.getElementById('cloud-modal-overlay').hidden = false;
+  });
+  document.getElementById('cloud-modal-cancel').addEventListener('click', function() {
+    document.getElementById('cloud-modal-overlay').hidden = false;
+    document.getElementById('cloud-modal-overlay').hidden = true;
+  });
+  document.getElementById('cloud-modal-save').addEventListener('click', function() {
+    const url = document.getElementById('gas-url-input').value.trim();
+    if (url && !url.startsWith('https://script.google.com/')) {
+      showToast('正しいGAS URLを入力してください');
+      return;
+    }
+    setGasUrl(url);
+    document.getElementById('cloud-modal-overlay').hidden = true;
+    if (url) {
+      showToast('URL保存 - 同期を開始します');
+      syncToCloud();
+    } else {
+      setSyncStatus('off');
+      showToast('URL設定をクリアしました');
+    }
+  });
+  document.getElementById('cloud-modal-clear').addEventListener('click', function() {
+    setGasUrl('');
+    document.getElementById('gas-url-input').value = '';
+    document.getElementById('cloud-modal-overlay').hidden = true;
+    setSyncStatus('off');
+    showToast('クラウド設定を削除しました');
+  });
+  document.getElementById('cloud-modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) this.hidden = true;
+  });
 }
 
 /* ===== Fetch Live Exchange Rate ===== */
@@ -1536,6 +1694,12 @@ function init() {
   document.getElementById('itin-date').value = getTodayString();
   renderAll();
   fetchExchangeRate();
+  // クラウド同期（設定済みなら）
+  if (getGasUrl()) {
+    syncFromCloud();
+  } else {
+    setSyncStatus('off');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);
