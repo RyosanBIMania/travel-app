@@ -444,24 +444,47 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 /* ===== Mobile compact ===== */
 @media (max-width: 480px) {
   :root {
-    --sp-lg: 16px;
-    --tap: 38px;
-    --header-h: 46px;
-    --tab-h: 52px;
+    --sp-sm: 6px;
+    --sp-md: 10px;
+    --sp-lg: 14px;
+    --sp-xl: 20px;
+    --tap: 36px;
+    --header-h: 44px;
+    --tab-h: 48px;
+    --fs-sm: 0.75rem;
+    --fs-base: 0.8125rem;
+    --fs-lg: 0.9375rem;
+    --fs-xl: 1.0625rem;
+    --radius-md: 8px;
   }
-  .card { padding: var(--sp-md); margin-bottom: 10px; }
-  .card-title { font-size: var(--fs-base); margin-bottom: 10px; }
-  .form-group { margin-bottom: 10px; }
-  .form-group > label { font-size: 0.75rem; margin-bottom: 2px; }
-  .form-input { min-height: var(--tap); padding: 6px 10px; font-size: var(--fs-sm); }
-  .form-row { gap: 10px; }
-  .form-actions { margin-top: 10px; }
-  .btn { min-height: var(--tap); padding: 6px var(--sp-md); font-size: var(--fs-sm); }
-  .tab-content { padding: 10px; }
-  .app-title { font-size: var(--fs-lg); }
-  .expense-item { padding: 10px; }
-  .expense-memo { font-size: var(--fs-sm); }
-  .expense-detail { font-size: 0.75rem; }
+  body { font-size: 0.8125rem; }
+  .tab-content { padding: 8px; }
+  .card { padding: 10px; margin-bottom: 8px; }
+  .card-title { font-size: 0.875rem; margin-bottom: 8px; }
+  .card-desc { font-size: 0.7rem; margin-bottom: 8px; }
+  .form-group { margin-bottom: 8px; }
+  .form-group > label { font-size: 0.7rem; margin-bottom: 1px; }
+  .form-input { min-height: 34px; padding: 5px 8px; font-size: 0.8rem; }
+  textarea.form-input { min-height: 44px; }
+  .form-row { gap: 8px; }
+  .form-row .form-group { margin-bottom: 8px; }
+  .form-actions { margin-top: 8px; gap: 6px; }
+  .btn { min-height: 34px; padding: 5px 10px; font-size: 0.8rem; }
+  .btn-sm { min-height: 28px; padding: 3px 6px; font-size: 0.7rem; }
+  .btn-icon-sm { width: 28px; height: 28px; font-size: 0.8rem; }
+  .inline-form { gap: 6px; }
+  .inline-form .btn { padding: 5px 12px; }
+  .app-title { font-size: 0.95rem; }
+  .icon-btn { width: 32px; height: 32px; font-size: 1rem; }
+  .tab-btn { font-size: 0.6rem; }
+  .tab-icon { font-size: 1.1rem; }
+  .expense-item { padding: 8px; }
+  .expense-memo { font-size: 0.75rem; }
+  .expense-detail { font-size: 0.7rem; }
+  .empty-msg { font-size: 0.8rem; padding: 16px 8px; }
+  .item-list li { padding: 8px 0; }
+  .modal { padding: 16px; }
+  .modal-message { font-size: 0.85rem; }
 }
 
 /* ===== Desktop ===== */
