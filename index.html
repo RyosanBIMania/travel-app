@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>旅費割り勘</title>
+<style>
+/* ===== CSS Custom Properties ===== */
+:root {
+  --c-primary: #2563eb;
+  --c-primary-dark: #1d4ed8;
+  --c-danger: #dc2626;
+  --c-danger-dark: #b91c1c;
+  --c-success: #16a34a;
+  --c-bg: #f1f5f9;
+  --c-surface: #ffffff;
+  --c-text: #1e293b;
+  --c-text2: #64748b;
+  --c-border: #e2e8f0;
+  --c-jpy: #dc2626;
+  --c-aud: #2563eb;
+  --sp-xs: 4px;
+  --sp-sm: 8px;
+  --sp-md: 16px;
+  --sp-lg: 24px;
+  --sp-xl: 32px;
+  --font: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  --fs-sm: 0.8125rem;
+  --fs-base: 0.9375rem;
+  --fs-lg: 1.0625rem;
+  --fs-xl: 1.25rem;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --header-h: 52px;
+  --tab-h: 60px;
+  --max-w: 560px;
+  --tap: 44px;
+}
+
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  background: var(--c-bg);
+  color: var(--c-text);
+  padding-top: var(--header-h);
+  padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px));
+  min-height: 100dvh;
+  -webkit-tap-highlight-color: transparent;
+}
+input, select, button, textarea { font-family: inherit; font-size: inherit; }
+a { color: var(--c-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ===== Header ===== */
+.app-header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--sp-md);
+  background: var(--c-primary);
+  color: #fff;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+.app-title { font-size: var(--fs-xl); font-weight: 700; letter-spacing: 0.02em; }
+.header-actions { display: flex; gap: var(--sp-xs); }
+.icon-btn {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.15); border: none; border-radius: var(--radius-sm);
+  color: #fff; font-size: 1.2rem; cursor: pointer; transition: background 0.15s;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.25); }
+
+/* ===== Tab Navigation ===== */
+.tab-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: var(--tab-h);
+  display: flex;
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 100;
+}
+.tab-btn {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px;
+  background: none; border: none;
+  color: var(--c-text2);
+  font-size: 0.65rem;
+  cursor: pointer;
+  transition: color 0.15s;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0 2px;
+}
+.tab-btn.active { color: var(--c-primary); font-weight: 600; }
+.tab-btn.active::after {
+  content: '';
+  position: absolute; top: 0; left: 20%; right: 20%;
+  height: 3px; background: var(--c-primary); border-radius: 0 0 3px 3px;
+}
+.tab-icon { font-size: 1.25rem; line-height: 1; }
+
+/* ===== Tab Content ===== */
+.tab-content {
+  display: none;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: var(--sp-md);
+}
+.tab-content.active { display: block; }
+
+/* ===== Card ===== */
+.card {
+  background: var(--c-surface);
+  border-radius: var(--radius-md);
+  padding: var(--sp-lg);
+  margin-bottom: var(--sp-md);
+  box-shadow: var(--shadow-sm);
+}
+.card-title {
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  margin-bottom: var(--sp-md);
+  display: flex; align-items: center; gap: var(--sp-sm);
+}
+.card-desc { font-size: var(--fs-sm); color: var(--c-text2); margin-bottom: var(--sp-md); }
+
+/* ===== Forms ===== */
+.form-input {
+  width: 100%;
+  min-height: var(--tap);
+  padding: var(--sp-sm) var(--sp-md);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  color: var(--c-text);
+  transition: border-color 0.15s;
+}
+.form-input:focus { outline: none; border-color: var(--c-primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+textarea.form-input { min-height: 60px; resize: vertical; }
+.inline-form { display: flex; gap: var(--sp-sm); }
+.inline-form .form-input { flex: 1; }
+.form-group { margin-bottom: var(--sp-md); }
+.form-group > label { display: block; font-size: var(--fs-sm); font-weight: 600; color: var(--c-text2); margin-bottom: var(--sp-xs); }
+.form-row { display: flex; gap: var(--sp-md); align-items: flex-end; }
+.form-row .form-group { margin-bottom: var(--sp-md); }
+.flex-grow { flex: 1; }
+.form-actions { margin-top: var(--sp-md); display: flex; flex-direction: column; gap: var(--sp-sm); }
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: var(--tap);
+  padding: var(--sp-sm) var(--sp-lg);
+  border: none; border-radius: var(--radius-sm);
+  font-weight: 600; cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--c-primary); color: #fff; }
+.btn-primary:hover { background: var(--c-primary-dark); }
+.btn-secondary { background: var(--c-border); color: var(--c-text); }
+.btn-danger { background: var(--c-danger); color: #fff; }
+.btn-danger:hover { background: var(--c-danger-dark); }
+.btn-block { width: 100%; }
+.btn-sm {
+  min-height: 32px; padding: var(--sp-xs) var(--sp-sm);
+  font-size: var(--fs-sm); border-radius: var(--radius-sm);
+  background: var(--c-bg); border: 1px solid var(--c-border);
+  cursor: pointer; font-weight: 500;
+}
+.btn-sm:hover { background: var(--c-border); }
+.btn-icon-sm {
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid var(--c-border); border-radius: var(--radius-sm);
+  cursor: pointer; font-size: 0.9rem; color: var(--c-text2);
+  transition: background 0.15s;
+}
+.btn-icon-sm:hover { background: var(--c-bg); }
+.btn-icon-sm.danger:hover { background: #fef2f2; color: var(--c-danger); border-color: var(--c-danger); }
+
+/* ===== Currency Toggle ===== */
+.currency-toggle {
+  display: inline-flex;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 2px solid var(--c-border);
+}
+.toggle-btn {
+  padding: var(--sp-sm) var(--sp-md);
+  min-height: var(--tap);
+  border: none;
+  background: var(--c-surface);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-size: var(--fs-base);
+}
+.toggle-btn.active-jpy { background: var(--c-jpy); color: #fff; }
+.toggle-btn.active-aud { background: var(--c-aud); color: #fff; }
+
+/* ===== Checkbox Grid ===== */
+.split-controls { display: flex; gap: var(--sp-sm); margin-bottom: var(--sp-sm); }
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: var(--sp-sm);
+}
+.checkbox-grid label {
+  display: flex; align-items: center; gap: var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--radius-sm);
+  background: var(--c-bg);
+  min-height: var(--tap);
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+.checkbox-grid label:has(input:checked) { background: #dbeafe; }
+.checkbox-grid input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--c-primary); cursor: pointer; }
+
+/* ===== Item Lists ===== */
+.item-list { list-style: none; }
+.list-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-md) 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.list-item:last-child { border-bottom: none; }
+.member-name { font-weight: 600; }
+.empty-msg { text-align: center; color: var(--c-text2); padding: var(--sp-xl) 0; font-size: var(--fs-sm); }
+
+/* ===== Expense Items ===== */
+.expense-item {
+  padding: var(--sp-md) 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.expense-item:last-child { border-bottom: none; }
+.expense-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-sm); }
+.expense-info { flex: 1; min-width: 0; }
+.expense-memo { font-weight: 600; word-break: break-word; }
+.expense-detail { font-size: var(--fs-sm); color: var(--c-text2); margin-top: 2px; }
+.expense-right { text-align: right; flex-shrink: 0; }
+.expense-amount { font-size: var(--fs-lg); font-weight: 700; }
+.expense-amount.jpy { color: var(--c-jpy); }
+.expense-amount.aud { color: var(--c-aud); }
+.expense-date { font-size: var(--fs-sm); color: var(--c-text2); }
+.expense-actions { display: flex; gap: var(--sp-xs); margin-top: var(--sp-sm); justify-content: flex-end; }
+.summary-bar {
+  background: var(--c-bg); border-radius: var(--radius-sm);
+  padding: var(--sp-sm) var(--sp-md);
+  margin-bottom: var(--sp-md);
+  font-size: var(--fs-sm); font-weight: 600;
+  text-align: center;
+}
+.summary-bar:empty { display: none; }
+
+/* ===== Settlement ===== */
+.exchange-rate-form {
+  display: flex; align-items: center; gap: var(--sp-sm);
+  font-weight: 600;
+}
+.exchange-rate-form .form-input { width: 100px; text-align: center; }
+.rate-status { font-size: var(--fs-sm); color: var(--c-text2); margin-top: var(--sp-sm); }
+.rate-status.success { color: var(--c-success); }
+.rate-status.error { color: var(--c-danger); }
+.settlement-currency { margin-top: var(--sp-sm); }
+.balance-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--sp-sm) 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.balance-item:last-child { border-bottom: none; }
+.balance-name { font-weight: 600; }
+.balance-amount { font-weight: 700; font-size: var(--fs-lg); }
+.balance-amount.positive { color: var(--c-success); }
+.balance-amount.negative { color: var(--c-danger); }
+.settlement-item {
+  display: flex; align-items: center;
+  padding: var(--sp-md);
+  margin-bottom: var(--sp-sm);
+  background: var(--c-bg);
+  border-radius: var(--radius-sm);
+  border-left: 4px solid var(--c-primary);
+  gap: var(--sp-sm);
+  flex-wrap: wrap;
+}
+.settlement-from, .settlement-to { font-weight: 700; }
+.settlement-arrow { color: var(--c-text2); font-size: 1.2rem; }
+.settlement-amount { margin-left: auto; font-weight: 700; color: var(--c-primary); font-size: var(--fs-lg); }
+
+/* ===== Itinerary (しおり) ===== */
+.itin-day-group { margin-bottom: var(--sp-lg); }
+.itin-day-header {
+  display: flex; align-items: center; gap: var(--sp-sm);
+  padding: var(--sp-sm) var(--sp-md);
+  background: var(--c-primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: var(--fs-base);
+  margin-bottom: var(--sp-sm);
+  position: sticky; top: var(--header-h); z-index: 10;
+}
+.itin-day-header.today { background: var(--c-success); }
+.itin-day-label { font-size: var(--fs-sm); font-weight: 400; opacity: 0.85; margin-left: auto; }
+.itin-timeline { position: relative; padding-left: 36px; }
+.itin-timeline::before {
+  content: '';
+  position: absolute; left: 14px; top: 0; bottom: 0;
+  width: 2px; background: var(--c-border);
+}
+.itin-event {
+  position: relative;
+  background: var(--c-surface);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-md);
+  margin-bottom: var(--sp-sm);
+  box-shadow: var(--shadow-sm);
+  border-left: 3px solid var(--c-border);
+}
+.itin-event.next-up {
+  border-left-color: var(--c-success);
+  box-shadow: 0 0 0 2px rgba(22,163,74,0.2), var(--shadow-sm);
+}
+.itin-event-dot {
+  position: absolute;
+  left: -29px; top: 16px;
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  background: var(--c-surface);
+  border: 2px solid var(--c-border);
+  border-radius: 50%;
+  z-index: 1;
+}
+.itin-event.next-up .itin-event-dot { border-color: var(--c-success); }
+.itin-event-cat-flight { border-left-color: #3b82f6; }
+.itin-event-cat-flight .itin-event-dot { border-color: #3b82f6; }
+.itin-event-cat-hotel { border-left-color: #a855f7; }
+.itin-event-cat-hotel .itin-event-dot { border-color: #a855f7; }
+.itin-event-cat-sightseeing { border-left-color: #f59e0b; }
+.itin-event-cat-sightseeing .itin-event-dot { border-color: #f59e0b; }
+.itin-event-cat-food { border-left-color: #ef4444; }
+.itin-event-cat-food .itin-event-dot { border-color: #ef4444; }
+.itin-event-cat-transport { border-left-color: #06b6d4; }
+.itin-event-cat-transport .itin-event-dot { border-color: #06b6d4; }
+.itin-event-cat-other { border-left-color: var(--c-text2); }
+.itin-event-cat-other .itin-event-dot { border-color: var(--c-text2); }
+.itin-event-top { display: flex; align-items: flex-start; gap: var(--sp-sm); }
+.itin-event-body { flex: 1; min-width: 0; }
+.itin-event-time { font-size: var(--fs-sm); color: var(--c-text2); font-weight: 600; }
+.itin-event-title { font-weight: 700; margin-top: 2px; word-break: break-word; }
+.itin-event-location { font-size: var(--fs-sm); color: var(--c-text2); margin-top: 2px; }
+.itin-event-memo { font-size: var(--fs-sm); color: var(--c-text2); margin-top: var(--sp-xs); white-space: pre-wrap; word-break: break-word; }
+.itin-event-links { display: flex; gap: var(--sp-sm); margin-top: var(--sp-sm); flex-wrap: wrap; }
+.itin-link {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: var(--sp-xs) var(--sp-sm);
+  background: var(--c-bg);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm); font-weight: 500;
+  color: var(--c-primary);
+  text-decoration: none;
+  min-height: 32px;
+}
+.itin-link:hover { background: #dbeafe; text-decoration: none; }
+.itin-event-actions { display: flex; gap: var(--sp-xs); margin-top: var(--sp-sm); justify-content: flex-end; }
+.next-badge {
+  display: inline-block;
+  background: var(--c-success); color: #fff;
+  font-size: 0.7rem; font-weight: 700;
+  padding: 2px 8px; border-radius: var(--radius-full);
+  margin-left: var(--sp-sm);
+}
+
+/* ===== Sync Indicator ===== */
+.sync-indicator {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #64748b;
+  display: inline-block;
+  margin-right: 2px;
+  transition: background 0.3s;
+}
+.sync-indicator.synced { background: #22c55e; }
+.sync-indicator.syncing { background: #f59e0b; animation: pulse 1s infinite; }
+.sync-indicator.error { background: #ef4444; }
+.sync-indicator.off { background: #64748b; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200;
+  padding: var(--sp-md);
+}
+.modal-overlay[hidden] { display: none !important; }
+.modal {
+  background: var(--c-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-xl);
+  max-width: 360px; width: 100%;
+  box-shadow: var(--shadow-md);
+}
+.modal-message { font-size: var(--fs-base); font-weight: 500; margin-bottom: var(--sp-lg); line-height: 1.5; }
+.modal-actions { display: flex; gap: var(--sp-sm); justify-content: flex-end; }
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  bottom: calc(var(--tab-h) + var(--sp-lg) + env(safe-area-inset-bottom, 0px));
+  left: 50%; transform: translateX(-50%) translateY(20px);
+  opacity: 0;
+  background: var(--c-text);
+  color: #fff;
+  padding: var(--sp-sm) var(--sp-lg);
+  border-radius: var(--radius-full);
+  font-size: var(--fs-sm); font-weight: 500;
+  transition: opacity 0.3s, transform 0.3s;
+  z-index: 300;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.toast[hidden] { display: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===== Desktop ===== */
+@media (min-width: 768px) {
+  .tab-nav {
+    position: static;
+    border-top: none;
+    border-bottom: 1px solid var(--c-border);
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+  body { padding-bottom: var(--sp-xl); }
+  .toast { bottom: var(--sp-xl); }
+  .tab-btn.active::after { top: auto; bottom: 0; border-radius: 3px 3px 0 0; }
+  .tab-btn { font-size: var(--fs-sm); }
+  .tab-icon { font-size: 1.1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header class="app-header">
+  <h1 class="app-title">旅費割り勘</h1>
+  <div class="header-actions">
+    <span id="sync-status" class="sync-indicator" title="同期状態"></span>
+    <button id="btn-sync" class="icon-btn" title="クラウド同期">&#x1F504;</button>
+    <button id="btn-cloud-settings" class="icon-btn" title="クラウド設定">&#x2601;</button>
+    <button id="btn-export" class="icon-btn" title="データ書き出し">&#x1F4E4;</button>
+    <button id="btn-import" class="icon-btn" title="データ読み込み">&#x1F4E5;</button>
+    <input type="file" id="import-file" accept=".json" hidden>
+  </div>
+</header>
+
+<!-- ===== Tab Navigation ===== -->
+<nav class="tab-nav" role="tablist">
+  <button class="tab-btn" data-tab="itinerary" role="tab">
+    <span class="tab-icon">&#x1F4CB;</span>
+    <span class="tab-label">しおり</span>
+  </button>
+  <button class="tab-btn" data-tab="itin-edit" role="tab">
+    <span class="tab-icon">&#x270F;&#xFE0F;</span>
+    <span class="tab-label">編集</span>
+  </button>
+  <button class="tab-btn active" data-tab="members" role="tab">
+    <span class="tab-icon">&#x1F465;</span>
+    <span class="tab-label">メンバー</span>
+  </button>
+  <button class="tab-btn" data-tab="expenses" role="tab">
+    <span class="tab-icon">&#x1F4B0;</span>
+    <span class="tab-label">支払い</span>
+  </button>
+  <button class="tab-btn" data-tab="settlement" role="tab">
+    <span class="tab-icon">&#x1F4CA;</span>
+    <span class="tab-label">精算</span>
+  </button>
+</nav>
+
+<!-- ===== Tab: しおり（表示専用） ===== -->
+<section id="tab-itinerary" class="tab-content">
+  <div class="card">
+    <h2 class="card-title">📋 スケジュール</h2>
+    <div id="itinerary-list"></div>
+    <p id="itinerary-empty" class="empty-msg">予定がありません<br><small style="color:var(--c-text2)">「✏️ 編集」タブから予定を追加してください</small></p>
+  </div>
+</section>
+
+<!-- ===== Tab: 編集（スケジュール入力・管理） ===== -->
+<section id="tab-itin-edit" class="tab-content">
+  <!-- Add/Edit Form -->
+  <div class="card">
+    <h2 class="card-title" id="itin-form-title">予定を追加</h2>
+    <form id="form-itinerary">
+      <input type="hidden" id="itin-edit-id" value="">
+
+      <div class="form-row">
+        <div class="form-group flex-grow">
+          <label for="itin-date">日付</label>
+          <input type="date" id="itin-date" class="form-input" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-grow">
+          <label for="itin-time">開始時刻</label>
+          <input type="time" id="itin-time" class="form-input">
+        </div>
+        <div class="form-group flex-grow">
+          <label for="itin-endtime">終了時刻</label>
+          <input type="time" id="itin-endtime" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="itin-title">タイトル</label>
+        <input type="text" id="itin-title" class="form-input" required placeholder="例: 成田→シドニー JQ12" maxlength="100" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="itin-category">カテゴリ</label>
+        <select id="itin-category" class="form-input">
+          <option value="flight">✈️ 飛行機</option>
+          <option value="hotel">🏨 宿泊</option>
+          <option value="sightseeing">🗺️ 観光</option>
+          <option value="food">🍽️ 食事</option>
+          <option value="transport">🚃 交通</option>
+          <option value="other">📌 その他</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="itin-memo">メモ</label>
+        <textarea id="itin-memo" class="form-input" placeholder="詳細メモ（任意）" maxlength="500" rows="2"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="itin-url">リンクURL</label>
+        <input type="url" id="itin-url" class="form-input" placeholder="Googleドライブ等のURL（任意）" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="itin-location">場所名</label>
+        <input type="text" id="itin-location" class="form-input" placeholder="例: シドニー・オペラハウス（任意）" maxlength="100" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="itin-mapurl">Google Maps URL</label>
+        <input type="url" id="itin-mapurl" class="form-input" placeholder="Google Mapsの共有URL（任意）" autocomplete="off">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-block" id="itin-submit-btn">追加する</button>
+        <button type="button" id="btn-cancel-itin-edit" class="btn btn-secondary btn-block" style="display:none;">キャンセル</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Compact list for editing -->
+  <div class="card">
+    <h2 class="card-title">予定一覧 <span style="font-weight:400;font-size:var(--fs-sm);color:var(--c-text2)">(<span id="itin-count">0</span>件)</span></h2>
+    <div id="itin-edit-list"></div>
+    <p id="itin-edit-empty" class="empty-msg">予定がありません</p>
+  </div>
+</section>
+
+<!-- ===== Tab: メンバー管理 ===== -->
+<section id="tab-members" class="tab-content active">
+  <div class="card">
+    <h2 class="card-title">メンバー追加</h2>
+    <form id="form-add-member" class="inline-form">
+      <input type="text" id="input-member-name" placeholder="名前を入力" class="form-input" required maxlength="20" autocomplete="off">
+      <button type="submit" class="btn btn-primary">追加</button>
+    </form>
+  </div>
+  <div class="card">
+    <h2 class="card-title">メンバー一覧 <span style="font-weight:400;font-size:var(--fs-sm);color:var(--c-text2)">(<span id="member-count">0</span>人)</span></h2>
+    <ul id="member-list" class="item-list"></ul>
+    <p id="member-empty" class="empty-msg">メンバーがいません</p>
+  </div>
+</section>
+
+<!-- ===== Tab: 支払い記録 ===== -->
+<section id="tab-expenses" class="tab-content">
+  <div class="card">
+    <h2 class="card-title" id="expense-form-title">支払いを追加</h2>
+    <form id="form-expense">
+      <input type="hidden" id="expense-edit-id" value="">
+      <div class="form-group">
+        <label for="expense-date">日付</label>
+        <input type="date" id="expense-date" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label for="expense-payer">支払った人</label>
+        <select id="expense-payer" class="form-input" required>
+          <option value="">選択してください</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="form-group flex-grow">
+          <label for="expense-amount">金額</label>
+          <input type="number" id="expense-amount" class="form-input" min="0" step="any" required placeholder="0" inputmode="decimal">
+        </div>
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <div class="currency-toggle" id="currency-toggle">
+            <button type="button" class="toggle-btn active-jpy" data-currency="JPY">JPY</button>
+            <button type="button" class="toggle-btn" data-currency="AUD">AUD</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="expense-memo">メモ</label>
+        <input type="text" id="expense-memo" class="form-input" placeholder="何に使った？" maxlength="100" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label>割り勘メンバー</label>
+        <div class="split-controls">
+          <button type="button" id="btn-select-all" class="btn-sm">全選択</button>
+          <button type="button" id="btn-deselect-all" class="btn-sm">全解除</button>
+        </div>
+        <div id="split-members" class="checkbox-grid"></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-block" id="expense-submit-btn">追加する</button>
+        <button type="button" id="btn-cancel-edit" class="btn btn-secondary btn-block" style="display:none;">キャンセル</button>
+      </div>
+    </form>
+  </div>
+  <div class="card">
+    <h2 class="card-title">支払い一覧</h2>
+    <div id="expense-summary" class="summary-bar"></div>
+    <div id="expense-list"></div>
+    <p id="expense-empty" class="empty-msg">支払い記録がありません</p>
+  </div>
+</section>
+
+<!-- ===== Tab: 精算 ===== -->
+<section id="tab-settlement" class="tab-content">
+  <div class="card">
+    <h2 class="card-title">為替レート</h2>
+    <div class="exchange-rate-form">
+      <span>1 AUD =</span>
+      <input type="number" id="exchange-rate" class="form-input" min="0.01" step="0.01" value="95" inputmode="decimal">
+      <span>円</span>
+    </div>
+    <div id="rate-status" class="rate-status"></div>
+  </div>
+  <div class="card">
+    <h2 class="card-title">精算通貨</h2>
+    <div class="currency-toggle" id="settle-currency-toggle">
+      <button type="button" class="toggle-btn active-jpy" data-settle="JPY">JPY で精算</button>
+      <button type="button" class="toggle-btn" data-settle="AUD">AUD で精算</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2 class="card-title">個人収支</h2>
+    <div id="balance-list"></div>
+    <p id="balance-empty" class="empty-msg">データがありません</p>
+  </div>
+  <div class="card">
+    <h2 class="card-title">精算プラン</h2>
+    <p class="card-desc">最小限の送金回数で精算します</p>
+    <div id="settlement-plan"></div>
+    <p id="settlement-empty" class="empty-msg">精算するデータがありません</p>
+  </div>
+</section>
+
+<!-- ===== Modal ===== -->
+<div id="modal-overlay" class="modal-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <p id="modal-message" class="modal-message"></p>
+    <div class="modal-actions">
+      <button id="modal-cancel" class="btn btn-secondary">キャンセル</button>
+      <button id="modal-confirm" class="btn btn-danger">削除する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Cloud Settings Modal ===== -->
+<div id="cloud-modal-overlay" class="modal-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <p class="modal-message" style="font-weight:700;margin-bottom:8px;">クラウド同期設定</p>
+    <p style="font-size:var(--fs-sm);color:var(--c-text2);margin-bottom:var(--sp-md);line-height:1.5;">Google Apps Script のデプロイURLを貼り付けてください。設定するとスプレッドシートとデータが自動同期されます。</p>
+    <div class="form-group">
+      <label for="gas-url-input">GAS デプロイURL</label>
+      <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off">
+    </div>
+    <div class="modal-actions">
+      <button id="cloud-modal-cancel" class="btn btn-secondary">キャンセル</button>
+      <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:var(--fs-sm)">URL削除</button>
+      <button id="cloud-modal-save" class="btn btn-primary">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Toast ===== -->
+<div id="toast" class="toast" hidden></div>
+
+<script>
+/* ===== Constants ===== */
+const APP_KEY = 'travel-expense-splitter-v1';
+
+const CATEGORY_ICONS = {
+  flight: '✈️', hotel: '🏨', sightseeing: '🗺️',
+  food: '🍽️', transport: '🚃', other: '📌'
+};
+const CATEGORY_LABELS = {
+  flight: '飛行機', hotel: '宿泊', sightseeing: '観光',
+  food: '食事', transport: '交通', other: 'その他'
+};
+const DAY_NAMES = ['日','月','火','水','木','金','土'];
+
+/* ===== State ===== */
+let state = createDefaultState();
+let modalCallback = null;
+let currentCurrency = 'JPY';
+
+function createDefaultState() {
+  return {
+    members: [],
+    expenses: [],
+    itinerary: [],
+    exchangeRate: 95,
+    settleCurrency: 'JPY',
+    nextMemberId: 1,
+    nextExpenseId: 1,
+    nextItineraryId: 1
+  };
+}
+
+/* ===== Persistence ===== */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(APP_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.members) && Array.isArray(parsed.expenses)) {
+        state = parsed;
+        if (!Array.isArray(state.itinerary)) state.itinerary = [];
+        if (!state.nextItineraryId) state.nextItineraryId = 1;
+      }
+    }
+  } catch (e) { /* keep default */ }
+}
+
+function saveState() {
+  localStorage.setItem(APP_KEY, JSON.stringify(state));
+  debouncedSyncToCloud();
+}
+
+/* ===== Cloud Sync (GAS) ===== */
+const GAS_URL_KEY = 'travel-app-gas-url';
+let syncTimer = null;
+
+function getGasUrl() {
+  return localStorage.getItem(GAS_URL_KEY) || '';
+}
+
+function setGasUrl(url) {
+  if (url) localStorage.setItem(GAS_URL_KEY, url);
+  else localStorage.removeItem(GAS_URL_KEY);
+}
+
+function setSyncStatus(status) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  el.className = 'sync-indicator ' + status;
+  const titles = { off: '未設定', syncing: '同期中...', synced: '同期済', error: '同期エラー' };
+  el.title = titles[status] || '';
+}
+
+function debouncedSyncToCloud() {
+  if (!getGasUrl()) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(() => syncToCloud(), 1500);
+}
+
+async function syncToCloud() {
+  const url = getGasUrl();
+  if (!url) return;
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(state),
+      signal: AbortSignal.timeout(15000)
+    });
+    const result = await res.json();
+    if (result.success) {
+      setSyncStatus('synced');
+    } else {
+      setSyncStatus('error');
+      console.error('Sync save error:', result.error);
+    }
+  } catch (e) {
+    setSyncStatus('error');
+    console.error('Sync save failed:', e);
+  }
+}
+
+async function syncFromCloud() {
+  const url = getGasUrl();
+  if (!url) { setSyncStatus('off'); return; }
+  setSyncStatus('syncing');
+  try {
+    const res = await fetch(url + '?action=load', { signal: AbortSignal.timeout(15000) });
+    const result = await res.json();
+    if (result.success && result.data) {
+      const cloud = result.data;
+      if (cloud.members && cloud.members.length > 0 || cloud.expenses && cloud.expenses.length > 0 || cloud.itinerary && cloud.itinerary.length > 0) {
+        state = cloud;
+        if (!Array.isArray(state.members)) state.members = [];
+        if (!Array.isArray(state.expenses)) state.expenses = [];
+        if (!Array.isArray(state.itinerary)) state.itinerary = [];
+        localStorage.setItem(APP_KEY, JSON.stringify(state));
+        renderAll();
+      }
+      setSyncStatus('synced');
+    } else {
+      setSyncStatus('error');
+    }
+  } catch (e) {
+    setSyncStatus('error');
+    console.error('Sync load failed:', e);
+  }
+}
+
+/* ===== Utilities ===== */
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function getTodayString() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-');
+  return `${Number(m)}/${Number(d)}`;
+}
+
+function formatDateFull(dateStr) {
+  if (!dateStr) return '';
+  const [y, m, d] = dateStr.split('-');
+  const date = new Date(Number(y), Number(m) - 1, Number(d));
+  return `${Number(m)}/${Number(d)}(${DAY_NAMES[date.getDay()]})`;
+}
+
+function getMemberName(id) {
+  const m = state.members.find(m => m.id === id);
+  return m ? m.name : '不明';
+}
+
+function roundForCurrency(amount, currency) {
+  if (currency === 'JPY') return Math.round(amount);
+  return Math.round(amount * 100) / 100;
+}
+
+function formatAmount(amount, currency) {
+  if (currency === 'JPY') return '¥' + Math.round(amount).toLocaleString('ja-JP');
+  return 'A$' + amount.toFixed(2);
+}
+
+function generateMemberId() { return 'm' + (state.nextMemberId++); }
+function generateExpenseId() { return state.nextExpenseId++; }
+function generateItineraryId() { return state.nextItineraryId++; }
+
+/* ===== Toast ===== */
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.hidden = false;
+  requestAnimationFrame(() => { toast.classList.add('show'); });
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => { toast.hidden = true; }, 300);
+  }, 2200);
+}
+
+/* ===== Modal ===== */
+function showModal(message, confirmLabel, onConfirm) {
+  document.getElementById('modal-message').textContent = message;
+  document.getElementById('modal-confirm').textContent = confirmLabel || '削除する';
+  document.getElementById('modal-overlay').hidden = false;
+  modalCallback = onConfirm;
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').hidden = true;
+  modalCallback = null;
+}
+
+/* ===== Member Management ===== */
+function addMember(name) {
+  const trimmed = name.trim();
+  if (!trimmed) { showToast('名前を入力してください'); return false; }
+  if (state.members.some(m => m.name === trimmed)) { showToast('同じ名前のメンバーがいます'); return false; }
+  state.members.push({ id: generateMemberId(), name: trimmed });
+  saveState();
+  return true;
+}
+
+function removeMember(memberId) {
+  const hasExpenses = state.expenses.some(e => e.payerId === memberId || e.splitWith.includes(memberId));
+  if (hasExpenses) {
+    showToast('支払い記録に含まれているため削除できません');
+    return false;
+  }
+  state.members = state.members.filter(m => m.id !== memberId);
+  saveState();
+  return true;
+}
+
+/* ===== Expense Management ===== */
+function addExpense(data) {
+  if (!data.payerId) { showToast('支払った人を選択してください'); return false; }
+  if (!data.amount || data.amount <= 0) { showToast('金額を入力してください'); return false; }
+  if (!data.splitWith || data.splitWith.length === 0) { showToast('割り勘メンバーを選択してください'); return false; }
+  state.expenses.push({
+    id: generateExpenseId(),
+    date: data.date || getTodayString(),
+    payerId: data.payerId,
+    amount: Number(data.amount),
+    currency: data.currency || 'JPY',
+    memo: data.memo || '',
+    splitWith: [...data.splitWith]
+  });
+  saveState();
+  return true;
+}
+
+function updateExpense(expenseId, data) {
+  const idx = state.expenses.findIndex(e => e.id === expenseId);
+  if (idx === -1) return false;
+  if (!data.payerId) { showToast('支払った人を選択してください'); return false; }
+  if (!data.amount || data.amount <= 0) { showToast('金額を入力してください'); return false; }
+  if (!data.splitWith || data.splitWith.length === 0) { showToast('割り勘メンバーを選択してください'); return false; }
+  state.expenses[idx] = { ...state.expenses[idx], ...data, amount: Number(data.amount) };
+  saveState();
+  return true;
+}
+
+function deleteExpense(expenseId) {
+  state.expenses = state.expenses.filter(e => e.id !== expenseId);
+  saveState();
+}
+
+/* ===== Itinerary Management ===== */
+function addItineraryEvent(data) {
+  if (!data.date) { showToast('日付を入力してください'); return false; }
+  if (!data.title || !data.title.trim()) { showToast('タイトルを入力してください'); return false; }
+  state.itinerary.push({
+    id: generateItineraryId(),
+    date: data.date,
+    time: data.time || '',
+    endTime: data.endTime || '',
+    title: data.title.trim(),
+    category: data.category || 'other',
+    memo: data.memo || '',
+    url: data.url || '',
+    location: data.location || '',
+    mapUrl: data.mapUrl || ''
+  });
+  saveState();
+  return true;
+}
+
+function updateItineraryEvent(eventId, data) {
+  const idx = state.itinerary.findIndex(e => e.id === eventId);
+  if (idx === -1) return false;
+  if (!data.date) { showToast('日付を入力してください'); return false; }
+  if (!data.title || !data.title.trim()) { showToast('タイトルを入力してください'); return false; }
+  state.itinerary[idx] = { ...state.itinerary[idx], ...data, title: data.title.trim() };
+  saveState();
+  return true;
+}
+
+function deleteItineraryEvent(eventId) {
+  state.itinerary = state.itinerary.filter(e => e.id !== eventId);
+  saveState();
+}
+
+/* ===== Settlement Algorithm ===== */
+function calculateNetBalances() {
+  const rate = state.exchangeRate || 95;
+  const sc = state.settleCurrency || 'JPY';
+  const balances = {};
+  state.members.forEach(m => { balances[m.id] = 0; });
+  state.expenses.forEach(exp => {
+    let amt;
+    if (sc === 'JPY') { amt = exp.currency === 'JPY' ? exp.amount : exp.amount * rate; }
+    else { amt = exp.currency === 'AUD' ? exp.amount : exp.amount / rate; }
+    if (balances[exp.payerId] !== undefined) { balances[exp.payerId] += amt; }
+    const share = amt / exp.splitWith.length;
+    exp.splitWith.forEach(mid => { if (balances[mid] !== undefined) { balances[mid] -= share; } });
+  });
+  return balances;
+}
+
+function calculateSettlementPlan(balances) {
+  const sc = state.settleCurrency || 'JPY';
+  const debtors = [], creditors = [];
+  Object.entries(balances).forEach(([id, bal]) => {
+    const r = roundForCurrency(bal, sc);
+    if (r < (sc === 'JPY' ? -0.5 : -0.005)) debtors.push({ id, amount: Math.abs(r) });
+    else if (r > (sc === 'JPY' ? 0.5 : 0.005)) creditors.push({ id, amount: r });
+  });
+  debtors.sort((a, b) => b.amount - a.amount);
+  creditors.sort((a, b) => b.amount - a.amount);
+  const transactions = [];
+  let di = 0, ci = 0;
+  while (di < debtors.length && ci < creditors.length) {
+    const d = debtors[di], c = creditors[ci];
+    const transfer = Math.min(d.amount, c.amount);
+    if (transfer > (sc === 'JPY' ? 0.5 : 0.005)) {
+      transactions.push({ from: d.id, fromName: getMemberName(d.id), to: c.id, toName: getMemberName(c.id), amount: roundForCurrency(transfer, sc), currency: sc });
+    }
+    d.amount -= transfer; c.amount -= transfer;
+    if (d.amount < (sc === 'JPY' ? 0.5 : 0.005)) di++;
+    if (c.amount < (sc === 'JPY' ? 0.5 : 0.005)) ci++;
+  }
+  return transactions;
+}
+
+/* ===== Rendering: Members ===== */
+function renderMembers() {
+  const list = document.getElementById('member-list');
+  const empty = document.getElementById('member-empty');
+  document.getElementById('member-count').textContent = state.members.length;
+  if (state.members.length === 0) { list.innerHTML = ''; empty.hidden = false; return; }
+  empty.hidden = true;
+  list.innerHTML = state.members.map(m => `
+    <li class="list-item">
+      <span class="member-name">${escapeHtml(m.name)}</span>
+      <button class="btn-icon-sm danger" data-delete-member="${m.id}" title="削除">&#x2716;</button>
+    </li>
+  `).join('');
+}
+
+/* ===== Rendering: Expenses ===== */
+function renderPayerSelect() {
+  const sel = document.getElementById('expense-payer');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">選択してください</option>' +
+    state.members.map(m => `<option value="${m.id}">${escapeHtml(m.name)}</option>`).join('');
+  if (current && state.members.some(m => m.id === current)) sel.value = current;
+}
+
+function renderSplitCheckboxes(selected) {
+  const container = document.getElementById('split-members');
+  const allIds = selected || state.members.map(m => m.id);
+  container.innerHTML = state.members.map(m => `
+    <label><input type="checkbox" name="split" value="${m.id}" ${allIds.includes(m.id) ? 'checked' : ''}> ${escapeHtml(m.name)}</label>
+  `).join('');
+}
+
+function renderExpenses() {
+  const container = document.getElementById('expense-list');
+  const empty = document.getElementById('expense-empty');
+  const summary = document.getElementById('expense-summary');
+  if (state.expenses.length === 0) { container.innerHTML = ''; empty.hidden = false; summary.innerHTML = ''; return; }
+  empty.hidden = true;
+  const totalJPY = state.expenses.filter(e => e.currency === 'JPY').reduce((s, e) => s + e.amount, 0);
+  const totalAUD = state.expenses.filter(e => e.currency === 'AUD').reduce((s, e) => s + e.amount, 0);
+  const parts = [];
+  if (totalJPY > 0) parts.push(`<span style="color:var(--c-jpy)">${formatAmount(totalJPY, 'JPY')}</span>`);
+  if (totalAUD > 0) parts.push(`<span style="color:var(--c-aud)">${formatAmount(totalAUD, 'AUD')}</span>`);
+  summary.innerHTML = parts.length > 0 ? `合計: ${parts.join(' / ')} (${state.expenses.length}件)` : '';
+  const sorted = [...state.expenses].sort((a, b) => {
+    if (a.date !== b.date) return b.date.localeCompare(a.date);
+    return b.id - a.id;
+  });
+  container.innerHTML = sorted.map(e => {
+    const splitNames = e.splitWith.map(id => getMemberName(id)).join(', ');
+    return `
+    <div class="expense-item">
+      <div class="expense-top">
+        <div class="expense-info">
+          <div class="expense-memo">${escapeHtml(e.memo || '(メモなし)')}</div>
+          <div class="expense-detail">${escapeHtml(getMemberName(e.payerId))} が支払い → ${escapeHtml(splitNames)}</div>
+        </div>
+        <div class="expense-right">
+          <div class="expense-amount ${e.currency.toLowerCase()}">${formatAmount(e.amount, e.currency)}</div>
+          <div class="expense-date">${formatDate(e.date)}</div>
+        </div>
+      </div>
+      <div class="expense-actions">
+        <button class="btn-icon-sm" data-edit-expense="${e.id}" title="編集">&#x270E;</button>
+        <button class="btn-icon-sm danger" data-delete-expense="${e.id}" title="削除">&#x2716;</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== Rendering: Settlement ===== */
+function renderSettlement() {
+  const rateInput = document.getElementById('exchange-rate');
+  state.exchangeRate = Number(rateInput.value) || 95;
+  saveState();
+  const sc = state.settleCurrency;
+  const balances = calculateNetBalances();
+  const plan = calculateSettlementPlan(balances);
+  const balanceEl = document.getElementById('balance-list');
+  const balanceEmpty = document.getElementById('balance-empty');
+  if (state.members.length === 0) { balanceEl.innerHTML = ''; balanceEmpty.hidden = false; }
+  else {
+    balanceEmpty.hidden = true;
+    balanceEl.innerHTML = state.members.map(m => {
+      const bal = roundForCurrency(balances[m.id] || 0, sc);
+      const cls = bal >= 0 ? 'positive' : 'negative';
+      const sign = bal > 0 ? '+' : '';
+      return `<div class="balance-item"><span class="balance-name">${escapeHtml(m.name)}</span><span class="balance-amount ${cls}">${sign}${formatAmount(bal, sc)}</span></div>`;
+    }).join('');
+  }
+  const planEl = document.getElementById('settlement-plan');
+  const settleEmpty = document.getElementById('settlement-empty');
+  if (plan.length === 0) {
+    planEl.innerHTML = '';
+    if (state.expenses.length > 0 && state.members.length > 0) { settleEmpty.hidden = false; settleEmpty.textContent = '精算不要です（全員均等です）'; }
+    else { settleEmpty.hidden = state.expenses.length === 0 && state.members.length === 0; settleEmpty.textContent = '精算するデータがありません'; }
+    return;
+  }
+  settleEmpty.hidden = true;
+  planEl.innerHTML = plan.map(t => `
+    <div class="settlement-item">
+      <span class="settlement-from">${escapeHtml(t.fromName)}</span>
+      <span class="settlement-arrow">&#x27A1;</span>
+      <span class="settlement-to">${escapeHtml(t.toName)}</span>
+      <span class="settlement-amount">${formatAmount(t.amount, t.currency)}</span>
+    </div>
+  `).join('');
+}
+
+/* ===== Rendering: Itinerary ===== */
+function renderItinerary() {
+  const container = document.getElementById('itinerary-list');
+  const empty = document.getElementById('itinerary-empty');
+
+  if (state.itinerary.length === 0) {
+    container.innerHTML = '';
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+
+  const today = getTodayString();
+  const now = new Date();
+  const nowTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+  // Sort by date then time
+  const sorted = [...state.itinerary].sort((a, b) => {
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return (a.time || '99:99').localeCompare(b.time || '99:99');
+  });
+
+  // Group by date
+  const groups = {};
+  sorted.forEach(ev => {
+    if (!groups[ev.date]) groups[ev.date] = [];
+    groups[ev.date].push(ev);
+  });
+
+  // Find "next up" event: first event today/future whose time hasn't passed
+  let nextUpId = null;
+  for (const ev of sorted) {
+    if (ev.date > today || (ev.date === today && (!ev.time || ev.time >= nowTime))) {
+      nextUpId = ev.id;
+      break;
+    }
+  }
+
+  // Calculate day numbers from first date
+  const dates = Object.keys(groups).sort();
+  const firstDate = dates[0];
+
+  let html = '';
+  dates.forEach(date => {
+    const isToday = date === today;
+    const dayNum = Math.floor((new Date(date) - new Date(firstDate)) / 86400000) + 1;
+
+    html += `<div class="itin-day-group">`;
+    html += `<div class="itin-day-header ${isToday ? 'today' : ''}">`;
+    html += `Day ${dayNum} - ${formatDateFull(date)}`;
+    if (isToday) html += `<span class="itin-day-label">TODAY</span>`;
+    html += `</div>`;
+    html += `<div class="itin-timeline">`;
+
+    groups[date].forEach(ev => {
+      const isNext = ev.id === nextUpId;
+      const catClass = 'itin-event-cat-' + (ev.category || 'other');
+      const icon = CATEGORY_ICONS[ev.category] || '📌';
+
+      html += `<div class="itin-event ${catClass} ${isNext ? 'next-up' : ''}">`;
+      html += `<div class="itin-event-dot">${icon}</div>`;
+      html += `<div class="itin-event-top">`;
+      html += `<div class="itin-event-body">`;
+
+      // Time
+      if (ev.time) {
+        let timeStr = ev.time;
+        if (ev.endTime) timeStr += ' - ' + ev.endTime;
+        html += `<div class="itin-event-time">${escapeHtml(timeStr)}`;
+        if (isNext) html += `<span class="next-badge">NEXT</span>`;
+        html += `</div>`;
+      } else if (isNext) {
+        html += `<div class="itin-event-time"><span class="next-badge">NEXT</span></div>`;
+      }
+
+      // Title
+      html += `<div class="itin-event-title">${escapeHtml(ev.title)}</div>`;
+
+      // Location
+      if (ev.location) {
+        html += `<div class="itin-event-location">📍 ${escapeHtml(ev.location)}</div>`;
+      }
+
+      // Memo
+      if (ev.memo) {
+        html += `<div class="itin-event-memo">${escapeHtml(ev.memo)}</div>`;
+      }
+
+      // Links
+      const hasLinks = ev.url || ev.mapUrl;
+      if (hasLinks) {
+        html += `<div class="itin-event-links">`;
+        if (ev.url) html += `<a href="${escapeHtml(ev.url)}" target="_blank" rel="noopener" class="itin-link">📎 リンク</a>`;
+        if (ev.mapUrl) html += `<a href="${escapeHtml(ev.mapUrl)}" target="_blank" rel="noopener" class="itin-link">📍 地図</a>`;
+        html += `</div>`;
+      }
+
+      html += `</div></div>`; // close body, top
+
+      html += `</div>`; // close event
+    });
+
+    html += `</div></div>`; // close timeline, day-group
+  });
+
+  container.innerHTML = html;
+
+  // Auto-scroll to today or next-up
+  if (nextUpId) {
+    const nextEl = container.querySelector('.itin-event.next-up');
+    if (nextEl) {
+      setTimeout(() => nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+    }
+  }
+}
+
+/* ===== Rendering: Itinerary Edit List ===== */
+function renderItinEditList() {
+  const container = document.getElementById('itin-edit-list');
+  const empty = document.getElementById('itin-edit-empty');
+  const countEl = document.getElementById('itin-count');
+  countEl.textContent = state.itinerary.length;
+
+  if (state.itinerary.length === 0) {
+    container.innerHTML = '';
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+
+  const sorted = [...state.itinerary].sort((a, b) => {
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return (a.time || '99:99').localeCompare(b.time || '99:99');
+  });
+
+  container.innerHTML = sorted.map(ev => {
+    const icon = CATEGORY_ICONS[ev.category] || '📌';
+    const timeStr = ev.time ? ev.time + (ev.endTime ? '-' + ev.endTime : '') : '';
+    return `
+    <div class="expense-item">
+      <div class="expense-top">
+        <div class="expense-info">
+          <div class="expense-memo">${icon} ${escapeHtml(ev.title)}</div>
+          <div class="expense-detail">${formatDate(ev.date)} ${timeStr ? timeStr : ''} ${ev.location ? '📍' + escapeHtml(ev.location) : ''}</div>
+        </div>
+      </div>
+      <div class="expense-actions">
+        <button class="btn-icon-sm" data-edit-itin="${ev.id}" title="編集">&#x270E;</button>
+        <button class="btn-icon-sm danger" data-delete-itin="${ev.id}" title="削除">&#x2716;</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== Currency Toggle Helper ===== */
+function updateCurrencyToggle(container, activeCurrency, dataAttr) {
+  container.querySelectorAll('.toggle-btn').forEach(btn => {
+    const val = btn.dataset[dataAttr];
+    btn.classList.remove('active-jpy', 'active-aud');
+    if (val === activeCurrency) {
+      btn.classList.add(activeCurrency === 'JPY' ? 'active-jpy' : 'active-aud');
+    }
+  });
+}
+
+/* ===== Expense Form Helpers ===== */
+function getExpenseFormData() {
+  const splitChecks = document.querySelectorAll('#split-members input[type="checkbox"]:checked');
+  return {
+    date: document.getElementById('expense-date').value,
+    payerId: document.getElementById('expense-payer').value,
+    amount: document.getElementById('expense-amount').value,
+    currency: currentCurrency,
+    memo: document.getElementById('expense-memo').value,
+    splitWith: Array.from(splitChecks).map(cb => cb.value)
+  };
+}
+
+function resetExpenseForm() {
+  document.getElementById('expense-edit-id').value = '';
+  document.getElementById('expense-date').value = getTodayString();
+  document.getElementById('expense-payer').value = '';
+  document.getElementById('expense-amount').value = '';
+  document.getElementById('expense-memo').value = '';
+  currentCurrency = 'JPY';
+  updateCurrencyToggle(document.getElementById('currency-toggle'), 'JPY', 'currency');
+  renderSplitCheckboxes();
+  document.getElementById('expense-form-title').textContent = '支払いを追加';
+  document.getElementById('expense-submit-btn').textContent = '追加する';
+  document.getElementById('btn-cancel-edit').style.display = 'none';
+}
+
+function startEditExpense(expenseId) {
+  const exp = state.expenses.find(e => e.id === expenseId);
+  if (!exp) return;
+  document.getElementById('expense-edit-id').value = expenseId;
+  document.getElementById('expense-date').value = exp.date;
+  document.getElementById('expense-payer').value = exp.payerId;
+  document.getElementById('expense-amount').value = exp.amount;
+  document.getElementById('expense-memo').value = exp.memo;
+  currentCurrency = exp.currency;
+  updateCurrencyToggle(document.getElementById('currency-toggle'), currentCurrency, 'currency');
+  renderSplitCheckboxes(exp.splitWith);
+  document.getElementById('expense-form-title').textContent = '支払いを編集';
+  document.getElementById('expense-submit-btn').textContent = '更新する';
+  document.getElementById('btn-cancel-edit').style.display = '';
+  document.getElementById('expense-form-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ===== Itinerary Form Helpers ===== */
+function getItineraryFormData() {
+  return {
+    date: document.getElementById('itin-date').value,
+    time: document.getElementById('itin-time').value,
+    endTime: document.getElementById('itin-endtime').value,
+    title: document.getElementById('itin-title').value,
+    category: document.getElementById('itin-category').value,
+    memo: document.getElementById('itin-memo').value,
+    url: document.getElementById('itin-url').value,
+    location: document.getElementById('itin-location').value,
+    mapUrl: document.getElementById('itin-mapurl').value
+  };
+}
+
+function resetItineraryForm() {
+  document.getElementById('itin-edit-id').value = '';
+  document.getElementById('itin-date').value = getTodayString();
+  document.getElementById('itin-time').value = '';
+  document.getElementById('itin-endtime').value = '';
+  document.getElementById('itin-title').value = '';
+  document.getElementById('itin-category').value = 'other';
+  document.getElementById('itin-memo').value = '';
+  document.getElementById('itin-url').value = '';
+  document.getElementById('itin-location').value = '';
+  document.getElementById('itin-mapurl').value = '';
+  document.getElementById('itin-form-title').textContent = '予定を追加';
+  document.getElementById('itin-submit-btn').textContent = '追加する';
+  document.getElementById('btn-cancel-itin-edit').style.display = 'none';
+}
+
+function startEditItineraryEvent(eventId) {
+  const ev = state.itinerary.find(e => e.id === eventId);
+  if (!ev) return;
+  document.getElementById('itin-edit-id').value = eventId;
+  document.getElementById('itin-date').value = ev.date;
+  document.getElementById('itin-time').value = ev.time || '';
+  document.getElementById('itin-endtime').value = ev.endTime || '';
+  document.getElementById('itin-title').value = ev.title;
+  document.getElementById('itin-category').value = ev.category || 'other';
+  document.getElementById('itin-memo').value = ev.memo || '';
+  document.getElementById('itin-url').value = ev.url || '';
+  document.getElementById('itin-location').value = ev.location || '';
+  document.getElementById('itin-mapurl').value = ev.mapUrl || '';
+  document.getElementById('itin-form-title').textContent = '予定を編集';
+  document.getElementById('itin-submit-btn').textContent = '更新する';
+  document.getElementById('btn-cancel-itin-edit').style.display = '';
+  document.getElementById('itin-form-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ===== Export / Import ===== */
+function handleExport() {
+  const dataStr = JSON.stringify(state, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'travel-expenses-' + getTodayString() + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('データを書き出しました');
+}
+
+function handleImport(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (!imported.members || !imported.expenses) throw new Error('Invalid');
+      state = imported;
+      if (!Array.isArray(state.itinerary)) state.itinerary = [];
+      if (!state.nextItineraryId) state.nextItineraryId = 1;
+      saveState();
+      renderAll();
+      showToast('データを読み込みました');
+    } catch (err) {
+      showToast('読み込み失敗: 不正なファイルです');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+/* ===== Render All ===== */
+function renderAll() {
+  renderMembers();
+  renderPayerSelect();
+  renderSplitCheckboxes();
+  renderExpenses();
+  renderSettlement();
+  renderItinerary();
+  renderItinEditList();
+  document.getElementById('exchange-rate').value = state.exchangeRate;
+  updateCurrencyToggle(document.getElementById('settle-currency-toggle'), state.settleCurrency, 'settle');
+}
+
+/* ===== Event Listeners ===== */
+function initEventListeners() {
+  // Tab switching
+  document.querySelector('.tab-nav').addEventListener('click', function(e) {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    const tabId = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    if (tabId === 'expenses') { renderPayerSelect(); renderSplitCheckboxes(); renderExpenses(); }
+    if (tabId === 'settlement') renderSettlement();
+    if (tabId === 'members') renderMembers();
+    if (tabId === 'itinerary') renderItinerary();
+    if (tabId === 'itin-edit') renderItinEditList();
+  });
+
+  // Add member
+  document.getElementById('form-add-member').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const input = document.getElementById('input-member-name');
+    if (addMember(input.value)) {
+      input.value = '';
+      renderMembers();
+      renderPayerSelect();
+      renderSplitCheckboxes();
+      showToast('メンバーを追加しました');
+    }
+  });
+
+  // Delete member
+  document.getElementById('member-list').addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-delete-member]');
+    if (!btn) return;
+    const id = btn.dataset.deleteMember;
+    const name = getMemberName(id);
+    showModal(`「${name}」を削除しますか？`, '削除する', function() {
+      if (removeMember(id)) {
+        renderMembers(); renderPayerSelect(); renderSplitCheckboxes();
+        showToast('メンバーを削除しました');
+      }
+      closeModal();
+    });
+  });
+
+  // Expense form submit
+  document.getElementById('form-expense').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const editId = document.getElementById('expense-edit-id').value;
+    const data = getExpenseFormData();
+    if (editId) {
+      if (updateExpense(Number(editId), data)) { resetExpenseForm(); renderExpenses(); showToast('支払いを更新しました'); }
+    } else {
+      if (addExpense(data)) { resetExpenseForm(); renderExpenses(); showToast('支払いを追加しました'); }
+    }
+  });
+
+  // Expense list actions
+  document.getElementById('expense-list').addEventListener('click', function(e) {
+    const editBtn = e.target.closest('[data-edit-expense]');
+    const deleteBtn = e.target.closest('[data-delete-expense]');
+    if (editBtn) { startEditExpense(Number(editBtn.dataset.editExpense)); }
+    else if (deleteBtn) {
+      const id = Number(deleteBtn.dataset.deleteExpense);
+      showModal('この支払い記録を削除しますか？', '削除する', function() { deleteExpense(id); renderExpenses(); closeModal(); showToast('支払いを削除しました'); });
+    }
+  });
+
+  document.getElementById('btn-cancel-edit').addEventListener('click', resetExpenseForm);
+
+  // Currency toggle
+  document.getElementById('currency-toggle').addEventListener('click', function(e) {
+    const btn = e.target.closest('.toggle-btn');
+    if (!btn) return;
+    currentCurrency = btn.dataset.currency;
+    updateCurrencyToggle(this, currentCurrency, 'currency');
+  });
+
+  // Split member controls
+  document.getElementById('btn-select-all').addEventListener('click', function() {
+    document.querySelectorAll('#split-members input[type="checkbox"]').forEach(cb => cb.checked = true);
+  });
+  document.getElementById('btn-deselect-all').addEventListener('click', function() {
+    document.querySelectorAll('#split-members input[type="checkbox"]').forEach(cb => cb.checked = false);
+  });
+
+  // Settlement currency toggle
+  document.getElementById('settle-currency-toggle').addEventListener('click', function(e) {
+    const btn = e.target.closest('.toggle-btn');
+    if (!btn) return;
+    state.settleCurrency = btn.dataset.settle;
+    updateCurrencyToggle(this, state.settleCurrency, 'settle');
+    saveState(); renderSettlement();
+  });
+
+  // Exchange rate
+  document.getElementById('exchange-rate').addEventListener('input', function() {
+    state.exchangeRate = Number(this.value) || 95;
+    saveState(); renderSettlement();
+  });
+
+  // Itinerary form submit
+  document.getElementById('form-itinerary').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const editId = document.getElementById('itin-edit-id').value;
+    const data = getItineraryFormData();
+    if (editId) {
+      if (updateItineraryEvent(Number(editId), data)) { resetItineraryForm(); renderItinerary(); renderItinEditList(); showToast('予定を更新しました'); }
+    } else {
+      if (addItineraryEvent(data)) { resetItineraryForm(); renderItinerary(); renderItinEditList(); showToast('予定を追加しました'); }
+    }
+  });
+
+  document.getElementById('btn-cancel-itin-edit').addEventListener('click', resetItineraryForm);
+
+  // Itinerary edit list actions
+  document.getElementById('itin-edit-list').addEventListener('click', function(e) {
+    const editBtn = e.target.closest('[data-edit-itin]');
+    const deleteBtn = e.target.closest('[data-delete-itin]');
+    if (editBtn) { startEditItineraryEvent(Number(editBtn.dataset.editItin)); }
+    else if (deleteBtn) {
+      const id = Number(deleteBtn.dataset.deleteItin);
+      showModal('この予定を削除しますか？', '削除する', function() {
+        deleteItineraryEvent(id);
+        renderItinerary();
+        renderItinEditList();
+        closeModal();
+        showToast('予定を削除しました');
+      });
+    }
+  });
+
+  // Modal
+  document.getElementById('modal-confirm').addEventListener('click', function() { if (modalCallback) modalCallback(); });
+  document.getElementById('modal-cancel').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+  // Export / Import
+  document.getElementById('btn-export').addEventListener('click', handleExport);
+  document.getElementById('btn-import').addEventListener('click', function() { document.getElementById('import-file').click(); });
+  document.getElementById('import-file').addEventListener('change', handleImport);
+
+  // Cloud sync button
+  document.getElementById('btn-sync').addEventListener('click', async function() {
+    if (!getGasUrl()) { showToast('クラウド設定でURLを設定してください'); return; }
+    showToast('同期中...');
+    await syncFromCloud();
+    showToast('同期完了');
+  });
+
+  // Cloud settings modal
+  document.getElementById('btn-cloud-settings').addEventListener('click', function() {
+    document.getElementById('gas-url-input').value = getGasUrl();
+    document.getElementById('cloud-modal-overlay').hidden = false;
+  });
+  document.getElementById('cloud-modal-cancel').addEventListener('click', function() {
+    document.getElementById('cloud-modal-overlay').hidden = false;
+    document.getElementById('cloud-modal-overlay').hidden = true;
+  });
+  document.getElementById('cloud-modal-save').addEventListener('click', function() {
+    const url = document.getElementById('gas-url-input').value.trim();
+    if (url && !url.startsWith('https://script.google.com/')) {
+      showToast('正しいGAS URLを入力してください');
+      return;
+    }
+    setGasUrl(url);
+    document.getElementById('cloud-modal-overlay').hidden = true;
+    if (url) {
+      showToast('URL保存 - 同期を開始します');
+      syncToCloud();
+    } else {
+      setSyncStatus('off');
+      showToast('URL設定をクリアしました');
+    }
+  });
+  document.getElementById('cloud-modal-clear').addEventListener('click', function() {
+    setGasUrl('');
+    document.getElementById('gas-url-input').value = '';
+    document.getElementById('cloud-modal-overlay').hidden = true;
+    setSyncStatus('off');
+    showToast('クラウド設定を削除しました');
+  });
+  document.getElementById('cloud-modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) this.hidden = true;
+  });
+}
+
+/* ===== Fetch Live Exchange Rate ===== */
+async function fetchExchangeRate() {
+  const statusEl = document.getElementById('rate-status');
+  statusEl.textContent = '最新レートを取得中...';
+  statusEl.className = 'rate-status';
+  const apis = [
+    { url: 'https://api.exchangerate-api.com/v4/latest/AUD', parse: (data) => data.rates && data.rates.JPY },
+    { url: 'https://open.er-api.com/v6/latest/AUD', parse: (data) => data.rates && data.rates.JPY }
+  ];
+  for (const api of apis) {
+    try {
+      const res = await fetch(api.url, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const rate = api.parse(data);
+      if (rate && rate > 0) {
+        const rounded = Math.round(rate * 100) / 100;
+        state.exchangeRate = rounded;
+        document.getElementById('exchange-rate').value = rounded;
+        saveState(); renderSettlement();
+        const now = new Date();
+        const timeStr = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+        statusEl.textContent = `${timeStr} に最新レートを取得 (1 AUD = ${rounded} 円)`;
+        statusEl.className = 'rate-status success';
+        return;
+      }
+    } catch (e) { /* try next */ }
+  }
+  statusEl.textContent = '取得失敗 (オフライン？) - 手動で入力してください';
+  statusEl.className = 'rate-status error';
+}
+
+/* ===== Init ===== */
+function init() {
+  loadState();
+  initEventListeners();
+  document.getElementById('expense-date').value = getTodayString();
+  document.getElementById('itin-date').value = getTodayString();
+  renderAll();
+  fetchExchangeRate();
+  // クラウド同期（設定済みなら）
+  if (getGasUrl()) {
+    syncFromCloud();
+  } else {
+    setSyncStatus('off');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
