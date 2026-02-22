@@ -71,12 +71,12 @@ a:hover { text-decoration: underline; }
   box-shadow: var(--shadow-md);
 }
 .app-title { font-size: var(--fs-xl); font-weight: 700; letter-spacing: 0.02em; }
-.header-actions { display: flex; gap: var(--sp-xs); }
+.header-actions { display: flex; align-items: center; gap: 6px; }
 .icon-btn {
-  width: 40px; height: 40px;
+  width: 36px; height: 36px;
   display: flex; align-items: center; justify-content: center;
   background: rgba(255,255,255,0.15); border: none; border-radius: var(--radius-sm);
-  color: #fff; font-size: 1.2rem; cursor: pointer; transition: background 0.15s;
+  color: #fff; font-size: 1.1rem; cursor: pointer; transition: background 0.15s;
 }
 .icon-btn:hover { background: rgba(255,255,255,0.25); }
 
@@ -387,19 +387,20 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   margin-left: var(--sp-sm);
 }
 
-/* ===== Sync Indicator ===== */
-.sync-indicator {
-  width: 10px; height: 10px;
+/* ===== Sync Dot (inside button) ===== */
+.sync-dot {
+  position: absolute; top: 4px; right: 4px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   background: #64748b;
-  display: inline-block;
-  margin-right: 2px;
+  border: 1.5px solid rgba(255,255,255,0.8);
   transition: background 0.3s;
+  pointer-events: none;
 }
-.sync-indicator.synced { background: #22c55e; }
-.sync-indicator.syncing { background: #f59e0b; animation: pulse 1s infinite; }
-.sync-indicator.error { background: #ef4444; }
-.sync-indicator.off { background: #64748b; }
+.sync-dot.synced { background: #22c55e; }
+.sync-dot.syncing { background: #f59e0b; animation: pulse 1s infinite; }
+.sync-dot.error { background: #ef4444; }
+.sync-dot.off { background: #64748b; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
 /* ===== Modal ===== */
@@ -463,11 +464,11 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 <header class="app-header">
   <h1 class="app-title">旅費割り勘</h1>
   <div class="header-actions">
-    <span id="sync-status" class="sync-indicator" title="同期状態"></span>
-    <button id="btn-sync" class="icon-btn" title="クラウド同期">&#x1F504;</button>
-    <button id="btn-cloud-settings" class="icon-btn" title="クラウド設定">&#x2601;</button>
-    <button id="btn-export" class="icon-btn" title="データ書き出し">&#x1F4E4;</button>
-    <button id="btn-import" class="icon-btn" title="データ読み込み">&#x1F4E5;</button>
+    <button id="btn-sync" class="icon-btn" title="クラウド同期" style="position:relative;">
+      &#x1F504;
+      <span id="sync-status" class="sync-dot" title="同期状態"></span>
+    </button>
+    <button id="btn-cloud-settings" class="icon-btn" title="設定">&#x2699;</button>
     <input type="file" id="import-file" accept=".json" hidden>
   </div>
 </header>
@@ -696,19 +697,31 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   </div>
 </div>
 
-<!-- ===== Cloud Settings Modal ===== -->
+<!-- ===== Settings Modal ===== -->
 <div id="cloud-modal-overlay" class="modal-overlay" hidden>
-  <div class="modal" role="dialog" aria-modal="true">
-    <p class="modal-message" style="font-weight:700;margin-bottom:8px;">クラウド同期設定</p>
-    <p style="font-size:var(--fs-sm);color:var(--c-text2);margin-bottom:var(--sp-md);line-height:1.5;">Google Apps Script のデプロイURLを貼り付けてください。設定するとスプレッドシートとデータが自動同期されます。</p>
-    <div class="form-group">
-      <label for="gas-url-input">GAS デプロイURL</label>
-      <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:400px;">
+    <p class="modal-message" style="font-weight:700;margin-bottom:12px;">設定</p>
+
+    <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:4px;">クラウド同期</p>
+    <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:8px;line-height:1.4;">GAS デプロイURLを設定するとスプレッドシートと自動同期されます。</p>
+    <div class="form-group" style="margin-bottom:8px;">
+      <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off" style="font-size:0.75rem;">
     </div>
+    <div style="display:flex;gap:6px;margin-bottom:16px;">
+      <button id="cloud-modal-save" class="btn btn-primary" style="flex:1;font-size:var(--fs-sm);">URL保存</button>
+      <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:0.75rem;padding:6px 10px;">削除</button>
+    </div>
+
+    <div style="border-top:1px solid var(--c-border);padding-top:12px;margin-bottom:12px;">
+      <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:8px;">データ管理</p>
+      <div style="display:flex;gap:8px;">
+        <button id="btn-export" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);">📤 書き出し</button>
+        <button id="btn-import" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);">📥 読み込み</button>
+      </div>
+    </div>
+
     <div class="modal-actions">
-      <button id="cloud-modal-cancel" class="btn btn-secondary">キャンセル</button>
-      <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:var(--fs-sm)">URL削除</button>
-      <button id="cloud-modal-save" class="btn btn-primary">保存</button>
+      <button id="cloud-modal-cancel" class="btn btn-secondary" style="width:100%;">閉じる</button>
     </div>
   </div>
 </div>
@@ -785,7 +798,7 @@ function setGasUrl(url) {
 function setSyncStatus(status) {
   const el = document.getElementById('sync-status');
   if (!el) return;
-  el.className = 'sync-indicator ' + status;
+  el.className = 'sync-dot ' + status;
   const titles = { off: '未設定', syncing: '同期中...', synced: '同期済', error: '同期エラー' };
   el.title = titles[status] || '';
 }
