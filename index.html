@@ -770,10 +770,11 @@ function saveState() {
 
 /* ===== Cloud Sync (GAS) ===== */
 const GAS_URL_KEY = 'travel-app-gas-url';
+const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzVlmFo5alIzs7oYbaD3LEgmfRx_C-CJi91l9womxRpNV8o6n1E2MNK0fx4nlkMjXJO/exec';
 let syncTimer = null;
 
 function getGasUrl() {
-  return localStorage.getItem(GAS_URL_KEY) || '';
+  return localStorage.getItem(GAS_URL_KEY) || DEFAULT_GAS_URL;
 }
 
 function setGasUrl(url) {
