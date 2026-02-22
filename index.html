@@ -1850,6 +1850,43 @@ async function fetchExchangeRate() {
 /* ===== Init ===== */
 function init() {
   loadState();
+
+  // === 一時データ投入: 航空券PDF → スケジュール登録 ===
+  if (!localStorage.getItem('flight-data-imported-v1')) {
+    const flights = [
+      {
+        id: state.nextItineraryId++,
+        date: '2026-02-28',
+        time: '06:55',
+        endTime: '18:50',
+        title: 'QF026 羽田(HND)→シドニー(SYD)',
+        category: 'flight',
+        memo: 'カンタス航空 QF026\nターミナル3発 → ターミナル1着\n予約番号: ESDGO3\n手荷物: 30kg',
+        url: '',
+        location: '羽田空港 ターミナル3',
+        mapUrl: '',
+        participants: ['m1', 'm2']
+      },
+      {
+        id: state.nextItineraryId++,
+        date: '2026-03-05',
+        time: '09:25',
+        endTime: '17:40',
+        title: 'QF079 メルボルン(MEL)→成田(NRT)',
+        category: 'flight',
+        memo: 'カンタス航空 QF079\nターミナル2発 → ターミナル2着\n予約番号: ESGXXC\n手荷物: 30kg',
+        url: '',
+        location: 'メルボルン空港 ターミナル2',
+        mapUrl: '',
+        participants: ['m1', 'm2']
+      }
+    ];
+    flights.forEach(f => state.itinerary.push(f));
+    saveState();
+    localStorage.setItem('flight-data-imported-v1', '1');
+  }
+  // === 一時データ投入ここまで ===
+
   initEventListeners();
   document.getElementById('expense-date').value = getTodayString();
   document.getElementById('itin-date').value = getTodayString();
