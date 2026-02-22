@@ -441,6 +441,29 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .toast[hidden] { display: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* ===== Mobile compact ===== */
+@media (max-width: 480px) {
+  :root {
+    --sp-lg: 16px;
+    --tap: 38px;
+    --header-h: 46px;
+    --tab-h: 52px;
+  }
+  .card { padding: var(--sp-md); margin-bottom: 10px; }
+  .card-title { font-size: var(--fs-base); margin-bottom: 10px; }
+  .form-group { margin-bottom: 10px; }
+  .form-group > label { font-size: 0.75rem; margin-bottom: 2px; }
+  .form-input { min-height: var(--tap); padding: 6px 10px; font-size: var(--fs-sm); }
+  .form-row { gap: 10px; }
+  .form-actions { margin-top: 10px; }
+  .btn { min-height: var(--tap); padding: 6px var(--sp-md); font-size: var(--fs-sm); }
+  .tab-content { padding: 10px; }
+  .app-title { font-size: var(--fs-lg); }
+  .expense-item { padding: 10px; }
+  .expense-memo { font-size: var(--fs-sm); }
+  .expense-detail { font-size: 0.75rem; }
+}
+
 /* ===== Desktop ===== */
 @media (min-width: 768px) {
   .tab-nav {
