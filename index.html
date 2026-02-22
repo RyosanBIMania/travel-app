@@ -366,7 +366,21 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .itin-event-title { font-weight: 700; margin-top: 2px; word-break: break-word; }
 .itin-event-location { font-size: var(--fs-sm); color: var(--c-text2); margin-top: 2px; }
 .itin-event-participants { font-size: 0.75rem; color: var(--c-primary); margin-top: 2px; }
-.itin-event-memo { font-size: var(--fs-sm); color: var(--c-text2); margin-top: var(--sp-xs); white-space: pre-wrap; word-break: break-word; }
+.itin-event-memo { font-size: var(--fs-sm); color: var(--c-text2); margin-top: var(--sp-xs); white-space: pre-wrap; word-break: break-word;
+  background: var(--c-bg); border-radius: var(--radius-sm); padding: var(--sp-sm) var(--sp-md);
+  display: none; border-left: 3px solid var(--c-primary);
+}
+.itin-event-memo.open { display: block; }
+.itin-memo-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: var(--sp-xs) var(--sp-sm);
+  background: var(--c-bg); border-radius: var(--radius-sm);
+  font-size: var(--fs-sm); font-weight: 500;
+  color: var(--c-primary); cursor: pointer; min-height: 32px;
+  user-select: none; transition: background 0.15s;
+}
+.itin-memo-badge:hover { background: #dbeafe; }
+.itin-memo-badge.open { background: #dbeafe; }
 .itin-event-links { display: flex; gap: var(--sp-sm); margin-top: var(--sp-sm); flex-wrap: wrap; }
 .itin-link {
   display: inline-flex; align-items: center; gap: 4px;
@@ -1379,18 +1393,19 @@ function renderItinerary() {
         html += `<div class="itin-event-location">📍 ${escapeHtml(ev.location)}</div>`;
       }
 
-      // Memo
-      if (ev.memo) {
-        html += `<div class="itin-event-memo">${escapeHtml(ev.memo)}</div>`;
-      }
-
-      // Links
+      // Links & Memo badge row
       const hasLinks = ev.url || ev.mapUrl;
-      if (hasLinks) {
+      if (hasLinks || ev.memo) {
         html += `<div class="itin-event-links">`;
         if (ev.url) html += `<a href="${escapeHtml(ev.url)}" target="_blank" rel="noopener" class="itin-link">📎 リンク</a>`;
         if (ev.mapUrl) html += `<a href="${escapeHtml(ev.mapUrl)}" target="_blank" rel="noopener" class="itin-link">📍 地図</a>`;
+        if (ev.memo) html += `<span class="itin-memo-badge" data-memo-toggle="${ev.id}">📝 メモあり</span>`;
         html += `</div>`;
+      }
+
+      // Memo (hidden by default, toggled by badge tap)
+      if (ev.memo) {
+        html += `<div class="itin-event-memo" id="itin-memo-${ev.id}">${escapeHtml(ev.memo)}</div>`;
       }
 
       html += `</div></div>`; // close body, top
@@ -1741,6 +1756,18 @@ function initEventListeners() {
     if (!btn) return;
     itinFilterMember = btn.dataset.filter;
     renderItinerary();
+  });
+
+  // Memo badge toggle
+  document.getElementById('itinerary-list').addEventListener('click', function(e) {
+    const badge = e.target.closest('.itin-memo-badge');
+    if (!badge) return;
+    const id = badge.dataset.memoToggle;
+    const memo = document.getElementById('itin-memo-' + id);
+    if (memo) {
+      memo.classList.toggle('open');
+      badge.classList.toggle('open');
+    }
   });
 
   // Itinerary edit list actions
