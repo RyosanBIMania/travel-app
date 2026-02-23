@@ -4,22 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>旅費割り勘</title>
+<title>旅のしおり</title>
 <style>
 /* ===== CSS Custom Properties ===== */
 :root {
-  --c-primary: #2563eb;
-  --c-primary-dark: #1d4ed8;
+  --c-primary: #4466ce;
+  --c-primary-dark: #31345e;
   --c-danger: #dc2626;
   --c-danger-dark: #b91c1c;
   --c-success: #16a34a;
-  --c-bg: #f1f5f9;
+  --c-bg: #f7f9f9;
   --c-surface: #ffffff;
-  --c-text: #1e293b;
-  --c-text2: #64748b;
-  --c-border: #e2e8f0;
+  --c-text: #31345e;
+  --c-text2: #6b7280;
+  --c-border: #dfe3e8;
   --c-jpy: #dc2626;
-  --c-aud: #2563eb;
+  --c-aud: #4466ce;
+  --c-accent: #008db7;
   --sp-xs: 4px;
   --sp-sm: 8px;
   --sp-md: 16px;
@@ -65,7 +66,7 @@ a:hover { text-decoration: underline; }
   height: var(--header-h);
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 var(--sp-md);
-  background: var(--c-primary);
+  background: var(--c-primary-dark);
   color: #fff;
   z-index: 100;
   box-shadow: var(--shadow-md);
@@ -148,7 +149,7 @@ a:hover { text-decoration: underline; }
   color: var(--c-text);
   transition: border-color 0.15s;
 }
-.form-input:focus { outline: none; border-color: var(--c-primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.form-input:focus { outline: none; border-color: var(--c-primary); box-shadow: 0 0 0 3px rgba(68,102,206,0.15); }
 textarea.form-input { min-height: 60px; resize: vertical; }
 .inline-form { display: flex; gap: var(--sp-sm); }
 .inline-form .form-input { flex: 1; }
@@ -230,7 +231,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   font-weight: 500;
   transition: background 0.15s;
 }
-.checkbox-grid label:has(input:checked) { background: #dbeafe; }
+.checkbox-grid label:has(input:checked) { background: #e0e8f7; }
 .checkbox-grid input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--c-primary); cursor: pointer; }
 
 /* ===== Item Lists ===== */
@@ -380,8 +381,8 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   color: var(--c-primary); cursor: pointer; min-height: 32px;
   user-select: none; transition: background 0.15s;
 }
-.itin-memo-badge:hover { background: #dbeafe; }
-.itin-memo-badge.open { background: #dbeafe; }
+.itin-memo-badge:hover { background: #e0e8f7; }
+.itin-memo-badge.open { background: #e0e8f7; }
 .itin-event-links { display: flex; gap: var(--sp-sm); margin-top: var(--sp-sm); flex-wrap: wrap; }
 .itin-link {
   display: inline-flex; align-items: center; gap: 4px;
@@ -393,7 +394,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   text-decoration: none;
   min-height: 32px;
 }
-.itin-link:hover { background: #dbeafe; text-decoration: none; }
+.itin-link:hover { background: #e0e8f7; text-decoration: none; }
 .itin-event-actions { display: flex; gap: var(--sp-xs); margin-top: var(--sp-sm); justify-content: flex-end; }
 .next-badge {
   display: inline-block;
@@ -547,7 +548,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 <!-- ===== Header ===== -->
 <header class="app-header">
-  <h1 class="app-title">旅費割り勘</h1>
+  <h1 class="app-title">旅のしおり</h1>
   <div class="header-actions">
     <button id="btn-sync" class="icon-btn" title="クラウド同期" style="position:relative;">
       &#x1F504;
@@ -560,7 +561,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 <!-- ===== Tab Navigation ===== -->
 <nav class="tab-nav" role="tablist">
-  <button class="tab-btn" data-tab="itinerary" role="tab">
+  <button class="tab-btn active" data-tab="itinerary" role="tab">
     <span class="tab-icon">&#x1F4CB;</span>
     <span class="tab-label">スケジュール</span>
   </button>
@@ -568,7 +569,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     <span class="tab-icon">&#x270F;&#xFE0F;</span>
     <span class="tab-label">編集</span>
   </button>
-  <button class="tab-btn active" data-tab="members" role="tab">
+  <button class="tab-btn" data-tab="members" role="tab">
     <span class="tab-icon">&#x1F465;</span>
     <span class="tab-label">メンバー</span>
   </button>
@@ -583,7 +584,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 </nav>
 
 <!-- ===== Tab: スケジュール（表示専用） ===== -->
-<section id="tab-itinerary" class="tab-content">
+<section id="tab-itinerary" class="tab-content active">
   <div class="card">
     <h2 class="card-title">📋 スケジュール</h2>
     <div id="itin-filter" class="itin-filter"></div>
@@ -680,7 +681,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 </section>
 
 <!-- ===== Tab: メンバー管理 ===== -->
-<section id="tab-members" class="tab-content active">
+<section id="tab-members" class="tab-content">
   <div class="card">
     <h2 class="card-title">メンバー追加</h2>
     <form id="form-add-member" class="inline-form">
@@ -805,6 +806,15 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     <div style="display:flex;gap:6px;margin-bottom:16px;">
       <button id="cloud-modal-save" class="btn btn-primary" style="flex:1;font-size:var(--fs-sm);">URL保存</button>
       <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:0.75rem;padding:6px 10px;">削除</button>
+    </div>
+
+    <div style="border-top:1px solid var(--c-border);padding-top:12px;margin-bottom:12px;">
+      <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:8px;">データの表示</p>
+      <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:8px;line-height:1.4;">データの確認・一括投入はスプレッドシートから行えます。</p>
+      <div id="spreadsheet-link-area" style="margin-bottom:8px;">
+        <a id="spreadsheet-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%;font-size:var(--fs-sm);text-decoration:none;text-align:center;display:none;">📊 スプレッドシートを開く</a>
+        <p id="spreadsheet-link-none" style="font-size:0.75rem;color:var(--c-text2);text-align:center;">クラウド同期を設定すると表示されます</p>
+      </div>
     </div>
 
     <div style="border-top:1px solid var(--c-border);padding-top:12px;margin-bottom:12px;">
@@ -937,6 +947,11 @@ async function syncFromCloud() {
     const result = await res.json();
     if (result.success && result.data) {
       const cloud = result.data;
+      // Save spreadsheet URL if provided
+      if (cloud.spreadsheetUrl) {
+        localStorage.setItem('travel-app-spreadsheet-url', cloud.spreadsheetUrl);
+        updateSpreadsheetLink();
+      }
       if (cloud.members && cloud.members.length > 0 || cloud.expenses && cloud.expenses.length > 0 || cloud.itinerary && cloud.itinerary.length > 0) {
         state = cloud;
         if (!Array.isArray(state.members)) state.members = [];
@@ -1620,6 +1635,21 @@ function handleImport(e) {
   e.target.value = '';
 }
 
+/* ===== Spreadsheet Link ===== */
+function updateSpreadsheetLink() {
+  const url = localStorage.getItem('travel-app-spreadsheet-url');
+  const link = document.getElementById('spreadsheet-link');
+  const none = document.getElementById('spreadsheet-link-none');
+  if (url) {
+    link.href = url;
+    link.style.display = 'block';
+    none.style.display = 'none';
+  } else {
+    link.style.display = 'none';
+    none.style.display = 'block';
+  }
+}
+
 /* ===== Render All ===== */
 function renderAll() {
   renderMembers();
@@ -1926,6 +1956,7 @@ function init() {
   document.getElementById('expense-date').value = getTodayString();
   document.getElementById('itin-date').value = getTodayString();
   renderAll();
+  updateSpreadsheetLink();
   fetchExchangeRate();
   // クラウド同期（設定済みなら）
   if (getGasUrl()) {
