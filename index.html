@@ -1025,7 +1025,6 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     </button>
     <button id="btn-cloud-upload" class="icon-btn" title="クラウドに保存">&#x2601;</button>
     <button id="btn-help" class="icon-btn" title="使い方ガイド">&#x1F4D6;</button>
-    <button id="btn-cloud-settings" class="icon-btn" title="設定">&#x2699;</button>
   </div>
 </header>
 
@@ -3796,15 +3795,6 @@ function initEventListeners() {
     if (e.target === this) this.hidden = true;
   });
 
-  // Settings button → switch to settings tab
-  document.getElementById('btn-cloud-settings').addEventListener('click', function() {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector('.tab-btn[data-tab="settings"]').classList.add('active');
-    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-    document.getElementById('tab-settings').classList.add('active');
-    renderMembers();
-    updateSpreadsheetLink();
-  });
   // GAS URL modal (開発者向け：スプレッドシートリンクを長押しで開く)
   document.getElementById('cloud-modal-cancel').addEventListener('click', function() {
     document.getElementById('cloud-modal-overlay').hidden = true;
