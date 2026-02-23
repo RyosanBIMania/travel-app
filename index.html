@@ -848,9 +848,11 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .checklist-progress-bar { height:4px; background:rgba(0,0,0,0.06); border-radius:2px; margin-bottom:var(--sp-sm); overflow:hidden; }
 .checklist-progress-fill { height:100%; background:linear-gradient(90deg, var(--c-success) 0%, #34d399 100%); border-radius:2px; transition:width var(--t-smooth); }
 #tab-checklist .checklist-body { display:block; }
-.checklist-add { display:flex; gap:var(--sp-sm); margin-bottom:var(--sp-sm); }
-.checklist-add input { flex:1; min-height:36px; padding:6px 12px; border:1.5px solid rgba(0,0,0,0.08); border-radius:var(--radius-sm); background:rgba(255,255,255,0.7); font-size:var(--fs-sm); }
-.checklist-add button { min-height:36px; padding:6px 14px; }
+.cl-form-open-btn { font-size:var(--fs-base); font-weight:700; padding:12px; letter-spacing:0.02em; }
+.cl-add-panel { padding-top:var(--sp-md); animation:cl-slide-down 0.25s ease; }
+.cl-add-panel[hidden] { display:none; }
+.cl-add-btn-active { opacity:0.45; pointer-events:none; transition:opacity var(--t-fast), background var(--t-fast); }
+.cl-add-btn-active.enabled { opacity:1; pointer-events:auto; background:var(--c-primary); box-shadow:0 4px 12px -2px rgba(26,35,126,0.35); }
 .cl-cat-tabs { display:flex; gap:4px; margin-bottom:var(--sp-sm); flex-wrap:wrap; }
 .cl-cat-tab { padding:4px 10px; border-radius:var(--radius-full); border:1px solid rgba(0,0,0,0.08); background:rgba(0,0,0,0.03); font-size:var(--fs-xs); cursor:pointer; transition:background var(--t-fast); }
 .cl-cat-tab.active { background:linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-light) 100%); color:#fff; border-color:var(--c-primary); }
@@ -865,12 +867,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .cl-progress-member.done { opacity:1; }
 .cl-progress-member.filter-active { opacity:1; box-shadow:0 0 0 2px #fff, 0 0 0 4px currentColor; }
 .cl-progress-member .cl-pm-count { font-weight:400; opacity:0.85; }
-/* Add form meta (category + member select) */
-.cl-add-meta { display:flex; flex-direction:column; gap:6px; padding:8px 0 4px; animation:cl-slide-down 0.2s ease; }
-.cl-add-meta[hidden] { display:none; }
 @keyframes cl-slide-down { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-.cl-auto-cat { display:flex; align-items:center; gap:6px; }
-.cl-auto-cat-label, .cl-add-members-label { font-size:var(--fs-xs); color:var(--c-text2); flex-shrink:0; }
 .cl-cat-select { padding:4px 8px; border:1px solid rgba(0,0,0,0.1); border-radius:var(--radius-sm); font-size:var(--fs-xs); background:rgba(255,255,255,0.8); min-height:30px; }
 .cl-add-member-checks { display:flex; flex-wrap:wrap; gap:4px; }
 .cl-add-member-checks label { display:inline-flex; align-items:center; gap:3px; padding:3px 8px; border-radius:var(--radius-full); font-size:var(--fs-xs); background:rgba(0,0,0,0.04); cursor:pointer; }
@@ -1174,29 +1171,31 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 <section id="tab-checklist" class="tab-content">
   <!-- 持ち物を追加 -->
   <div class="card">
-    <h2 class="card-title">✏️ 持ち物を追加</h2>
-    <div class="checklist-add-form" id="cl-add-form">
-      <div class="checklist-add">
-        <input type="text" id="cl-new-item" placeholder="アイテムを追加..." maxlength="50" autocomplete="off">
-        <button class="btn btn-primary btn-sm" id="cl-add-btn">追加</button>
+    <button id="cl-form-open-btn" class="btn btn-primary btn-block cl-form-open-btn">＋ 持ち物を追加する</button>
+    <div id="cl-add-panel" class="cl-add-panel" hidden>
+      <div class="form-group">
+        <label for="cl-new-item">アイテム名</label>
+        <input type="text" id="cl-new-item" class="form-input" placeholder="例: パスポート、充電器..." maxlength="50" autocomplete="off">
       </div>
-      <div class="cl-add-meta" id="cl-add-meta" hidden>
-        <div class="cl-auto-cat">
-          <span class="cl-auto-cat-label">カテゴリ:</span>
-          <select id="cl-cat-select" class="cl-cat-select">
-            <option value="essential">必需品</option>
-            <option value="clothes">衣類</option>
-            <option value="electronics">電子機器</option>
-            <option value="toiletry">日用品</option>
-            <option value="medicine">医薬品</option>
-            <option value="food">食品</option>
-            <option value="other" selected>その他</option>
-          </select>
-        </div>
-        <div class="cl-add-members">
-          <span class="cl-add-members-label">対象:</span>
-          <div id="cl-add-member-checks" class="cl-add-member-checks"></div>
-        </div>
+      <div class="form-group">
+        <label for="cl-cat-select">カテゴリ</label>
+        <select id="cl-cat-select" class="form-input cl-cat-select">
+          <option value="essential">必需品</option>
+          <option value="clothes">衣類</option>
+          <option value="electronics">電子機器</option>
+          <option value="toiletry">日用品</option>
+          <option value="medicine">医薬品</option>
+          <option value="food">食品</option>
+          <option value="other" selected>その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>対象メンバー</label>
+        <div id="cl-add-member-checks" class="cl-add-member-checks"></div>
+      </div>
+      <div class="form-actions" style="gap:var(--sp-sm);">
+        <button id="cl-add-btn" class="btn btn-primary btn-block cl-add-btn-active" disabled>追加する</button>
+        <button id="cl-form-cancel-btn" type="button" class="btn btn-secondary btn-block">閉じる</button>
       </div>
     </div>
   </div>
@@ -3591,6 +3590,24 @@ function initEventListeners() {
     renderChecklist();
   });
 
+  // Checklist: open/close add panel
+  document.getElementById('cl-form-open-btn').addEventListener('click', function() {
+    const panel = document.getElementById('cl-add-panel');
+    panel.hidden = false;
+    this.hidden = true;
+    renderChecklistAddMembers();
+    document.getElementById('cl-new-item').focus();
+  });
+  document.getElementById('cl-form-cancel-btn').addEventListener('click', function() {
+    document.getElementById('cl-add-panel').hidden = true;
+    document.getElementById('cl-form-open-btn').hidden = false;
+    // Reset form
+    document.getElementById('cl-new-item').value = '';
+    document.getElementById('cl-cat-select').value = 'other';
+    const addBtn = document.getElementById('cl-add-btn');
+    addBtn.disabled = true;
+    addBtn.classList.remove('enabled');
+  });
   // Checklist add item
   document.getElementById('cl-add-btn').addEventListener('click', function() {
     const input = document.getElementById('cl-new-item');
@@ -3598,8 +3615,10 @@ function initEventListeners() {
     if (addChecklistItem(input.value, catSelect.value)) {
       input.value = '';
       catSelect.value = 'other';
-      document.getElementById('cl-add-meta').hidden = true;
+      this.disabled = true;
+      this.classList.remove('enabled');
       renderChecklist();
+      showToast('持ち物を追加しました ✓');
     } else {
       showToast('アイテム名を入力してください');
     }
@@ -3610,15 +3629,17 @@ function initEventListeners() {
       document.getElementById('cl-add-btn').click();
     }
   });
-  // Show meta panel on focus, auto-detect category on input
-  document.getElementById('cl-new-item').addEventListener('focus', function() {
-    document.getElementById('cl-add-meta').hidden = false;
-    renderChecklistAddMembers();
-  });
+  // Auto-detect category on input + enable/disable add button
   document.getElementById('cl-new-item').addEventListener('input', function() {
     const text = this.value.trim();
+    const addBtn = document.getElementById('cl-add-btn');
     if (text.length > 0) {
       document.getElementById('cl-cat-select').value = detectChecklistCategory(text);
+      addBtn.disabled = false;
+      addBtn.classList.add('enabled');
+    } else {
+      addBtn.disabled = true;
+      addBtn.classList.remove('enabled');
     }
   });
 
