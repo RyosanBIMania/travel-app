@@ -204,6 +204,14 @@ a:hover { text-decoration: underline; }
   background: #fff;
 }
 .form-input::placeholder { color: #a0aab4; }
+/* date/time inputs: Safari/WebKit overflow fix for all screen sizes */
+input[type="date"].form-input,
+input[type="time"].form-input {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  max-width: 100%;
+}
 textarea.form-input { min-height: 60px; resize: vertical; }
 .inline-form { display: flex; gap: var(--sp-sm); }
 .inline-form .form-input { flex: 1; }
