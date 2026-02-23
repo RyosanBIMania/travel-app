@@ -2089,7 +2089,7 @@ function renderItinFilter() {
   let html = `<button class="filter-btn ${itinFilterMember === 'all' ? 'active' : ''}" data-filter="all">全員</button>`;
   state.members.forEach(m => {
     const color = getMemberColor(m.id);
-    const isActive = itinFilterMember === m.id;
+    const isActive = String(itinFilterMember) === String(m.id);
     const style = isActive
       ? `background:${color};color:#fff;border-color:${color}`
       : `border-color:${color};color:${color}`;
@@ -2101,7 +2101,8 @@ function renderItinFilter() {
 function isEventForMember(ev, memberId) {
   if (memberId === 'all') return true;
   if (!ev.participants || ev.participants.length === 0) return true;
-  return ev.participants.includes(memberId);
+  const key = String(memberId);
+  return ev.participants.some(pid => String(pid) === key);
 }
 
 function renderItinerary() {
