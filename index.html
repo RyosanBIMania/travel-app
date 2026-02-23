@@ -70,7 +70,7 @@ body {
   background: var(--c-bg);
   color: var(--c-text);
   padding-top: var(--header-h);
-  padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(var(--tab-h) + 20px + env(safe-area-inset-bottom, 0px));
   min-height: 100dvh;
   -webkit-tap-highlight-color: transparent;
   line-height: 1.55;
@@ -113,6 +113,11 @@ a:hover { text-decoration: underline; }
 }
 .icon-btn:hover { background: rgba(201,168,76,0.15); border-color: rgba(201,168,76,0.4); }
 .icon-btn:active { transform: scale(0.92); }
+
+/* ===== App Credit Footer ===== */
+.app-credit { position:fixed; bottom:var(--tab-h); left:0; right:0; text-align:center; font-size:0.65rem; color:var(--c-text2); padding:4px 0; background:rgba(255,255,255,0.9); border-top:1px solid rgba(0,0,0,0.04); z-index:99; letter-spacing:0.01em; padding-bottom:env(safe-area-inset-bottom,0); }
+.app-credit a { color:var(--c-primary); text-decoration:none; font-weight:600; }
+.app-credit a:active { opacity:0.7; }
 
 /* ===== Tab Navigation — premium bottom bar ===== */
 .tab-nav {
@@ -1047,6 +1052,8 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     <span class="tab-label">設定</span>
   </button>
 </nav>
+
+<footer class="app-credit">Powered by <a href="https://data-parade.com/" target="_blank" rel="noopener">Data Parade co.ltd.</a> with Claude</footer>
 
 <!-- ===== Tab: ホーム（ダッシュボード） ===== -->
 <section id="tab-home" class="tab-content active">
