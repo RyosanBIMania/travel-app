@@ -1338,6 +1338,18 @@ function loadState() {
         if (!state.nextItineraryId) state.nextItineraryId = 1;
         const maxClIdLocal = state.checklist.length > 0 ? Math.max(...state.checklist.map(i => Number(i.id) || 0)) : 0;
         if (!state.nextChecklistId || state.nextChecklistId <= maxClIdLocal) state.nextChecklistId = maxClIdLocal + 1;
+        // ID型を数値に統一
+        state.members.forEach(m => { m.id = Number(m.id) || m.id; });
+        state.checklist.forEach(item => {
+          if (Array.isArray(item.members)) item.members = item.members.map(mid => Number(mid) || mid);
+        });
+        state.expenses.forEach(e => {
+          e.payerId = Number(e.payerId) || e.payerId;
+          if (Array.isArray(e.splitWith)) e.splitWith = e.splitWith.map(id => Number(id) || id);
+        });
+        state.itinerary.forEach(e => {
+          if (Array.isArray(e.participants)) e.participants = e.participants.map(id => Number(id) || id);
+        });
         // Ensure all members have a color
         state.members.forEach((m, i) => {
           if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
@@ -1480,6 +1492,21 @@ async function syncFromCloud() {
       if (!Array.isArray(state.expenses)) state.expenses = [];
       if (!Array.isArray(state.itinerary)) state.itinerary = [];
       if (!Array.isArray(state.checklist)) state.checklist = [];
+      // members.id を数値に統一（GASからは文字列で来る場合がある）
+      state.members.forEach(m => { m.id = Number(m.id) || m.id; });
+      // checklist.members[] / checkedBy のキーも数値に統一
+      state.checklist.forEach(item => {
+        if (Array.isArray(item.members)) item.members = item.members.map(mid => Number(mid) || mid);
+      });
+      // expenses.payerId / splitWith も数値に統一
+      state.expenses.forEach(e => {
+        e.payerId = Number(e.payerId) || e.payerId;
+        if (Array.isArray(e.splitWith)) e.splitWith = e.splitWith.map(id => Number(id) || id);
+      });
+      // itinerary.participants も数値に統一
+      state.itinerary.forEach(e => {
+        if (Array.isArray(e.participants)) e.participants = e.participants.map(id => Number(id) || id);
+      });
       // nextChecklistId: GASから正しく返らない場合、既存データから算出
       const maxClId = state.checklist.length > 0 ? Math.max(...state.checklist.map(i => Number(i.id) || 0)) : 0;
       if (!state.nextChecklistId || state.nextChecklistId <= maxClId) state.nextChecklistId = maxClId + 1;
@@ -1487,6 +1514,7 @@ async function syncFromCloud() {
       state.members.forEach((m, i) => {
         if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
       });
+      console.log('[sync] checklist items:', state.checklist.length, 'members:', state.members.length);
       // Migrate old checklist format to per-member format
       migrateChecklistItems();
       localStorage.setItem(APP_KEY, JSON.stringify(state));
