@@ -3405,10 +3405,13 @@ function initEventListeners() {
 
   // Itinerary filter (delegated)
   document.getElementById('itin-filter').addEventListener('click', function(e) {
+    e.preventDefault();
     const btn = e.target.closest('.filter-btn');
     if (!btn) return;
+    const scrollY = window.scrollY;
     itinFilterMember = btn.dataset.filter;
     renderItinerary();
+    window.scrollTo(0, scrollY);
   });
 
   // Itinerary view: memo badge toggle + edit/delete from schedule tab
@@ -3592,29 +3595,38 @@ function initEventListeners() {
 
   // Checklist category tabs
   document.getElementById('cl-cat-tabs').addEventListener('click', function(e) {
+    e.preventDefault();
     const tab = e.target.closest('.cl-cat-tab');
     if (!tab) return;
+    const scrollY = window.scrollY;
     clFilterCat = tab.dataset.clCat;
     renderChecklist();
+    window.scrollTo(0, scrollY);
   });
 
   // Member filter (filter bar)
   document.getElementById('cl-member-filter').addEventListener('click', function(e) {
+    e.preventDefault();
     const btn = e.target.closest('.cl-member-filter-btn');
     if (!btn) return;
+    const scrollY = window.scrollY;
     const val = btn.dataset.clMember;
     clFilterMember = val === 'all' ? 'all' : val;
     renderChecklist();
+    window.scrollTo(0, scrollY);
   });
 
   // Member filter (progress badge tap)
   document.getElementById('cl-progress-summary').addEventListener('click', function(e) {
+    e.preventDefault();
     const badge = e.target.closest('.cl-progress-member');
     if (!badge) return;
     const val = badge.dataset.clMember;
     if (!val) return;
+    const scrollY = window.scrollY;
     clFilterMember = String(clFilterMember) === val ? 'all' : val;
     renderChecklist();
+    window.scrollTo(0, scrollY);
   });
 
   // Checklist: open/close add panel
