@@ -817,16 +817,19 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 }
 
 /* ===== Reduced motion ===== */
+/* ===== Accordion (generic toggle) ===== */
+.accordion-toggle { display:flex; align-items:center; gap:var(--sp-sm); cursor:pointer; padding:var(--sp-sm) 0; font-weight:600; color:var(--c-text); user-select:none; }
+.accordion-toggle .arrow { transition:transform var(--t-fast); font-size:0.7em; }
+.accordion-toggle.open .arrow { transform:rotate(90deg); }
+.accordion-body { display:none; }
+.accordion-body.open { display:block; }
+
 /* ===== Checklist ===== */
 .checklist-section { margin-top: var(--sp-md); }
-.checklist-toggle { display:flex; align-items:center; gap:var(--sp-sm); cursor:pointer; padding:var(--sp-sm) 0; font-weight:600; color:var(--c-text); user-select:none; }
-.checklist-toggle .arrow { transition:transform var(--t-fast); font-size:0.7em; }
-.checklist-toggle.open .arrow { transform:rotate(90deg); }
 .checklist-progress { font-weight:400; font-size:var(--fs-sm); color:var(--c-text2); margin-left:auto; }
 .checklist-progress-bar { height:4px; background:rgba(0,0,0,0.06); border-radius:2px; margin-bottom:var(--sp-sm); overflow:hidden; }
 .checklist-progress-fill { height:100%; background:linear-gradient(90deg, var(--c-success) 0%, #34d399 100%); border-radius:2px; transition:width var(--t-smooth); }
-.checklist-body { display:none; }
-.checklist-body.open { display:block; }
+#tab-checklist .checklist-body { display:block; }
 .checklist-add { display:flex; gap:var(--sp-sm); margin-bottom:var(--sp-sm); }
 .checklist-add input { flex:1; min-height:36px; padding:6px 12px; border:1.5px solid rgba(0,0,0,0.08); border-radius:var(--radius-sm); background:rgba(255,255,255,0.7); font-size:var(--fs-sm); }
 .checklist-add button { min-height:36px; padding:6px 14px; }
@@ -907,35 +910,30 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     </button>
     <button id="btn-cloud-upload" class="icon-btn" title="クラウドに保存">&#x2601;</button>
     <button id="btn-cloud-settings" class="icon-btn" title="設定">&#x2699;</button>
-    <input type="file" id="import-file" accept=".json" hidden>
   </div>
 </header>
 
 <!-- ===== Tab Navigation ===== -->
 <nav class="tab-nav" role="tablist">
   <button class="tab-btn active" data-tab="itinerary" role="tab">
-    <span class="tab-icon">&#x1F4CB;</span>
-    <span class="tab-label">スケジュール</span>
+    <span class="tab-icon">&#x1F5FA;</span>
+    <span class="tab-label">旅程</span>
   </button>
-  <button class="tab-btn" data-tab="itin-edit" role="tab">
-    <span class="tab-icon">&#x270F;&#xFE0F;</span>
-    <span class="tab-label">編集</span>
+  <button class="tab-btn" data-tab="checklist" role="tab">
+    <span class="tab-icon">&#x1F9F3;</span>
+    <span class="tab-label">持ち物</span>
   </button>
-  <button class="tab-btn" data-tab="expenses" role="tab">
+  <button class="tab-btn" data-tab="money" role="tab">
     <span class="tab-icon">&#x1F4B0;</span>
-    <span class="tab-label">支払い</span>
+    <span class="tab-label">お金</span>
   </button>
-  <button class="tab-btn" data-tab="settlement" role="tab">
-    <span class="tab-icon">&#x1F4CA;</span>
-    <span class="tab-label">精算</span>
-  </button>
-  <button class="tab-btn" data-tab="members" role="tab">
-    <span class="tab-icon">&#x1F465;</span>
-    <span class="tab-label">メンバー</span>
+  <button class="tab-btn" data-tab="settings" role="tab">
+    <span class="tab-icon">&#x2699;</span>
+    <span class="tab-label">設定</span>
   </button>
 </nav>
 
-<!-- ===== Tab: スケジュール（表示専用） ===== -->
+<!-- ===== Tab: 旅程（スケジュール閲覧＋編集） ===== -->
 <section id="tab-itinerary" class="tab-content active">
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-sm);">
@@ -944,17 +942,104 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     </div>
     <div id="itin-filter" class="itin-filter"></div>
     <div id="itinerary-list"></div>
-    <p id="itinerary-empty" class="empty-msg">予定がありません<br><small style="color:var(--c-text2)">「✏️ 編集」タブから予定を追加してください</small></p>
+    <p id="itinerary-empty" class="empty-msg">予定がありません<br><small style="color:var(--c-text2)">下の「✏️ 予定を追加・編集」を開いて追加してください</small></p>
   </div>
 
-  <!-- 持ち物チェックリスト -->
-  <div class="card checklist-section">
-    <div id="checklist-header" class="checklist-toggle">
+  <!-- 予定の追加・編集（アコーディオン） -->
+  <div class="card">
+    <div id="itin-edit-toggle" class="accordion-toggle">
       <span class="arrow">▶</span>
-      🧳 持ち物チェックリスト
-      <span id="checklist-progress" class="checklist-progress">0/0</span>
+      ✏️ 予定を追加・編集
+      <span style="font-weight:400;font-size:var(--fs-sm);color:var(--c-text2);margin-left:auto;">(<span id="itin-count">0</span>件)</span>
     </div>
+    <div id="itin-edit-body" class="accordion-body">
+      <!-- テンプレート -->
+      <div style="margin-top:var(--sp-md);">
+        <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:var(--sp-sm);">📝 テンプレートから追加</p>
+        <div class="tpl-grid" id="template-grid"></div>
+      </div>
+      <!-- 追加/編集フォーム -->
+      <div style="margin-top:var(--sp-md);">
+        <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:var(--sp-sm);" id="itin-form-title">予定を追加</p>
+        <form id="form-itinerary">
+          <input type="hidden" id="itin-edit-id" value="">
+          <div class="form-row">
+            <div class="form-group flex-grow">
+              <label for="itin-date">日付</label>
+              <input type="date" id="itin-date" class="form-input" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group flex-grow">
+              <label for="itin-time">開始時刻</label>
+              <input type="time" id="itin-time" class="form-input">
+            </div>
+            <div class="form-group flex-grow">
+              <label for="itin-endtime">終了時刻</label>
+              <input type="time" id="itin-endtime" class="form-input">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="itin-title">タイトル</label>
+            <input type="text" id="itin-title" class="form-input" required placeholder="例: 成田→シドニー JQ12" maxlength="100" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="itin-category">カテゴリ</label>
+            <select id="itin-category" class="form-input">
+              <option value="flight">✈️ 飛行機</option>
+              <option value="hotel">🏨 宿泊</option>
+              <option value="sightseeing">🗺️ 観光</option>
+              <option value="food">🍽️ 食事</option>
+              <option value="transport">🚃 交通</option>
+              <option value="other">📌 その他</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>参加メンバー</label>
+            <div class="split-controls">
+              <button type="button" id="btn-itin-select-all" class="btn-sm">全選択</button>
+              <button type="button" id="btn-itin-deselect-all" class="btn-sm">全解除</button>
+            </div>
+            <div id="itin-participants" class="checkbox-grid"></div>
+          </div>
+          <div class="form-group">
+            <label for="itin-memo">メモ</label>
+            <textarea id="itin-memo" class="form-input" placeholder="詳細メモ（任意）" maxlength="500" rows="2"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="itin-url">リンクURL</label>
+            <input type="url" id="itin-url" class="form-input" placeholder="Googleドライブ等のURL（任意）" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="itin-location">場所名</label>
+            <input type="text" id="itin-location" class="form-input" placeholder="例: シドニー・オペラハウス（任意）" maxlength="100" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="itin-mapurl">Google Maps URL</label>
+            <input type="url" id="itin-mapurl" class="form-input" placeholder="Google Mapsの共有URL（任意）" autocomplete="off">
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block" id="itin-submit-btn">追加する</button>
+            <button type="button" id="btn-cancel-itin-edit" class="btn btn-secondary btn-block" style="display:none;">キャンセル</button>
+          </div>
+        </form>
+      </div>
+      <!-- 予定一覧（編集用） -->
+      <div style="margin-top:var(--sp-md);">
+        <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:var(--sp-sm);">予定一覧</p>
+        <div id="itin-edit-list"></div>
+        <p id="itin-edit-empty" class="empty-msg">予定がありません</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Tab: 持ち物（チェックリスト） ===== -->
+<section id="tab-checklist" class="tab-content">
+  <div class="card">
+    <h2 class="card-title">🧳 持ち物チェックリスト</h2>
     <div class="checklist-progress-bar"><div id="checklist-progress-fill" class="checklist-progress-fill" style="width:0%"></div></div>
+    <span id="checklist-progress" class="checklist-progress" style="display:block;text-align:right;margin-bottom:var(--sp-sm);">0/0</span>
     <div id="checklist-body" class="checklist-body">
       <div class="cl-cat-tabs" id="cl-cat-tabs">
         <span class="cl-cat-tab active" data-cl-cat="all">すべて</span>
@@ -973,117 +1058,9 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   </div>
 </section>
 
-<!-- ===== Tab: 編集（スケジュール入力・管理） ===== -->
-<section id="tab-itin-edit" class="tab-content">
-  <!-- Templates -->
-  <div class="card">
-    <h2 class="card-title">📝 テンプレートから追加</h2>
-    <div class="tpl-grid" id="template-grid"></div>
-  </div>
-
-  <!-- Add/Edit Form -->
-  <div class="card">
-    <h2 class="card-title" id="itin-form-title">予定を追加</h2>
-    <form id="form-itinerary">
-      <input type="hidden" id="itin-edit-id" value="">
-
-      <div class="form-row">
-        <div class="form-group flex-grow">
-          <label for="itin-date">日付</label>
-          <input type="date" id="itin-date" class="form-input" required>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group flex-grow">
-          <label for="itin-time">開始時刻</label>
-          <input type="time" id="itin-time" class="form-input">
-        </div>
-        <div class="form-group flex-grow">
-          <label for="itin-endtime">終了時刻</label>
-          <input type="time" id="itin-endtime" class="form-input">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="itin-title">タイトル</label>
-        <input type="text" id="itin-title" class="form-input" required placeholder="例: 成田→シドニー JQ12" maxlength="100" autocomplete="off">
-      </div>
-
-      <div class="form-group">
-        <label for="itin-category">カテゴリ</label>
-        <select id="itin-category" class="form-input">
-          <option value="flight">✈️ 飛行機</option>
-          <option value="hotel">🏨 宿泊</option>
-          <option value="sightseeing">🗺️ 観光</option>
-          <option value="food">🍽️ 食事</option>
-          <option value="transport">🚃 交通</option>
-          <option value="other">📌 その他</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>参加メンバー</label>
-        <div class="split-controls">
-          <button type="button" id="btn-itin-select-all" class="btn-sm">全選択</button>
-          <button type="button" id="btn-itin-deselect-all" class="btn-sm">全解除</button>
-        </div>
-        <div id="itin-participants" class="checkbox-grid"></div>
-      </div>
-
-      <div class="form-group">
-        <label for="itin-memo">メモ</label>
-        <textarea id="itin-memo" class="form-input" placeholder="詳細メモ（任意）" maxlength="500" rows="2"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="itin-url">リンクURL</label>
-        <input type="url" id="itin-url" class="form-input" placeholder="Googleドライブ等のURL（任意）" autocomplete="off">
-      </div>
-
-      <div class="form-group">
-        <label for="itin-location">場所名</label>
-        <input type="text" id="itin-location" class="form-input" placeholder="例: シドニー・オペラハウス（任意）" maxlength="100" autocomplete="off">
-      </div>
-
-      <div class="form-group">
-        <label for="itin-mapurl">Google Maps URL</label>
-        <input type="url" id="itin-mapurl" class="form-input" placeholder="Google Mapsの共有URL（任意）" autocomplete="off">
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary btn-block" id="itin-submit-btn">追加する</button>
-        <button type="button" id="btn-cancel-itin-edit" class="btn btn-secondary btn-block" style="display:none;">キャンセル</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- Compact list for editing -->
-  <div class="card">
-    <h2 class="card-title">予定一覧 <span style="font-weight:400;font-size:var(--fs-sm);color:var(--c-text2)">(<span id="itin-count">0</span>件)</span></h2>
-    <div id="itin-edit-list"></div>
-    <p id="itin-edit-empty" class="empty-msg">予定がありません</p>
-  </div>
-</section>
-
-<!-- ===== Tab: メンバー管理 ===== -->
-<section id="tab-members" class="tab-content">
-  <div class="card">
-    <h2 class="card-title">メンバー追加</h2>
-    <form id="form-add-member" class="inline-form">
-      <input type="text" id="input-member-name" placeholder="名前を入力" class="form-input" required maxlength="20" autocomplete="off">
-      <button type="submit" class="btn btn-primary">追加</button>
-    </form>
-  </div>
-  <div class="card">
-    <h2 class="card-title">メンバー一覧 <span style="font-weight:400;font-size:var(--fs-sm);color:var(--c-text2)">(<span id="member-count">0</span>人)</span></h2>
-    <ul id="member-list" class="item-list"></ul>
-    <p id="member-empty" class="empty-msg">メンバーがいません</p>
-  </div>
-</section>
-
-<!-- ===== Tab: 支払い記録 ===== -->
-<section id="tab-expenses" class="tab-content">
+<!-- ===== Tab: お金（支払い＋精算） ===== -->
+<section id="tab-money" class="tab-content">
+  <!-- 支払いフォーム -->
   <div class="card">
     <h2 class="card-title" id="expense-form-title">支払いを追加</h2>
     <form id="form-expense">
@@ -1129,16 +1106,13 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       </div>
     </form>
   </div>
+  <!-- 支払い一覧 -->
   <div class="card">
     <h2 class="card-title">支払い一覧</h2>
     <div id="expense-summary" class="summary-bar"></div>
     <div id="expense-list"></div>
     <p id="expense-empty" class="empty-msg">支払い記録がありません</p>
   </div>
-</section>
-
-<!-- ===== Tab: 精算 ===== -->
-<section id="tab-settlement" class="tab-content">
   <!-- 支出ダッシュボード -->
   <div class="card">
     <h2 class="card-title">📊 支出サマリー</h2>
@@ -1164,7 +1138,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     <div id="dash-legend" class="dash-legend"></div>
     <p id="dashboard-empty" class="empty-msg" hidden>支払いデータがありません</p>
   </div>
-
+  <!-- 為替レート -->
   <div class="card">
     <h2 class="card-title">為替レート</h2>
     <div class="exchange-rate-form">
@@ -1174,6 +1148,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     </div>
     <div id="rate-status" class="rate-status"></div>
   </div>
+  <!-- 精算通貨 -->
   <div class="card">
     <h2 class="card-title">精算通貨</h2>
     <div class="currency-toggle" id="settle-currency-toggle">
@@ -1181,16 +1156,47 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       <button type="button" class="toggle-btn" data-settle="AUD">AUD で精算</button>
     </div>
   </div>
+  <!-- 個人収支 -->
   <div class="card">
     <h2 class="card-title">個人収支</h2>
     <div id="balance-list"></div>
     <p id="balance-empty" class="empty-msg">データがありません</p>
   </div>
+  <!-- 精算プラン -->
   <div class="card">
     <h2 class="card-title">精算プラン</h2>
     <p class="card-desc">最小限の送金回数で精算します</p>
     <div id="settlement-plan"></div>
     <p id="settlement-empty" class="empty-msg">精算するデータがありません</p>
+  </div>
+</section>
+
+<!-- ===== Tab: 設定 ===== -->
+<section id="tab-settings" class="tab-content">
+  <div class="card">
+    <h2 class="card-title">👥 メンバー管理</h2>
+    <form id="form-add-member" class="inline-form" style="margin-bottom:var(--sp-md);">
+      <input type="text" id="input-member-name" placeholder="名前を入力" class="form-input" required maxlength="20" autocomplete="off">
+      <button type="submit" class="btn btn-primary">追加</button>
+    </form>
+    <h3 style="font-size:var(--fs-sm);font-weight:600;color:var(--c-text2);margin-bottom:var(--sp-sm);">メンバー一覧 <span style="font-weight:400">(<span id="member-count">0</span>人)</span></h3>
+    <ul id="member-list" class="item-list"></ul>
+    <p id="member-empty" class="empty-msg">メンバーがいません</p>
+  </div>
+  <div class="card">
+    <h2 class="card-title">☁️ クラウド同期</h2>
+    <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:12px;line-height:1.4;">スプレッドシートと同期中。🔄で取得、☁で保存できます。</p>
+    <div id="spreadsheet-link-area" style="margin-bottom:8px;">
+      <a id="spreadsheet-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%;font-size:var(--fs-sm);text-decoration:none;text-align:center;display:none;">📊 スプレッドシートを開く</a>
+    </div>
+  </div>
+  <div class="card">
+    <h2 class="card-title">📁 データ管理</h2>
+    <div style="display:flex;gap:8px;">
+      <button id="btn-export" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);">📤 書き出し</button>
+      <button id="btn-import" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);">📥 読み込み</button>
+    </div>
+    <input type="file" id="import-file" accept=".json" hidden>
   </div>
 </section>
 
@@ -1205,40 +1211,17 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   </div>
 </div>
 
-<!-- ===== Settings Modal ===== -->
+<!-- ===== GAS URL Settings Modal (開発者向け) ===== -->
 <div id="cloud-modal-overlay" class="modal-overlay" hidden>
   <div class="modal" role="dialog" aria-modal="true" style="max-width:400px;">
-    <p class="modal-message" style="font-weight:700;margin-bottom:12px;">設定</p>
-
-    <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:4px;">クラウド同期</p>
-    <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:12px;line-height:1.4;">✅ スプレッドシートと自動同期中です。すべての端末でURLを開くだけでデータが共有されます。</p>
-    <!-- GAS URL設定（通常は非表示・開発者向け） -->
-    <div id="gas-url-section" hidden>
-      <div class="form-group" style="margin-bottom:8px;">
-        <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off" style="font-size:0.75rem;">
-      </div>
-      <div style="display:flex;gap:6px;margin-bottom:16px;">
-        <button id="cloud-modal-save" class="btn btn-primary" style="flex:1;font-size:var(--fs-sm);">URL保存</button>
-        <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:0.75rem;padding:6px 10px;">削除</button>
-      </div>
+    <p class="modal-message" style="font-weight:700;margin-bottom:12px;">GAS URL設定</p>
+    <div class="form-group" style="margin-bottom:8px;">
+      <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off" style="font-size:0.75rem;">
     </div>
-
-    <div style="border-top:1px solid var(--c-border);padding-top:12px;margin-bottom:12px;">
-      <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:8px;">データの表示</p>
-      <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:8px;line-height:1.4;">データの確認・一括投入はスプレッドシートから行えます。</p>
-      <div id="spreadsheet-link-area" style="margin-bottom:8px;">
-        <a id="spreadsheet-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%;font-size:var(--fs-sm);text-decoration:none;text-align:center;display:none;">📊 スプレッドシートを開く</a>
-      </div>
+    <div style="display:flex;gap:6px;margin-bottom:16px;">
+      <button id="cloud-modal-save" class="btn btn-primary" style="flex:1;font-size:var(--fs-sm);">URL保存</button>
+      <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:0.75rem;padding:6px 10px;">削除</button>
     </div>
-
-    <div style="border-top:1px solid var(--c-border);padding-top:12px;margin-bottom:12px;">
-      <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:8px;">データ管理</p>
-      <div style="display:flex;gap:8px;">
-        <button id="btn-export" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);">📤 書き出し</button>
-        <button id="btn-import" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);">📥 読み込み</button>
-      </div>
-    </div>
-
     <div class="modal-actions">
       <button id="cloud-modal-cancel" class="btn btn-secondary" style="width:100%;">閉じる</button>
     </div>
@@ -2166,20 +2149,12 @@ function renderChecklist() {
   const list = document.getElementById('checklist-list');
   const progressEl = document.getElementById('checklist-progress');
   const fillEl = document.getElementById('checklist-progress-fill');
-  const header = document.getElementById('checklist-header');
-  const body = document.getElementById('checklist-body');
   const items = state.checklist || [];
   const filtered = clFilterCat === 'all' ? items : items.filter(i => i.category === clFilterCat);
   const total = items.length;
   const checked = items.filter(i => i.checked).length;
   progressEl.textContent = `${checked}/${total}`;
   fillEl.style.width = total > 0 ? `${Math.round(checked / total * 100)}%` : '0%';
-
-  // Auto-open if checklist has items
-  if (total > 0 && !body.classList.contains('open')) {
-    body.classList.add('open');
-    header.classList.add('open');
-  }
 
   // Update active tab
   document.querySelectorAll('.cl-cat-tab').forEach(t => {
@@ -2600,11 +2575,10 @@ function initEventListeners() {
     btn.classList.add('active');
     document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
     document.getElementById('tab-' + tabId).classList.add('active');
-    if (tabId === 'expenses') { renderPayerSelect(); renderSplitCheckboxes(); renderExpenses(); }
-    if (tabId === 'settlement') { renderSettlement(); renderDashboard(); }
-    if (tabId === 'members') renderMembers();
-    if (tabId === 'itinerary') { renderItinerary(); renderChecklist(); injectWeatherBadges(); }
-    if (tabId === 'itin-edit') { renderItinEditList(); renderItinParticipants(); renderTemplates(); }
+    if (tabId === 'itinerary') { renderItinerary(); renderItinEditList(); renderItinParticipants(); renderTemplates(); injectWeatherBadges(); }
+    if (tabId === 'checklist') { renderChecklist(); }
+    if (tabId === 'money') { renderPayerSelect(); renderSplitCheckboxes(); renderExpenses(); renderSettlement(); renderDashboard(); }
+    if (tabId === 'settings') { renderMembers(); updateSpreadsheetLink(); }
   });
 
   // Add member
@@ -2751,18 +2725,19 @@ function initEventListeners() {
       return;
     }
 
-    // Edit from schedule view → switch to edit tab with form populated
+    // Edit from schedule view → open accordion and populate form
     const editBtn = e.target.closest('[data-view-edit-itin]');
     if (editBtn) {
       const id = Number(editBtn.dataset.viewEditItin);
-      // Switch to edit tab
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelector('.tab-btn[data-tab="itin-edit"]').classList.add('active');
-      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-      document.getElementById('tab-itin-edit').classList.add('active');
-      renderItinEditList();
+      // Open the edit accordion if closed
+      const editBody = document.getElementById('itin-edit-body');
+      const editToggle = document.getElementById('itin-edit-toggle');
+      if (!editBody.classList.contains('open')) {
+        editBody.classList.add('open');
+        editToggle.classList.add('open');
+      }
       renderItinParticipants();
-      // Populate form
+      // Populate form and scroll to it
       startEditItineraryEvent(id);
       return;
     }
@@ -2865,11 +2840,16 @@ function initEventListeners() {
     showToast('クラウドに保存完了！');
   });
 
-  // Cloud settings modal
+  // Settings button → switch to settings tab
   document.getElementById('btn-cloud-settings').addEventListener('click', function() {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.tab-btn[data-tab="settings"]').classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.getElementById('tab-settings').classList.add('active');
+    renderMembers();
     updateSpreadsheetLink();
-    document.getElementById('cloud-modal-overlay').hidden = false;
   });
+  // GAS URL modal (開発者向け：スプレッドシートリンクを長押しで開く)
   document.getElementById('cloud-modal-cancel').addEventListener('click', function() {
     document.getElementById('cloud-modal-overlay').hidden = true;
   });
@@ -2877,12 +2857,13 @@ function initEventListeners() {
     if (e.target === this) this.hidden = true;
   });
 
-  // ===== Feature 1: Checklist event listeners =====
-  // Checklist accordion toggle
-  document.getElementById('checklist-header').addEventListener('click', function() {
+  // ===== Itinerary edit accordion toggle =====
+  document.getElementById('itin-edit-toggle').addEventListener('click', function() {
     this.classList.toggle('open');
-    document.getElementById('checklist-body').classList.toggle('open');
+    document.getElementById('itin-edit-body').classList.toggle('open');
   });
+
+  // ===== Feature 1: Checklist event listeners =====
 
   // Checklist category tabs
   document.getElementById('cl-cat-tabs').addEventListener('click', function(e) {
