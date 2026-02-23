@@ -357,6 +357,8 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   transition: background var(--t-fast);
 }
 .expense-item:last-child { border-bottom: none; }
+.exp-show-all-btn { display:block; width:100%; padding:10px; margin-top:var(--sp-sm); background:rgba(68,102,206,0.06); color:var(--c-primary); border:none; border-radius:var(--radius-sm); font-size:var(--fs-sm); font-weight:700; cursor:pointer; transition:background var(--t-fast); }
+.exp-show-all-btn:hover { background:rgba(68,102,206,0.12); }
 .expense-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-sm); }
 .expense-info { flex: 1; min-width: 0; }
 .expense-memo { font-weight: 700; word-break: break-word; }
@@ -1775,11 +1777,14 @@ function getParticipantBadges(participantIds) {
   }).filter(Boolean).join('');
 }
 
+const EXP_PREVIEW_COUNT = 3;
+let expShowAll = false;
+
 function renderExpenses() {
   const container = document.getElementById('expense-list');
   const empty = document.getElementById('expense-empty');
   const summary = document.getElementById('expense-summary');
-  if (state.expenses.length === 0) { container.innerHTML = ''; empty.hidden = false; summary.innerHTML = ''; return; }
+  if (state.expenses.length === 0) { container.innerHTML = ''; empty.hidden = false; summary.innerHTML = ''; expShowAll = false; return; }
   empty.hidden = true;
   const totalJPY = state.expenses.filter(e => e.currency === 'JPY').reduce((s, e) => s + e.amount, 0);
   const totalAUD = state.expenses.filter(e => e.currency === 'AUD').reduce((s, e) => s + e.amount, 0);
@@ -1791,7 +1796,9 @@ function renderExpenses() {
     if (a.date !== b.date) return b.date.localeCompare(a.date);
     return b.id - a.id;
   });
-  container.innerHTML = sorted.map(e => {
+  const needCollapse = sorted.length > EXP_PREVIEW_COUNT;
+  const visible = (needCollapse && !expShowAll) ? sorted.slice(0, EXP_PREVIEW_COUNT) : sorted;
+  let html = visible.map(e => {
     const splitNames = e.splitWith.map(id => getMemberName(id)).join(', ');
     return `
     <div class="expense-item">
@@ -1811,6 +1818,15 @@ function renderExpenses() {
       </div>
     </div>`;
   }).join('');
+  if (needCollapse) {
+    if (expShowAll) {
+      html += `<button class="exp-show-all-btn" id="btn-exp-toggle">▲ 折りたたむ</button>`;
+    } else {
+      const remaining = sorted.length - EXP_PREVIEW_COUNT;
+      html += `<button class="exp-show-all-btn" id="btn-exp-toggle">▼ すべて表示（残り${remaining}件）</button>`;
+    }
+  }
+  container.innerHTML = html;
 }
 
 /* ===== Rendering: Settlement ===== */
@@ -2948,6 +2964,8 @@ function initEventListeners() {
 
   // Expense list actions
   document.getElementById('expense-list').addEventListener('click', function(e) {
+    // Show all / collapse toggle
+    if (e.target.id === 'btn-exp-toggle') { expShowAll = !expShowAll; renderExpenses(); return; }
     const editBtn = e.target.closest('[data-edit-expense]');
     const deleteBtn = e.target.closest('[data-delete-expense]');
     if (editBtn) { startEditExpense(Number(editBtn.dataset.editExpense)); }
