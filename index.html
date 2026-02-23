@@ -7,7 +7,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta name="version" content="2.1.0-premium-ui">
-<title>タビトモ — いっしょに旅する便利帳</title>
+<title>たびトモ — いっしょに旅する便利帳</title>
 <style>
 /* ===== CSS Custom Properties — 2026 Premium Travel UI ===== */
 /* Inspired by FlightNetwork, premium airline UIs, deep navy + gold accents */
@@ -1025,7 +1025,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 <!-- ===== Header ===== -->
 <header class="app-header">
-  <h1 class="app-title">タビトモ <span style="font-size:0.45em;font-weight:400;opacity:0.75;vertical-align:middle;-webkit-text-fill-color:rgba(255,255,255,0.75);background:none;-webkit-background-clip:unset;background-clip:unset;">— いっしょに旅する便利帳</span></h1>
+  <h1 class="app-title">たびトモ <span style="font-size:0.45em;font-weight:400;vertical-align:middle;">— いっしょに旅する便利帳</span></h1>
   <div class="header-actions">
     <button id="btn-help" class="icon-btn" title="使い方ガイド">&#x1F4D6;</button>
   </div>
@@ -1061,7 +1061,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   <div id="home-banner"></div>
   <div id="home-welcome" class="card home-welcome-card" hidden>
     <div class="home-welcome-icon">&#x2708;&#xFE0F;</div>
-    <h2 class="home-welcome-title">タビトモへようこそ</h2>
+    <h2 class="home-welcome-title">たびトモへようこそ</h2>
     <p class="home-welcome-desc">設定タブで旅行情報を登録して始めましょう</p>
     <button class="btn btn-primary home-welcome-btn" data-home-goto="settings">&#x2699; 設定を開く</button>
   </div>
@@ -1469,7 +1469,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       <!-- 全体の説明 -->
       <div class="help-section">
         <div class="help-section-icon">✈️</div>
-        <h3>タビトモ とは？</h3>
+        <h3>たびトモ とは？</h3>
         <p>旅行の<strong>予定・持ち物・お金</strong>をまとめて管理できるアプリです。メンバー全員で共有でき、旅行の準備から精算まで、これ1つで完結します。</p>
         <div class="help-tip">💡 まずは<strong>設定タブ</strong>で旅行の基本情報とメンバーを登録しましょう！</div>
       </div>
@@ -2971,7 +2971,7 @@ function shareSchedule() {
   });
 
   text += '━'.repeat(24) + '\n';
-  text += `✨ タビトモ より`;
+  text += `✨ たびトモ より`;
 
   if (navigator.share) {
     navigator.share({ title: `Day ${dayNum} の予定`, text: text }).catch(() => {
