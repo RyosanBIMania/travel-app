@@ -451,6 +451,9 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   padding: var(--sp-xl);
   max-width: 360px; width: 100%;
   box-shadow: var(--shadow-md);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .modal-message { font-size: var(--fs-base); font-weight: 500; margin-bottom: var(--sp-lg); line-height: 1.5; }
 .modal-actions { display: flex; gap: var(--sp-sm); justify-content: flex-end; }
@@ -1645,14 +1648,11 @@ function handleImport(e) {
 function updateSpreadsheetLink() {
   const url = localStorage.getItem('travel-app-spreadsheet-url');
   const link = document.getElementById('spreadsheet-link');
-  const none = document.getElementById('spreadsheet-link-none');
   if (url) {
     link.href = url;
     link.style.display = 'block';
-    none.style.display = 'none';
   } else {
     link.style.display = 'none';
-    none.style.display = 'block';
   }
 }
 
