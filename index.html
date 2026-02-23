@@ -773,7 +773,8 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 }
 
 /* ===== Help Modal ===== */
-.help-modal { background:#fff; border-radius:var(--radius-md) var(--radius-md) 0 0; width:100%; max-width:520px; max-height:92vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 -4px 30px rgba(0,0,20,0.3); }
+.help-overlay { align-items:flex-end; padding:0; bottom:calc(var(--tab-h) + env(safe-area-inset-bottom, 0px)); }
+.help-modal { background:#fff; border-radius:var(--radius-md) var(--radius-md) 0 0; width:100%; max-width:520px; max-height:100%; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 -4px 30px rgba(0,0,20,0.3); }
 .help-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:linear-gradient(135deg,var(--c-primary),var(--c-primary-light)); color:#fff; flex-shrink:0; }
 .help-title { font-size:1.15rem; font-weight:800; margin:0; }
 .help-close-btn { background:none; border:none; color:#fff; font-size:1.6rem; cursor:pointer; width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.2s; }
@@ -795,7 +796,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .help-step:last-child { margin-bottom:0; }
 .help-step-num { width:28px; height:28px; min-width:28px; border-radius:50%; background:var(--c-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800; }
 @media (max-width:600px) {
-  .help-modal { max-width:100%; max-height:92vh; }
+  .help-modal { max-width:100%; max-height:100%; }
   .help-body { padding:14px 16px 60px; }
 }
 
@@ -1444,7 +1445,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 </div>
 
 <!-- ===== Help / Manual Modal ===== -->
-<div id="help-modal-overlay" class="modal-overlay" hidden style="align-items:flex-end;padding:0;">
+<div id="help-modal-overlay" class="modal-overlay help-overlay" hidden>
   <div class="help-modal" role="dialog" aria-modal="true">
     <div class="help-header">
       <h2 class="help-title">📖 使い方ガイド</h2>
