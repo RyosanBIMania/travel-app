@@ -1486,7 +1486,19 @@ function loadState() {
         // ID型を数値に統一
         state.members.forEach(m => { m.id = Number(m.id) || m.id; });
         state.checklist.forEach(item => {
-          if (Array.isArray(item.members)) item.members = item.members.map(mid => Number(mid) || mid);
+          if (Array.isArray(item.members)) {
+            // Fix NaN members: replace with actual member IDs
+            const hasNaN = item.members.some(mid => mid !== mid); // NaN !== NaN is true
+            if (hasNaN) {
+              item.members = state.members.map(m => m.id);
+              // Rebuild checkedBy with correct keys
+              const newCB = {};
+              item.members.forEach(mid => { newCB[String(mid)] = false; });
+              item.checkedBy = newCB;
+            } else {
+              item.members = item.members.map(mid => Number(mid) || mid);
+            }
+          }
         });
         state.expenses.forEach(e => {
           e.payerId = Number(e.payerId) || e.payerId;
@@ -1639,9 +1651,19 @@ async function syncFromCloud() {
       if (!Array.isArray(state.checklist)) state.checklist = [];
       // members.id を数値に統一（GASからは文字列で来る場合がある）
       state.members.forEach(m => { m.id = Number(m.id) || m.id; });
-      // checklist.members[] / checkedBy のキーも数値に統一
+      // checklist.members[] / checkedBy のキーも数値に統一 + NaN修正
       state.checklist.forEach(item => {
-        if (Array.isArray(item.members)) item.members = item.members.map(mid => Number(mid) || mid);
+        if (Array.isArray(item.members)) {
+          const hasNaN = item.members.some(mid => mid !== mid);
+          if (hasNaN) {
+            item.members = state.members.map(m => m.id);
+            const newCB = {};
+            item.members.forEach(mid => { newCB[String(mid)] = false; });
+            item.checkedBy = newCB;
+          } else {
+            item.members = item.members.map(mid => Number(mid) || mid);
+          }
+        }
       });
       // expenses.payerId / splitWith も数値に統一
       state.expenses.forEach(e => {
@@ -2643,7 +2665,7 @@ function addChecklistItem(text, category) {
   // Gather selected members from form
   const cbs = document.querySelectorAll('#cl-add-member-checks input[type=checkbox]');
   let selectedMembers = [];
-  cbs.forEach(cb => { if (cb.checked) selectedMembers.push(Number(cb.value)); });
+  cbs.forEach(cb => { if (cb.checked) { const v = cb.value; selectedMembers.push(isNaN(Number(v)) ? v : Number(v)); } });
   if (selectedMembers.length === 0) selectedMembers = state.members.map(m => m.id);
   // Init checkedBy
   const checkedBy = {};
@@ -3651,9 +3673,10 @@ function initEventListeners() {
   // Helper: handle dot toggle
   function handleDotToggle(dot) {
     if (!dot) return;
-    const itemId = Number(dot.dataset.clToggle);
-    const memberId = Number(dot.dataset.clMemberId);
-    if (!itemId || !memberId) return;
+    const rawItemId = dot.dataset.clToggle;
+    const memberId = dot.dataset.clMemberId;
+    if (!rawItemId || !memberId) return;
+    const itemId = isNaN(Number(rawItemId)) ? rawItemId : Number(rawItemId);
     toggleChecklistItem(itemId, memberId);
     const item = state.checklist.find(i => i.id === itemId);
     if (item) {
