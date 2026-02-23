@@ -813,7 +813,13 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:8px;line-height:1.4;">データの確認・一括投入はスプレッドシートから行えます。</p>
       <div id="spreadsheet-link-area" style="margin-bottom:8px;">
         <a id="spreadsheet-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%;font-size:var(--fs-sm);text-decoration:none;text-align:center;display:none;">📊 スプレッドシートを開く</a>
-        <p id="spreadsheet-link-none" style="font-size:0.75rem;color:var(--c-text2);text-align:center;">クラウド同期を設定すると表示されます</p>
+      </div>
+      <div class="form-group" style="margin-bottom:4px;">
+        <input type="url" id="spreadsheet-url-input" class="form-input" placeholder="スプレッドシートのURLを貼り付け" autocomplete="off" style="font-size:0.75rem;">
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:4px;">
+        <button id="spreadsheet-url-save" class="btn btn-primary" style="flex:1;font-size:var(--fs-sm);">URL保存</button>
+        <button id="spreadsheet-url-clear" class="btn btn-danger" style="font-size:0.75rem;padding:6px 10px;">削除</button>
       </div>
     </div>
 
@@ -1846,6 +1852,8 @@ function initEventListeners() {
   // Cloud settings modal
   document.getElementById('btn-cloud-settings').addEventListener('click', function() {
     document.getElementById('gas-url-input').value = getGasUrl();
+    document.getElementById('spreadsheet-url-input').value = localStorage.getItem('travel-app-spreadsheet-url') || '';
+    updateSpreadsheetLink();
     document.getElementById('cloud-modal-overlay').hidden = false;
   });
   document.getElementById('cloud-modal-cancel').addEventListener('click', function() {
@@ -1875,6 +1883,21 @@ function initEventListeners() {
     setSyncStatus('off');
     showToast('クラウド設定を削除しました');
   });
+  document.getElementById('spreadsheet-url-save').addEventListener('click', function() {
+    const url = document.getElementById('spreadsheet-url-input').value.trim();
+    if (url) {
+      localStorage.setItem('travel-app-spreadsheet-url', url);
+      showToast('スプレッドシートURLを保存しました');
+    }
+    updateSpreadsheetLink();
+  });
+  document.getElementById('spreadsheet-url-clear').addEventListener('click', function() {
+    localStorage.removeItem('travel-app-spreadsheet-url');
+    document.getElementById('spreadsheet-url-input').value = '';
+    updateSpreadsheetLink();
+    showToast('スプレッドシートURLを削除しました');
+  });
+
   document.getElementById('cloud-modal-overlay').addEventListener('click', function(e) {
     if (e.target === this) this.hidden = true;
   });
