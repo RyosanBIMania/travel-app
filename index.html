@@ -1488,6 +1488,7 @@ function renderItinEditList() {
       </div>
       <div class="expense-actions">
         <button class="btn-icon-sm" data-edit-itin="${ev.id}" title="編集">&#x270E;</button>
+        <button class="btn-icon-sm" data-clone-itin="${ev.id}" title="複製して作成">&#x1F4CB;</button>
         <button class="btn-icon-sm danger" data-delete-itin="${ev.id}" title="削除">&#x2716;</button>
       </div>
     </div>`;
@@ -1810,8 +1811,26 @@ function initEventListeners() {
   // Itinerary edit list actions
   document.getElementById('itin-edit-list').addEventListener('click', function(e) {
     const editBtn = e.target.closest('[data-edit-itin]');
+    const cloneBtn = e.target.closest('[data-clone-itin]');
     const deleteBtn = e.target.closest('[data-delete-itin]');
     if (editBtn) { startEditItineraryEvent(Number(editBtn.dataset.editItin)); }
+    else if (cloneBtn) {
+      const id = Number(cloneBtn.dataset.cloneItin);
+      const src = state.itinerary.find(ev => ev.id === id);
+      if (src) {
+        const cloned = {
+          date: src.date, time: src.time, endTime: src.endTime,
+          title: src.title + '（コピー）', category: src.category,
+          memo: src.memo, url: src.url, location: src.location,
+          mapUrl: src.mapUrl, participants: [...(src.participants || [])]
+        };
+        if (addItineraryEvent(cloned)) {
+          renderItinerary();
+          renderItinEditList();
+          showToast('予定を複製しました');
+        }
+      }
+    }
     else if (deleteBtn) {
       const id = Number(deleteBtn.dataset.deleteItin);
       showModal('この予定を削除しますか？', '削除する', function() {
