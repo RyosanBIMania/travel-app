@@ -3601,7 +3601,7 @@ function initEventListeners() {
     const btn = e.target.closest('.cl-member-filter-btn');
     if (!btn) return;
     const val = btn.dataset.clMember;
-    clFilterMember = val === 'all' ? 'all' : Number(val);
+    clFilterMember = val === 'all' ? 'all' : (isNaN(Number(val)) ? val : Number(val));
     renderChecklist();
   });
 
@@ -3611,7 +3611,7 @@ function initEventListeners() {
     if (!badge) return;
     const val = badge.dataset.clMember;
     if (!val) return;
-    const mid = Number(val);
+    const mid = isNaN(Number(val)) ? val : Number(val);
     clFilterMember = clFilterMember === mid ? 'all' : mid;
     renderChecklist();
   });
