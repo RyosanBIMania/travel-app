@@ -876,19 +876,20 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .cl-item { display:flex; flex-direction:column; gap:4px; padding:8px 4px; border-bottom:1px solid rgba(0,0,0,0.04); }
 .cl-item:last-child { border-bottom:none; }
 .cl-item-main { display:flex; align-items:center; gap:var(--sp-sm); }
-.cl-item .cl-text { flex:1; font-size:var(--fs-sm); transition:opacity var(--t-fast); }
-.cl-item.cl-complete .cl-text { text-decoration:line-through; opacity:0.45; }
+.cl-item .cl-text { flex:1; font-size:var(--fs-sm); transition:opacity var(--t-fast), color var(--t-fast); }
+.cl-item.cl-complete .cl-text { text-decoration:line-through; text-decoration-thickness:2px; color:var(--c-text2); opacity:0.5; }
 .cl-cat-badge { font-size:0.6rem; padding:1px 6px; border-radius:var(--radius-full); background:rgba(0,0,0,0.05); color:var(--c-text2); white-space:nowrap; flex-shrink:0; }
 .cl-item .cl-del { width:24px; height:24px; border:none; background:none; color:var(--c-text2); cursor:pointer; font-size:0.8rem; opacity:0.5; flex-shrink:0; }
 .cl-item .cl-del:hover { opacity:1; color:var(--c-danger); }
 /* Member dot buttons */
-.cl-member-checks { display:flex; gap:4px; padding-left:2px; flex-wrap:wrap; }
-.cl-member-dot { width:28px; height:28px; border-radius:50%; border:2px solid rgba(255,255,255,0.6); display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; color:#fff; cursor:pointer; transition:all var(--t-fast); opacity:0.35; position:relative; -webkit-tap-highlight-color:transparent; padding:0; }
-.cl-member-dot.checked { opacity:1; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
-.cl-member-dot .cl-dot-check { display:none; font-size:0.75rem; }
+.cl-member-checks { display:flex; gap:6px; padding:4px 2px 2px; flex-wrap:wrap; }
+.cl-item.cl-complete { background:rgba(0,200,83,0.04); border-radius:var(--radius-sm); }
+.cl-member-dot { width:34px; height:34px; border-radius:50%; border:2.5px solid rgba(0,0,0,0.08); display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:800; color:#fff; cursor:pointer; transition:all var(--t-fast); opacity:0.4; position:relative; -webkit-tap-highlight-color:transparent; padding:0; }
+.cl-member-dot.checked { opacity:1; border-color:rgba(255,255,255,0.7); box-shadow:0 2px 8px rgba(0,0,0,0.25); transform:scale(1.05); }
+.cl-member-dot .cl-dot-check { display:none; font-size:0.85rem; }
 .cl-member-dot.checked .cl-dot-check { display:block; }
 .cl-member-dot.checked .cl-dot-initial { display:none; }
-.cl-member-dot:active { transform:scale(0.9); }
+.cl-member-dot:active { transform:scale(0.85); }
 
 /* ===== Share / Copy Button ===== */
 .btn-share { display:inline-flex; align-items:center; gap:4px; padding:6px 14px; border-radius:var(--radius-full); background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); font-size:var(--fs-sm); cursor:pointer; color:var(--c-text); transition:background var(--t-fast); }
@@ -3647,8 +3648,20 @@ function initEventListeners() {
   document.getElementById('checklist-list').addEventListener('click', function(e) {
     const dot = e.target.closest('.cl-member-dot');
     if (dot) {
-      toggleChecklistItem(Number(dot.dataset.clToggle), Number(dot.dataset.clMemberId));
+      const itemId = Number(dot.dataset.clToggle);
+      const memberId = Number(dot.dataset.clMemberId);
+      toggleChecklistItem(itemId, memberId);
+      // Check if all members are now done
+      const item = state.checklist.find(i => i.id === itemId);
+      if (item) {
+        const allDone = (item.members||[]).every(mid => item.checkedBy && item.checkedBy[String(mid)]);
+        const memberName = getMemberName(memberId);
+        if (allDone) {
+          showToast(`✅ 「${item.text}」全員完了！`);
+        }
+      }
       renderChecklist();
+      renderHome();
       return;
     }
     const del = e.target.closest('[data-cl-delete]');
