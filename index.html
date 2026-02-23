@@ -330,7 +330,9 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   transition: background var(--t-fast);
 }
 .list-item:last-child { border-bottom: none; }
-.member-name { font-weight: 700; flex: 1; }
+.member-name { font-weight: 700; flex: 1; cursor:pointer; border-bottom:1px dashed transparent; transition:border-color var(--t-fast); }
+.member-name:hover { border-bottom-color:rgba(0,0,0,0.2); }
+.member-name-edit { flex:1; font-size:var(--fs-sm); font-weight:700; padding:2px 6px; border:1.5px solid var(--c-primary); border-radius:var(--radius-xs); outline:none; min-width:0; }
 .member-color-dot {
   width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
@@ -1721,7 +1723,7 @@ function renderMembers() {
     return `
     <li class="list-item">
       <span class="member-color-dot" style="background:${color}"></span>
-      <span class="member-name" style="color:${color};font-weight:700;">${escapeHtml(m.name)}</span>
+      <span class="member-name" data-member-id="${m.id}" style="color:${color};font-weight:700;" title="タップで名前を編集">${escapeHtml(m.name)}</span>
       <input type="color" class="member-color-picker" data-color-member="${m.id}" value="${color}" title="テーマカラー変更">
       <button class="btn-icon-sm danger" data-delete-member="${m.id}" title="削除">&#x2716;</button>
     </li>`;
@@ -2857,19 +2859,63 @@ function initEventListeners() {
     }
   });
 
-  // Delete member
+  // Delete member & edit member name
   document.getElementById('member-list').addEventListener('click', function(e) {
+    // Delete
     const btn = e.target.closest('[data-delete-member]');
-    if (!btn) return;
-    const id = btn.dataset.deleteMember;
-    const name = getMemberName(id);
-    showModal(`「${name}」を削除しますか？`, '削除する', function() {
-      if (removeMember(id)) {
-        renderMembers(); renderPayerSelect(); renderSplitCheckboxes();
-        showToast('メンバーを削除しました');
+    if (btn) {
+      const id = btn.dataset.deleteMember;
+      const name = getMemberName(id);
+      showModal(`「${name}」を削除しますか？`, '削除する', function() {
+        if (removeMember(id)) {
+          renderMembers(); renderPayerSelect(); renderSplitCheckboxes();
+          showToast('メンバーを削除しました');
+        }
+        closeModal();
+      });
+      return;
+    }
+    // Edit name — click on .member-name to start inline editing
+    const nameEl = e.target.closest('.member-name');
+    if (nameEl && !e.target.closest('.member-name-edit')) {
+      const mid = nameEl.dataset.memberId;
+      const member = state.members.find(m => String(m.id) === mid);
+      if (!member) return;
+      const oldName = member.name;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'member-name-edit';
+      input.value = oldName;
+      input.maxLength = 20;
+      input.style.color = member.color || '';
+      nameEl.replaceWith(input);
+      input.focus();
+      input.select();
+      function commitEdit() {
+        const newName = input.value.trim();
+        if (newName && newName !== oldName) {
+          if (state.members.some(m => m.name === newName && m.id !== member.id)) {
+            showToast('同じ名前のメンバーがいます');
+          } else {
+            member.name = newName;
+            saveState();
+            showToast('名前を変更しました');
+          }
+        }
+        renderMembers();
+        renderPayerSelect();
+        renderSplitCheckboxes();
+        renderExpenses();
+        renderItinerary();
+        renderItinEditList();
+        renderChecklist();
       }
-      closeModal();
-    });
+      input.addEventListener('blur', commitEdit);
+      input.addEventListener('keydown', function(ev) {
+        if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+        if (ev.key === 'Escape') { input.value = oldName; input.blur(); }
+      });
+    }
   });
 
   // Member color picker change
