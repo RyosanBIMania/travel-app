@@ -826,7 +826,6 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 /* ===== Checklist ===== */
 .checklist-section { margin-top: var(--sp-md); }
-.checklist-progress { font-weight:400; font-size:var(--fs-sm); color:var(--c-text2); margin-left:auto; }
 .checklist-progress-bar { height:4px; background:rgba(0,0,0,0.06); border-radius:2px; margin-bottom:var(--sp-sm); overflow:hidden; }
 .checklist-progress-fill { height:100%; background:linear-gradient(90deg, var(--c-success) 0%, #34d399 100%); border-radius:2px; transition:width var(--t-smooth); }
 #tab-checklist .checklist-body { display:block; }
@@ -836,14 +835,43 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .cl-cat-tabs { display:flex; gap:4px; margin-bottom:var(--sp-sm); flex-wrap:wrap; }
 .cl-cat-tab { padding:4px 10px; border-radius:var(--radius-full); border:1px solid rgba(0,0,0,0.08); background:rgba(0,0,0,0.03); font-size:var(--fs-xs); cursor:pointer; transition:background var(--t-fast); }
 .cl-cat-tab.active { background:var(--c-primary); color:#fff; border-color:var(--c-primary); }
-.cl-item { display:flex; align-items:center; gap:var(--sp-sm); padding:8px 4px; border-bottom:1px solid rgba(0,0,0,0.04); }
+/* Member filter row */
+.cl-member-filter { display:flex; gap:4px; margin-bottom:var(--sp-sm); flex-wrap:wrap; align-items:center; }
+.cl-member-filter-btn { padding:3px 10px; border-radius:var(--radius-full); font-size:var(--fs-xs); cursor:pointer; transition:all var(--t-fast); color:#fff; font-weight:600; opacity:0.45; border:none; }
+.cl-member-filter-btn.active { opacity:1; box-shadow:0 1px 4px rgba(0,0,0,0.15); }
+/* Progress summary */
+.cl-progress-summary { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:var(--sp-sm); align-items:center; }
+.cl-progress-overall { font-size:var(--fs-sm); color:var(--c-text2); margin-right:auto; }
+.cl-progress-member { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:var(--radius-full); font-size:var(--fs-xs); font-weight:600; color:#fff; opacity:0.75; }
+.cl-progress-member.done { opacity:1; }
+.cl-progress-member .cl-pm-count { font-weight:400; opacity:0.85; }
+/* Add form meta (category + member select) */
+.cl-add-meta { display:flex; flex-direction:column; gap:6px; padding:8px 0 4px; animation:cl-slide-down 0.2s ease; }
+.cl-add-meta[hidden] { display:none; }
+@keyframes cl-slide-down { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.cl-auto-cat { display:flex; align-items:center; gap:6px; }
+.cl-auto-cat-label, .cl-add-members-label { font-size:var(--fs-xs); color:var(--c-text2); flex-shrink:0; }
+.cl-cat-select { padding:4px 8px; border:1px solid rgba(0,0,0,0.1); border-radius:var(--radius-sm); font-size:var(--fs-xs); background:rgba(255,255,255,0.8); min-height:30px; }
+.cl-add-member-checks { display:flex; flex-wrap:wrap; gap:4px; }
+.cl-add-member-checks label { display:inline-flex; align-items:center; gap:3px; padding:3px 8px; border-radius:var(--radius-full); font-size:var(--fs-xs); background:rgba(0,0,0,0.04); cursor:pointer; }
+.cl-add-member-checks input[type=checkbox] { width:16px; height:16px; accent-color:var(--c-success); }
+/* Item v2 layout (2-row: main + member dots) */
+.cl-item { display:flex; flex-direction:column; gap:4px; padding:8px 4px; border-bottom:1px solid rgba(0,0,0,0.04); }
 .cl-item:last-child { border-bottom:none; }
-.cl-item input[type=checkbox] { width:20px; height:20px; accent-color:var(--c-success); flex-shrink:0; }
+.cl-item-main { display:flex; align-items:center; gap:var(--sp-sm); }
 .cl-item .cl-text { flex:1; font-size:var(--fs-sm); transition:opacity var(--t-fast); }
-.cl-item.checked .cl-text { text-decoration:line-through; opacity:0.45; }
-.cl-item .cl-assignee { font-size:var(--fs-xs); padding:2px 6px; border-radius:var(--radius-full); background:rgba(0,0,0,0.05); color:var(--c-text2); }
-.cl-item .cl-del { width:24px; height:24px; border:none; background:none; color:var(--c-text2); cursor:pointer; font-size:0.8rem; opacity:0.5; }
+.cl-item.cl-complete .cl-text { text-decoration:line-through; opacity:0.45; }
+.cl-cat-badge { font-size:0.6rem; padding:1px 6px; border-radius:var(--radius-full); background:rgba(0,0,0,0.05); color:var(--c-text2); white-space:nowrap; flex-shrink:0; }
+.cl-item .cl-del { width:24px; height:24px; border:none; background:none; color:var(--c-text2); cursor:pointer; font-size:0.8rem; opacity:0.5; flex-shrink:0; }
 .cl-item .cl-del:hover { opacity:1; color:var(--c-danger); }
+/* Member dot buttons */
+.cl-member-checks { display:flex; gap:4px; padding-left:2px; flex-wrap:wrap; }
+.cl-member-dot { width:28px; height:28px; border-radius:50%; border:2px solid rgba(255,255,255,0.6); display:flex; align-items:center; justify-content:center; font-size:0.65rem; font-weight:700; color:#fff; cursor:pointer; transition:all var(--t-fast); opacity:0.35; position:relative; -webkit-tap-highlight-color:transparent; padding:0; }
+.cl-member-dot.checked { opacity:1; box-shadow:0 1px 4px rgba(0,0,0,0.2); }
+.cl-member-dot .cl-dot-check { display:none; font-size:0.75rem; }
+.cl-member-dot.checked .cl-dot-check { display:block; }
+.cl-member-dot.checked .cl-dot-initial { display:none; }
+.cl-member-dot:active { transform:scale(0.9); }
 
 /* ===== Share / Copy Button ===== */
 .btn-share { display:inline-flex; align-items:center; gap:4px; padding:6px 14px; border-radius:var(--radius-full); background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); font-size:var(--fs-sm); cursor:pointer; color:var(--c-text); transition:background var(--t-fast); }
@@ -1039,19 +1067,45 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   <div class="card">
     <h2 class="card-title">🧳 持ち物チェックリスト</h2>
     <div class="checklist-progress-bar"><div id="checklist-progress-fill" class="checklist-progress-fill" style="width:0%"></div></div>
-    <span id="checklist-progress" class="checklist-progress" style="display:block;text-align:right;margin-bottom:var(--sp-sm);">0/0</span>
+    <div id="cl-progress-summary" class="cl-progress-summary"></div>
     <div id="checklist-body" class="checklist-body">
+      <!-- メンバーフィルタ -->
+      <div id="cl-member-filter" class="cl-member-filter"></div>
+      <!-- カテゴリフィルタ -->
       <div class="cl-cat-tabs" id="cl-cat-tabs">
         <span class="cl-cat-tab active" data-cl-cat="all">すべて</span>
         <span class="cl-cat-tab" data-cl-cat="essential">必需品</span>
         <span class="cl-cat-tab" data-cl-cat="clothes">衣類</span>
         <span class="cl-cat-tab" data-cl-cat="electronics">電子機器</span>
         <span class="cl-cat-tab" data-cl-cat="toiletry">日用品</span>
+        <span class="cl-cat-tab" data-cl-cat="medicine">医薬品</span>
+        <span class="cl-cat-tab" data-cl-cat="food">食品</span>
         <span class="cl-cat-tab" data-cl-cat="other">その他</span>
       </div>
-      <div class="checklist-add">
-        <input type="text" id="cl-new-item" placeholder="アイテムを追加..." maxlength="50">
-        <button class="btn btn-primary btn-sm" id="cl-add-btn">追加</button>
+      <!-- 追加フォーム -->
+      <div class="checklist-add-form" id="cl-add-form">
+        <div class="checklist-add">
+          <input type="text" id="cl-new-item" placeholder="アイテムを追加..." maxlength="50" autocomplete="off">
+          <button class="btn btn-primary btn-sm" id="cl-add-btn">追加</button>
+        </div>
+        <div class="cl-add-meta" id="cl-add-meta" hidden>
+          <div class="cl-auto-cat">
+            <span class="cl-auto-cat-label">カテゴリ:</span>
+            <select id="cl-cat-select" class="cl-cat-select">
+              <option value="essential">必需品</option>
+              <option value="clothes">衣類</option>
+              <option value="electronics">電子機器</option>
+              <option value="toiletry">日用品</option>
+              <option value="medicine">医薬品</option>
+              <option value="food">食品</option>
+              <option value="other" selected>その他</option>
+            </select>
+          </div>
+          <div class="cl-add-members">
+            <span class="cl-add-members-label">対象:</span>
+            <div id="cl-add-member-checks" class="cl-add-member-checks"></div>
+          </div>
+        </div>
       </div>
       <div id="checklist-list"></div>
     </div>
@@ -1283,6 +1337,8 @@ function loadState() {
         state.members.forEach((m, i) => {
           if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
         });
+        // Migrate old checklist format to per-member format
+        migrateChecklistItems();
       }
     }
   } catch (e) { /* keep default */ }
@@ -1395,9 +1451,20 @@ async function syncFromCloud() {
           if (!Array.isArray(e.splitWith)) e.splitWith = [];
         });
       }
-      // checklistも修復
+      // checklistも修復 (new per-member format: members[], checkedBy{})
       if (Array.isArray(cloud.checklist)) {
         cloud.checklist.forEach(e => {
+          // Parse members if JSON string from GAS
+          if (typeof e.members === 'string') {
+            try { e.members = JSON.parse(e.members); } catch(ex) { e.members = []; }
+          }
+          if (!Array.isArray(e.members)) e.members = [];
+          // Parse checkedBy if JSON string from GAS
+          if (typeof e.checkedBy === 'string') {
+            try { e.checkedBy = JSON.parse(e.checkedBy); } catch(ex) { e.checkedBy = {}; }
+          }
+          if (!e.checkedBy || typeof e.checkedBy !== 'object' || Array.isArray(e.checkedBy)) e.checkedBy = {};
+          // Legacy: old boolean checked field → will be handled by migrateChecklistItems()
           if (typeof e.checked === 'string') e.checked = e.checked === 'true' || e.checked === 'TRUE';
         });
       }
@@ -1415,6 +1482,8 @@ async function syncFromCloud() {
       state.members.forEach((m, i) => {
         if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
       });
+      // Migrate old checklist format to per-member format
+      migrateChecklistItems();
       localStorage.setItem(APP_KEY, JSON.stringify(state));
       renderAll();
       setSyncStatus('synced');
@@ -2142,37 +2211,205 @@ function updateSpreadsheetLink() {
 
 /* ===== Feature 1: Checklist (持ち物チェックリスト) ===== */
 let clFilterCat = 'all';
+let clFilterMember = 'all';
 
 function generateChecklistId() { return state.nextChecklistId++; }
 
+/* --- Auto-category keyword dictionary (~170 words) --- */
+const CL_CATEGORY_KEYWORDS = {
+  essential: [
+    'パスポート','財布','さいふ','鍵','かぎ','キー','チケット','航空券','免許証',
+    '保険証','ビザ','現金','クレジットカード','カード','身分証','証明書',
+    'スマホ','携帯','ウォレット','搭乗券','予約確認','旅券','ETASイータス'
+  ],
+  clothes: [
+    'Tシャツ','シャツ','パンツ','ズボン','靴下','くつした','下着','したぎ',
+    'ジャケット','コート','パーカー','セーター','ニット','スカート','ワンピース',
+    '水着','パジャマ','靴','くつ','スニーカー','サンダル','帽子','ぼうし',
+    'マフラー','手袋','てぶくろ','ベルト','ネクタイ','スーツ','ドレス',
+    'ショートパンツ','短パン','レインコート','カーディガン','上着','羽織',
+    'アウター','インナー','肌着','ストッキング','タイツ'
+  ],
+  electronics: [
+    '充電器','じゅうでんき','カメラ','イヤホン','ヘッドホン','PC','パソコン',
+    'ノートパソコン','タブレット','iPad','モバイルバッテリー','バッテリー',
+    'ケーブル','USBケーブル','USB','変換アダプタ','変換プラグ','アダプター',
+    'コンセント変換','三脚','さんきゃく','SDカード','メモリーカード',
+    'Kindle','キンドル','スピーカー','ドライヤー','ヘアアイロン','電源タップ',
+    'WiFi','ポケットWiFi','ルーター','GoPro','自撮り棒','延長コード'
+  ],
+  toiletry: [
+    '歯ブラシ','はぶらし','歯磨き粉','はみがき','シャンプー','リンス',
+    'コンディショナー','ボディソープ','石鹸','せっけん','タオル','たおる',
+    'バスタオル','化粧品','けしょうひん','メイク','スキンケア','日焼け止め',
+    'ひやけどめ','リップ','クリーム','洗顔','せんがん','コンタクト',
+    'コンタクトレンズ','眼鏡','めがね','ヘアブラシ','くし','髭剃り',
+    'ひげそり','カミソリ','制汗剤','デオドラント','ティッシュ',
+    'ウェットティッシュ','綿棒','めんぼう','ハンカチ','生理用品','爪切り','つめきり'
+  ],
+  medicine: [
+    '薬','くすり','常備薬','風邪薬','かぜぐすり','頭痛薬','胃薬',
+    '酔い止め','よいどめ','鎮痛剤','目薬','めぐすり','絆創膏','ばんそうこう',
+    '消毒液','体温計','虫除け','むしよけ','虫刺され','サプリ','サプリメント',
+    'ビタミン','マスク','包帯','塗り薬','軟膏','アレルギー薬','下痢止め','整腸剤'
+  ],
+  food: [
+    'お菓子','おかし','水筒','すいとう','ボトル','おにぎり','パン',
+    'カップ麺','インスタント','レトルト','ふりかけ','お茶','おちゃ',
+    'コーヒー','飴','あめ','ガム','チョコ','チョコレート','ナッツ',
+    'ドライフルーツ','エナジーバー','プロテインバー','箸','はし','スプーン',
+    'フォーク','弁当箱','タッパー','保冷バッグ','水','ミネラルウォーター'
+  ]
+};
+
+const CL_CAT_LABELS = {
+  essential:'必需品', clothes:'衣類', electronics:'電子機器',
+  toiletry:'日用品', medicine:'医薬品', food:'食品', other:'その他'
+};
+
+function detectChecklistCategory(text) {
+  const n = text.trim().toLowerCase();
+  for (const [cat, keywords] of Object.entries(CL_CATEGORY_KEYWORDS)) {
+    for (const kw of keywords) {
+      if (n.includes(kw.toLowerCase())) return cat;
+    }
+  }
+  return 'other';
+}
+
+/* --- Data migration: old format → new per-member format --- */
+function migrateChecklistItems() {
+  if (!Array.isArray(state.checklist)) return;
+  const allMemberIds = state.members.map(m => m.id);
+  state.checklist.forEach(item => {
+    // Already migrated?
+    if (Array.isArray(item.members) && item.checkedBy && typeof item.checkedBy === 'object' && !Array.isArray(item.checkedBy)) {
+      delete item.checked; delete item.assignee;
+      return;
+    }
+    const wasChecked = !!item.checked;
+    // Determine members
+    if (item.assignee) {
+      const aid = Number(item.assignee) || item.assignee;
+      item.members = allMemberIds.includes(aid) ? [aid] : [...allMemberIds];
+    } else {
+      item.members = [...allMemberIds];
+    }
+    // Build checkedBy
+    item.checkedBy = {};
+    item.members.forEach(mid => { item.checkedBy[String(mid)] = wasChecked; });
+    // Validate category
+    if (!item.category || !Object.keys(CL_CAT_LABELS).includes(item.category)) {
+      item.category = 'other';
+    }
+    delete item.checked; delete item.assignee;
+  });
+}
+
+/* --- Render helpers --- */
+function renderChecklistMemberFilter() {
+  const c = document.getElementById('cl-member-filter');
+  if (!c) return;
+  if (state.members.length === 0) { c.innerHTML = ''; return; }
+  const allCls = clFilterMember === 'all' ? 'active' : '';
+  let h = `<span class="cl-member-filter-btn ${allCls}" data-cl-member="all" style="background:var(--c-text)">全員</span>`;
+  state.members.forEach(m => {
+    const active = clFilterMember === m.id ? 'active' : '';
+    h += `<span class="cl-member-filter-btn ${active}" data-cl-member="${m.id}" style="background:${m.color||'#888'}">${escapeHtml(m.name)}</span>`;
+  });
+  c.innerHTML = h;
+}
+
+function renderChecklistAddMembers() {
+  const c = document.getElementById('cl-add-member-checks');
+  if (!c) return;
+  c.innerHTML = state.members.map(m =>
+    `<label style="border-left:3px solid ${m.color||'#888'}"><input type="checkbox" name="cl-member" value="${m.id}" checked> ${escapeHtml(m.name)}</label>`
+  ).join('');
+}
+
 function renderChecklist() {
   const list = document.getElementById('checklist-list');
-  const progressEl = document.getElementById('checklist-progress');
   const fillEl = document.getElementById('checklist-progress-fill');
+  const summaryEl = document.getElementById('cl-progress-summary');
   const items = state.checklist || [];
-  const filtered = clFilterCat === 'all' ? items : items.filter(i => i.category === clFilterCat);
-  const total = items.length;
-  const checked = items.filter(i => i.checked).length;
-  progressEl.textContent = `${checked}/${total}`;
-  fillEl.style.width = total > 0 ? `${Math.round(checked / total * 100)}%` : '0%';
 
-  // Update active tab
+  // Filter by category
+  let filtered = clFilterCat === 'all' ? [...items] : items.filter(i => i.category === clFilterCat);
+  // Filter by member
+  if (clFilterMember !== 'all') {
+    filtered = filtered.filter(i => (i.members || []).includes(clFilterMember));
+  }
+
+  // Calculate overall progress (total member-checks across all items)
+  let totalChecks = 0, doneChecks = 0;
+  items.forEach(item => {
+    (item.members || []).forEach(mid => {
+      totalChecks++;
+      if (item.checkedBy && item.checkedBy[String(mid)]) doneChecks++;
+    });
+  });
+
+  // Per-member progress
+  const memberProgress = {};
+  state.members.forEach(m => { memberProgress[m.id] = { total: 0, done: 0 }; });
+  items.forEach(item => {
+    (item.members || []).forEach(mid => {
+      if (memberProgress[mid]) {
+        memberProgress[mid].total++;
+        if (item.checkedBy && item.checkedBy[String(mid)]) memberProgress[mid].done++;
+      }
+    });
+  });
+
+  // Render progress
+  const pct = totalChecks > 0 ? Math.round(doneChecks / totalChecks * 100) : 0;
+  fillEl.style.width = pct + '%';
+  let sumH = `<span class="cl-progress-overall">${doneChecks}/${totalChecks}</span>`;
+  state.members.forEach(m => {
+    const mp = memberProgress[m.id];
+    if (mp && mp.total > 0) {
+      const done = mp.done === mp.total;
+      sumH += `<span class="cl-progress-member${done ? ' done' : ''}" style="background:${m.color||'#888'}">${escapeHtml(m.name)} <span class="cl-pm-count">${mp.done}/${mp.total}</span></span>`;
+    }
+  });
+  if (summaryEl) summaryEl.innerHTML = sumH;
+
+  // Render member filter & add-form members
+  renderChecklistMemberFilter();
+
+  // Update active category tab
   document.querySelectorAll('.cl-cat-tab').forEach(t => {
     t.classList.toggle('active', t.dataset.clCat === clFilterCat);
   });
 
+  // Render items
   if (filtered.length === 0) {
-    list.innerHTML = `<p style="text-align:center;color:var(--c-text2);font-size:var(--fs-sm);padding:var(--sp-md) 0;">${total === 0 ? 'アイテムを追加してください' : 'このカテゴリにアイテムはありません'}</p>`;
+    const msg = items.length === 0 ? 'アイテムを追加してください' : 'このフィルタに該当するアイテムはありません';
+    list.innerHTML = `<p style="text-align:center;color:var(--c-text2);font-size:var(--fs-sm);padding:var(--sp-md) 0;">${msg}</p>`;
     return;
   }
 
   list.innerHTML = filtered.map(item => {
-    const assigneeName = item.assignee ? getMemberName(item.assignee) : '';
-    return `<div class="cl-item ${item.checked ? 'checked' : ''}">
-      <input type="checkbox" ${item.checked ? 'checked' : ''} data-cl-toggle="${item.id}">
-      <span class="cl-text">${escapeHtml(item.text)}</span>
-      ${assigneeName ? `<span class="cl-assignee">${escapeHtml(assigneeName)}</span>` : ''}
-      <button class="cl-del" data-cl-delete="${item.id}" title="削除">&times;</button>
+    const memberIds = item.members || [];
+    const allChecked = memberIds.length > 0 && memberIds.every(mid => item.checkedBy && item.checkedBy[String(mid)]);
+    const catLabel = CL_CAT_LABELS[item.category] || 'その他';
+
+    const dotsHtml = memberIds.map(mid => {
+      const member = state.members.find(m => m.id === mid);
+      if (!member) return '';
+      const isChecked = item.checkedBy && item.checkedBy[String(mid)];
+      const initial = member.name.charAt(0);
+      return `<button class="cl-member-dot${isChecked ? ' checked' : ''}" data-cl-toggle="${item.id}" data-cl-member-id="${mid}" style="background:${member.color||'#888'}" title="${escapeHtml(member.name)}${isChecked ? ' ✓' : ''}"><span class="cl-dot-check">✓</span><span class="cl-dot-initial">${escapeHtml(initial)}</span></button>`;
+    }).join('');
+
+    return `<div class="cl-item${allChecked ? ' cl-complete' : ''}" data-cl-id="${item.id}">
+      <div class="cl-item-main">
+        <span class="cl-text">${escapeHtml(item.text)}</span>
+        <span class="cl-cat-badge">${catLabel}</span>
+        <button class="cl-del" data-cl-delete="${item.id}" title="削除">&times;</button>
+      </div>
+      <div class="cl-member-checks">${dotsHtml}</div>
     </div>`;
   }).join('');
 }
@@ -2180,20 +2417,34 @@ function renderChecklist() {
 function addChecklistItem(text, category) {
   const trimmed = (text || '').trim();
   if (!trimmed) return false;
+  // Auto-detect category
+  const detectedCat = detectChecklistCategory(trimmed);
+  const finalCat = (category && category !== 'all' && category !== 'other') ? category : detectedCat;
+  // Gather selected members from form
+  const cbs = document.querySelectorAll('#cl-add-member-checks input[type=checkbox]');
+  let selectedMembers = [];
+  cbs.forEach(cb => { if (cb.checked) selectedMembers.push(Number(cb.value)); });
+  if (selectedMembers.length === 0) selectedMembers = state.members.map(m => m.id);
+  // Init checkedBy
+  const checkedBy = {};
+  selectedMembers.forEach(mid => { checkedBy[String(mid)] = false; });
   state.checklist.push({
     id: generateChecklistId(),
     text: trimmed,
-    checked: false,
-    assignee: '',
-    category: category && category !== 'all' ? category : 'other'
+    members: selectedMembers,
+    checkedBy: checkedBy,
+    category: finalCat
   });
   saveState();
   return true;
 }
 
-function toggleChecklistItem(id) {
-  const item = state.checklist.find(i => i.id === id);
-  if (item) { item.checked = !item.checked; saveState(); }
+function toggleChecklistItem(itemId, memberId) {
+  const item = state.checklist.find(i => i.id === itemId);
+  if (!item || !item.checkedBy) return;
+  const key = String(memberId);
+  item.checkedBy[key] = !item.checkedBy[key];
+  saveState();
 }
 
 function deleteChecklistItem(id) {
@@ -2885,11 +3136,23 @@ function initEventListeners() {
     renderChecklist();
   });
 
+  // Member filter
+  document.getElementById('cl-member-filter').addEventListener('click', function(e) {
+    const btn = e.target.closest('.cl-member-filter-btn');
+    if (!btn) return;
+    const val = btn.dataset.clMember;
+    clFilterMember = val === 'all' ? 'all' : Number(val);
+    renderChecklist();
+  });
+
   // Checklist add item
   document.getElementById('cl-add-btn').addEventListener('click', function() {
     const input = document.getElementById('cl-new-item');
-    if (addChecklistItem(input.value, clFilterCat)) {
+    const catSelect = document.getElementById('cl-cat-select');
+    if (addChecklistItem(input.value, catSelect.value)) {
       input.value = '';
+      catSelect.value = 'other';
+      document.getElementById('cl-add-meta').hidden = true;
       renderChecklist();
     } else {
       showToast('アイテム名を入力してください');
@@ -2901,15 +3164,26 @@ function initEventListeners() {
       document.getElementById('cl-add-btn').click();
     }
   });
-
-  // Checklist toggle (via checkbox change) & delete (via click)
-  document.getElementById('checklist-list').addEventListener('change', function(e) {
-    if (e.target.matches('[data-cl-toggle]')) {
-      toggleChecklistItem(Number(e.target.dataset.clToggle));
-      renderChecklist();
+  // Show meta panel on focus, auto-detect category on input
+  document.getElementById('cl-new-item').addEventListener('focus', function() {
+    document.getElementById('cl-add-meta').hidden = false;
+    renderChecklistAddMembers();
+  });
+  document.getElementById('cl-new-item').addEventListener('input', function() {
+    const text = this.value.trim();
+    if (text.length > 0) {
+      document.getElementById('cl-cat-select').value = detectChecklistCategory(text);
     }
   });
+
+  // Checklist toggle (member dot click) & delete
   document.getElementById('checklist-list').addEventListener('click', function(e) {
+    const dot = e.target.closest('.cl-member-dot');
+    if (dot) {
+      toggleChecklistItem(Number(dot.dataset.clToggle), Number(dot.dataset.clMemberId));
+      renderChecklist();
+      return;
+    }
     const del = e.target.closest('[data-cl-delete]');
     if (del) {
       deleteChecklistItem(Number(del.dataset.clDelete));
