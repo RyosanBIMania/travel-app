@@ -4,47 +4,61 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>旅費割り勘</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta name="version" content="2.0.0-5features">
+<title>旅のしおり</title>
 <style>
-/* ===== CSS Custom Properties ===== */
+/* ===== CSS Custom Properties — 2026 UX Refresh ===== */
+/* Inspired by Apple Liquid Glass, Material You, modern soft-UI trends */
 :root {
-  --c-primary: #2563eb;
-  --c-primary-dark: #1d4ed8;
-  --c-danger: #dc2626;
-  --c-danger-dark: #b91c1c;
-  --c-success: #16a34a;
-  --c-bg: #f1f5f9;
-  --c-surface: #ffffff;
-  --c-text: #1e293b;
-  --c-text2: #64748b;
-  --c-border: #e2e8f0;
-  --c-jpy: #dc2626;
-  --c-aud: #2563eb;
+  --c-primary: #4466ce;
+  --c-primary-light: #6b8df0;
+  --c-primary-dark: #2c3a6e;
+  --c-danger: #e5443a;
+  --c-danger-dark: #c0362e;
+  --c-success: #22c55e;
+  --c-bg: #f0f2f5;
+  --c-surface: rgba(255,255,255,0.78);
+  --c-surface-solid: #ffffff;
+  --c-text: #1a2233;
+  --c-text2: #6d7a8a;
+  --c-border: rgba(0,0,0,0.06);
+  --c-jpy: #e5443a;
+  --c-aud: #4466ce;
+  --c-accent: #008db7;
   --sp-xs: 4px;
   --sp-sm: 8px;
   --sp-md: 16px;
   --sp-lg: 24px;
   --sp-xl: 32px;
-  --font: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  --font: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  --fs-xs: 0.6875rem;
   --fs-sm: 0.8125rem;
   --fs-base: 0.9375rem;
   --fs-lg: 1.0625rem;
   --fs-xl: 1.25rem;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
   --radius-full: 9999px;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-  --header-h: 52px;
-  --tab-h: 60px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 6px 18px -4px rgba(0,0,0,0.07), 0 2px 5px rgba(0,0,0,0.03);
+  --shadow-lg: 0 12px 28px -6px rgba(0,0,0,0.10), 0 4px 10px rgba(0,0,0,0.03);
+  --header-h: 56px;
+  --tab-h: 64px;
   --max-w: 560px;
   --tap: 44px;
+  --glass-blur: 18px;
+  --t-fast: 0.18s cubic-bezier(0.4,0,0.2,1);
+  --t-spring: 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  --t-smooth: 0.3s cubic-bezier(0.4,0,0.2,1);
 }
 
 /* ===== Reset & Base ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
   font-family: var(--font);
   font-size: var(--fs-base);
@@ -54,62 +68,90 @@ body {
   padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px));
   min-height: 100dvh;
   -webkit-tap-highlight-color: transparent;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 input, select, button, textarea { font-family: inherit; font-size: inherit; }
 a { color: var(--c-primary); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* ===== Header ===== */
+/* ===== Header — frosted glass ===== */
 .app-header {
   position: fixed; top: 0; left: 0; right: 0;
   height: var(--header-h);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 var(--sp-md);
-  background: var(--c-primary);
+  padding: 0 var(--sp-lg);
+  background: linear-gradient(135deg, rgba(44,58,110,0.92) 0%, rgba(68,90,160,0.88) 100%);
+  backdrop-filter: saturate(180%) blur(var(--glass-blur));
+  -webkit-backdrop-filter: saturate(180%) blur(var(--glass-blur));
   color: #fff;
-  z-index: 100;
-  box-shadow: var(--shadow-md);
+  z-index: 150;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 2px 16px -2px rgba(44,58,110,0.25);
 }
-.app-title { font-size: var(--fs-xl); font-weight: 700; letter-spacing: 0.02em; }
-.header-actions { display: flex; gap: var(--sp-xs); }
+.app-title {
+  font-size: var(--fs-xl); font-weight: 800; letter-spacing: -0.01em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.8) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header-actions { display: flex; align-items: center; gap: 8px; }
 .icon-btn {
-  width: 40px; height: 40px;
+  width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,0.15); border: none; border-radius: var(--radius-sm);
-  color: #fff; font-size: 1.2rem; cursor: pointer; transition: background 0.15s;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  color: #fff; font-size: 1.1rem; cursor: pointer;
+  transition: background var(--t-fast), transform var(--t-fast);
 }
-.icon-btn:hover { background: rgba(255,255,255,0.25); }
+.icon-btn:hover { background: rgba(255,255,255,0.22); }
+.icon-btn:active { transform: scale(0.92); }
 
-/* ===== Tab Navigation ===== */
+/* ===== Tab Navigation — frosted glass ===== */
 .tab-nav {
   position: fixed; bottom: 0; left: 0; right: 0;
   height: var(--tab-h);
   display: flex;
-  background: var(--c-surface);
-  border-top: 1px solid var(--c-border);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: saturate(180%) blur(var(--glass-blur));
+  -webkit-backdrop-filter: saturate(180%) blur(var(--glass-blur));
+  border-top: 1px solid rgba(0,0,0,0.05);
   padding-bottom: env(safe-area-inset-bottom, 0px);
   z-index: 100;
 }
 .tab-btn {
   flex: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 2px;
+  gap: 3px;
   background: none; border: none;
   color: var(--c-text2);
-  font-size: 0.65rem;
+  font-size: var(--fs-xs);
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color var(--t-fast), transform var(--t-fast);
   position: relative;
   -webkit-tap-highlight-color: transparent;
   padding: 0 2px;
+  font-weight: 500;
 }
-.tab-btn.active { color: var(--c-primary); font-weight: 600; }
-.tab-btn.active::after {
+.tab-btn:active { transform: scale(0.93); }
+.tab-btn.active { color: var(--c-primary); font-weight: 700; }
+.tab-btn.active .tab-icon {
+  background: rgba(68,102,206,0.12);
+  border-radius: var(--radius-full);
+  padding: 2px 12px;
+}
+.tab-btn::before {
   content: '';
-  position: absolute; top: 0; left: 20%; right: 20%;
-  height: 3px; background: var(--c-primary); border-radius: 0 0 3px 3px;
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%) scaleX(0);
+  width: 24px; height: 3px;
+  background: var(--c-primary);
+  border-radius: 0 0 3px 3px;
+  transition: transform var(--t-spring);
 }
-.tab-icon { font-size: 1.25rem; line-height: 1; }
+.tab-btn.active::before { transform: translateX(-50%) scaleX(1); }
+.tab-icon { font-size: 1.2rem; line-height: 1; transition: background var(--t-fast), padding var(--t-fast), transform var(--t-spring); padding: 2px 0; }
+.tab-btn.active .tab-icon { transform: translateY(-1px); }
 
 /* ===== Tab Content ===== */
 .tab-content {
@@ -117,102 +159,136 @@ a:hover { text-decoration: underline; }
   max-width: var(--max-w);
   margin: 0 auto;
   padding: var(--sp-md);
+  overflow-x: hidden;
+  animation: fadeIn 0.25s ease;
 }
 .tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ===== Card ===== */
+/* ===== Card — glass surface ===== */
 .card {
   background: var(--c-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.5);
   border-radius: var(--radius-md);
   padding: var(--sp-lg);
   margin-bottom: var(--sp-md);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+  transition: box-shadow var(--t-smooth);
 }
 .card-title {
   font-size: var(--fs-lg);
-  font-weight: 700;
+  font-weight: 800;
   margin-bottom: var(--sp-md);
   display: flex; align-items: center; gap: var(--sp-sm);
+  letter-spacing: -0.01em;
 }
-.card-desc { font-size: var(--fs-sm); color: var(--c-text2); margin-bottom: var(--sp-md); }
+.card-desc { font-size: var(--fs-sm); color: var(--c-text2); margin-bottom: var(--sp-md); line-height: 1.5; }
 
-/* ===== Forms ===== */
+/* ===== Forms — soft rounded ===== */
 .form-input {
-  width: 100%;
+  width: 100%; max-width: 100%;
   min-height: var(--tap);
-  padding: var(--sp-sm) var(--sp-md);
-  border: 1.5px solid var(--c-border);
+  padding: 10px 14px;
+  border: 1.5px solid rgba(0,0,0,0.08);
   border-radius: var(--radius-sm);
-  background: var(--c-surface);
+  background: rgba(255,255,255,0.7);
   color: var(--c-text);
-  transition: border-color 0.15s;
+  transition: border-color var(--t-fast), box-shadow var(--t-fast), background var(--t-fast);
 }
-.form-input:focus { outline: none; border-color: var(--c-primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+.form-input:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 4px rgba(68,102,206,0.10);
+  background: #fff;
+}
+.form-input::placeholder { color: #a0aab4; }
 textarea.form-input { min-height: 60px; resize: vertical; }
 .inline-form { display: flex; gap: var(--sp-sm); }
 .inline-form .form-input { flex: 1; }
 .form-group { margin-bottom: var(--sp-md); }
-.form-group > label { display: block; font-size: var(--fs-sm); font-weight: 600; color: var(--c-text2); margin-bottom: var(--sp-xs); }
+.form-group > label {
+  display: block; font-size: var(--fs-sm); font-weight: 600;
+  color: var(--c-text2); margin-bottom: 6px;
+  letter-spacing: 0.01em;
+}
 .form-row { display: flex; gap: var(--sp-md); align-items: flex-end; }
 .form-row .form-group { margin-bottom: var(--sp-md); }
-.flex-grow { flex: 1; }
+.flex-grow { flex: 1; min-width: 0; }
 .form-actions { margin-top: var(--sp-md); display: flex; flex-direction: column; gap: var(--sp-sm); }
 
-/* ===== Buttons ===== */
+/* ===== Buttons — pill-shaped primary ===== */
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: var(--tap);
-  padding: var(--sp-sm) var(--sp-lg);
+  padding: 10px var(--sp-lg);
   border: none; border-radius: var(--radius-sm);
-  font-weight: 600; cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  font-weight: 700; cursor: pointer;
+  transition: background var(--t-fast), transform 0.12s, box-shadow var(--t-fast);
   white-space: nowrap;
+  letter-spacing: 0.01em;
 }
-.btn:active { transform: scale(0.97); }
-.btn-primary { background: var(--c-primary); color: #fff; }
-.btn-primary:hover { background: var(--c-primary-dark); }
-.btn-secondary { background: var(--c-border); color: var(--c-text); }
-.btn-danger { background: var(--c-danger); color: #fff; }
-.btn-danger:hover { background: var(--c-danger-dark); }
+.btn:active { transform: scale(0.96); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-light) 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px -2px rgba(68,102,206,0.35);
+}
+.btn-primary:hover { box-shadow: 0 6px 16px -2px rgba(68,102,206,0.45); }
+.btn-secondary { background: rgba(0,0,0,0.05); color: var(--c-text); border: 1px solid rgba(0,0,0,0.08); }
+.btn-secondary:hover { background: rgba(0,0,0,0.08); }
+.btn-danger {
+  background: linear-gradient(135deg, var(--c-danger) 0%, #f06050 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px -2px rgba(229,68,58,0.3);
+}
+.btn-danger:hover { box-shadow: 0 6px 16px -2px rgba(229,68,58,0.4); }
 .btn-block { width: 100%; }
 .btn-sm {
-  min-height: 32px; padding: var(--sp-xs) var(--sp-sm);
-  font-size: var(--fs-sm); border-radius: var(--radius-sm);
-  background: var(--c-bg); border: 1px solid var(--c-border);
-  cursor: pointer; font-weight: 500;
+  min-height: 32px; padding: 6px 12px;
+  font-size: var(--fs-sm); border-radius: var(--radius-xs);
+  background: rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer; font-weight: 600;
+  transition: background var(--t-fast), transform 0.1s;
 }
-.btn-sm:hover { background: var(--c-border); }
+.btn-sm:hover { background: rgba(0,0,0,0.07); }
+.btn-sm:active { transform: scale(0.96); }
 .btn-icon-sm {
-  width: 32px; height: 32px;
+  width: 34px; height: 34px;
   display: inline-flex; align-items: center; justify-content: center;
-  background: none; border: 1px solid var(--c-border); border-radius: var(--radius-sm);
+  background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.06);
+  border-radius: var(--radius-xs);
   cursor: pointer; font-size: 0.9rem; color: var(--c-text2);
-  transition: background 0.15s;
+  transition: background var(--t-fast), transform 0.1s, color var(--t-fast), border-color var(--t-fast);
 }
-.btn-icon-sm:hover { background: var(--c-bg); }
+.btn-icon-sm:hover { background: rgba(0,0,0,0.06); }
+.btn-icon-sm:active { transform: scale(0.9); }
 .btn-icon-sm.danger:hover { background: #fef2f2; color: var(--c-danger); border-color: var(--c-danger); }
 
-/* ===== Currency Toggle ===== */
+/* ===== Currency Toggle — pill style ===== */
 .currency-toggle {
   display: inline-flex;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  border: 2px solid var(--c-border);
+  border: 2px solid rgba(0,0,0,0.06);
+  background: rgba(0,0,0,0.03);
 }
 .toggle-btn {
-  padding: var(--sp-sm) var(--sp-md);
+  padding: 10px var(--sp-md);
   min-height: var(--tap);
   border: none;
-  background: var(--c-surface);
-  font-weight: 600;
+  background: transparent;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: background var(--t-fast), color var(--t-fast), transform 0.1s;
   font-size: var(--fs-base);
 }
-.toggle-btn.active-jpy { background: var(--c-jpy); color: #fff; }
-.toggle-btn.active-aud { background: var(--c-aud); color: #fff; }
+.toggle-btn:active { transform: scale(0.95); }
+.toggle-btn.active-jpy { background: var(--c-jpy); color: #fff; border-radius: var(--radius-xs); }
+.toggle-btn.active-aud { background: var(--c-aud); color: #fff; border-radius: var(--radius-xs); }
 
-/* ===== Checkbox Grid ===== */
+/* ===== Checkbox Grid — soft chips ===== */
 .split-controls { display: flex; gap: var(--sp-sm); margin-bottom: var(--sp-sm); }
 .checkbox-grid {
   display: grid;
@@ -221,57 +297,79 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 }
 .checkbox-grid label {
   display: flex; align-items: center; gap: var(--sp-sm);
-  padding: var(--sp-sm) var(--sp-md);
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
-  background: var(--c-bg);
+  background: rgba(0,0,0,0.03);
+  border: 1.5px solid transparent;
   min-height: var(--tap);
   cursor: pointer;
-  font-weight: 500;
-  transition: background 0.15s;
+  font-weight: 600;
+  transition: background var(--t-fast), border-color var(--t-fast), transform 0.1s;
 }
-.checkbox-grid label:has(input:checked) { background: #dbeafe; }
-.checkbox-grid input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--c-primary); cursor: pointer; }
+.checkbox-grid label:active { transform: scale(0.97); }
+.checkbox-grid label:has(input:checked) {
+  background: rgba(68,102,206,0.08);
+  border-color: rgba(68,102,206,0.3);
+}
+.checkbox-grid input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--c-primary); cursor: pointer; border-radius: 4px; }
 
 /* ===== Item Lists ===== */
 .item-list { list-style: none; }
 .list-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: var(--sp-md) 0;
-  border-bottom: 1px solid var(--c-border);
+  display: flex; align-items: center; gap: var(--sp-sm);
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  transition: background var(--t-fast);
 }
 .list-item:last-child { border-bottom: none; }
-.member-name { font-weight: 600; }
+.member-name { font-weight: 700; flex: 1; }
+.member-color-dot {
+  width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+}
+.list-item:hover .member-color-dot { transform: scale(1.2); }
+.member-color-picker {
+  width: 30px; height: 30px; border: none; padding: 0;
+  border-radius: var(--radius-xs); cursor: pointer; background: none;
+}
+.member-badge {
+  display: inline-block; padding: 3px 10px; border-radius: var(--radius-full);
+  font-size: 0.7rem; font-weight: 700; color: #fff; margin-right: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
 .empty-msg { text-align: center; color: var(--c-text2); padding: var(--sp-xl) 0; font-size: var(--fs-sm); }
 
 /* ===== Expense Items ===== */
 .expense-item {
-  padding: var(--sp-md) 0;
-  border-bottom: 1px solid var(--c-border);
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  transition: background var(--t-fast);
 }
 .expense-item:last-child { border-bottom: none; }
 .expense-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-sm); }
 .expense-info { flex: 1; min-width: 0; }
-.expense-memo { font-weight: 600; word-break: break-word; }
-.expense-detail { font-size: var(--fs-sm); color: var(--c-text2); margin-top: 2px; }
+.expense-memo { font-weight: 700; word-break: break-word; }
+.expense-detail { font-size: var(--fs-sm); color: var(--c-text2); margin-top: 3px; }
 .expense-right { text-align: right; flex-shrink: 0; }
-.expense-amount { font-size: var(--fs-lg); font-weight: 700; }
+.expense-amount { font-size: var(--fs-lg); font-weight: 800; letter-spacing: -0.02em; }
 .expense-amount.jpy { color: var(--c-jpy); }
 .expense-amount.aud { color: var(--c-aud); }
 .expense-date { font-size: var(--fs-sm); color: var(--c-text2); }
-.expense-actions { display: flex; gap: var(--sp-xs); margin-top: var(--sp-sm); justify-content: flex-end; }
+.expense-actions { display: flex; gap: 6px; margin-top: var(--sp-sm); justify-content: flex-end; }
 .summary-bar {
-  background: var(--c-bg); border-radius: var(--radius-sm);
-  padding: var(--sp-sm) var(--sp-md);
+  background: rgba(68,102,206,0.06); border-radius: var(--radius-sm);
+  padding: 10px var(--sp-md);
   margin-bottom: var(--sp-md);
-  font-size: var(--fs-sm); font-weight: 600;
+  font-size: var(--fs-sm); font-weight: 700;
   text-align: center;
 }
 .summary-bar:empty { display: none; }
 
-/* ===== Settlement ===== */
+/* ===== Settlement — soft cards ===== */
 .exchange-rate-form {
   display: flex; align-items: center; gap: var(--sp-sm);
-  font-weight: 600;
+  font-weight: 700;
 }
 .exchange-rate-form .form-input { width: 100px; text-align: center; }
 .rate-status { font-size: var(--fs-sm); color: var(--c-text2); margin-top: var(--sp-sm); }
@@ -280,74 +378,88 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .settlement-currency { margin-top: var(--sp-sm); }
 .balance-item {
   display: flex; align-items: center; justify-content: space-between;
-  padding: var(--sp-sm) 0;
-  border-bottom: 1px solid var(--c-border);
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
 }
 .balance-item:last-child { border-bottom: none; }
-.balance-name { font-weight: 600; }
-.balance-amount { font-weight: 700; font-size: var(--fs-lg); }
+.balance-name { font-weight: 700; }
+.balance-amount { font-weight: 800; font-size: var(--fs-lg); letter-spacing: -0.02em; }
 .balance-amount.positive { color: var(--c-success); }
 .balance-amount.negative { color: var(--c-danger); }
 .settlement-item {
   display: flex; align-items: center;
-  padding: var(--sp-md);
+  padding: 14px var(--sp-md);
   margin-bottom: var(--sp-sm);
-  background: var(--c-bg);
+  background: rgba(68,102,206,0.05);
   border-radius: var(--radius-sm);
   border-left: 4px solid var(--c-primary);
   gap: var(--sp-sm);
   flex-wrap: wrap;
+  transition: background var(--t-fast);
 }
 .settlement-from, .settlement-to { font-weight: 700; }
 .settlement-arrow { color: var(--c-text2); font-size: 1.2rem; }
-.settlement-amount { margin-left: auto; font-weight: 700; color: var(--c-primary); font-size: var(--fs-lg); }
+.settlement-amount { margin-left: auto; font-weight: 800; color: var(--c-primary); font-size: var(--fs-lg); }
 
-/* ===== Itinerary (しおり) ===== */
+/* ===== Itinerary (スケジュール) — refined timeline ===== */
 .itin-day-group { margin-bottom: var(--sp-lg); }
 .itin-day-header {
   display: flex; align-items: center; gap: var(--sp-sm);
-  padding: var(--sp-sm) var(--sp-md);
-  background: var(--c-primary);
+  padding: 10px var(--sp-md);
+  background: linear-gradient(135deg, var(--c-primary) 0%, var(--c-primary-light) 100%);
   color: #fff;
   border-radius: var(--radius-sm);
-  font-weight: 700;
+  font-weight: 800;
   font-size: var(--fs-base);
   margin-bottom: var(--sp-sm);
   position: sticky; top: var(--header-h); z-index: 10;
+  box-shadow: 0 4px 12px -3px rgba(68,102,206,0.3);
+  letter-spacing: -0.01em;
 }
-.itin-day-header.today { background: var(--c-success); }
-.itin-day-label { font-size: var(--fs-sm); font-weight: 400; opacity: 0.85; margin-left: auto; }
-.itin-timeline { position: relative; padding-left: 36px; }
+.itin-day-header.today {
+  background: linear-gradient(135deg, var(--c-success) 0%, #34d399 100%);
+  box-shadow: 0 4px 12px -3px rgba(34,197,94,0.3);
+}
+.itin-day-label { font-size: var(--fs-sm); font-weight: 500; opacity: 0.9; margin-left: auto; }
+.itin-timeline { position: relative; padding-left: 38px; }
 .itin-timeline::before {
   content: '';
-  position: absolute; left: 14px; top: 0; bottom: 0;
-  width: 2px; background: var(--c-border);
+  position: absolute; left: 15px; top: 0; bottom: 0;
+  width: 2px; background: rgba(0,0,0,0.06);
+  border-radius: 1px;
 }
 .itin-event {
   position: relative;
   background: var(--c-surface);
-  border-radius: var(--radius-sm);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: var(--radius-md);
   padding: var(--sp-md);
-  margin-bottom: var(--sp-sm);
+  margin-bottom: 10px;
   box-shadow: var(--shadow-sm);
-  border-left: 3px solid var(--c-border);
+  border-left: 4px solid rgba(0,0,0,0.06);
+  transition: box-shadow var(--t-smooth), transform var(--t-smooth);
 }
+.itin-event:active { transform: scale(0.99); }
 .itin-event.next-up {
   border-left-color: var(--c-success);
-  box-shadow: 0 0 0 2px rgba(22,163,74,0.2), var(--shadow-sm);
+  box-shadow: 0 0 0 2px rgba(34,197,94,0.15), var(--shadow-md);
 }
 .itin-event-dot {
   position: absolute;
-  left: -29px; top: 16px;
-  width: 24px; height: 24px;
+  left: -30px; top: 16px;
+  width: 26px; height: 26px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 0.85rem;
-  background: var(--c-surface);
-  border: 2px solid var(--c-border);
+  font-size: 0.8rem;
+  background: var(--c-surface-solid);
+  border: 2.5px solid rgba(0,0,0,0.08);
   border-radius: 50%;
   z-index: 1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
-.itin-event.next-up .itin-event-dot { border-color: var(--c-success); }
+.itin-event.next-up .itin-event-dot { border-color: var(--c-success); box-shadow: 0 0 0 3px rgba(34,197,94,0.15); }
 .itin-event-cat-flight { border-left-color: #3b82f6; }
 .itin-event-cat-flight .itin-event-dot { border-color: #3b82f6; }
 .itin-event-cat-hotel { border-left-color: #a855f7; }
@@ -362,83 +474,319 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .itin-event-cat-other .itin-event-dot { border-color: var(--c-text2); }
 .itin-event-top { display: flex; align-items: flex-start; gap: var(--sp-sm); }
 .itin-event-body { flex: 1; min-width: 0; }
-.itin-event-time { font-size: var(--fs-sm); color: var(--c-text2); font-weight: 600; }
-.itin-event-title { font-weight: 700; margin-top: 2px; word-break: break-word; }
-.itin-event-location { font-size: var(--fs-sm); color: var(--c-text2); margin-top: 2px; }
-.itin-event-memo { font-size: var(--fs-sm); color: var(--c-text2); margin-top: var(--sp-xs); white-space: pre-wrap; word-break: break-word; }
+.itin-event-time { font-size: var(--fs-sm); color: var(--c-text2); font-weight: 700; }
+.itin-event-title { font-weight: 800; margin-top: 3px; word-break: break-word; letter-spacing: -0.01em; }
+.itin-event-location { font-size: var(--fs-sm); color: var(--c-text2); margin-top: 3px; }
+.itin-event-participants { font-size: 0.75rem; color: var(--c-primary); margin-top: 6px; display: flex; align-items: center; flex-wrap: wrap; gap: 3px; }
+.itin-event-memo {
+  font-size: var(--fs-sm); color: var(--c-text2); margin-top: var(--sp-sm);
+  white-space: pre-wrap; word-break: break-word;
+  background: rgba(68,102,206,0.04); border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: none; border-left: 3px solid var(--c-primary);
+  animation: fadeIn 0.2s ease;
+}
+.itin-event-memo.open { display: block; }
+.itin-memo-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 10px;
+  background: rgba(68,102,206,0.06); border-radius: var(--radius-xs);
+  font-size: var(--fs-sm); font-weight: 600;
+  color: var(--c-primary); cursor: pointer; min-height: 32px;
+  user-select: none; transition: background var(--t-fast), transform 0.1s;
+}
+.itin-memo-badge:hover { background: rgba(68,102,206,0.1); }
+.itin-memo-badge:active { transform: scale(0.96); }
+.itin-memo-badge.open { background: rgba(68,102,206,0.12); }
 .itin-event-links { display: flex; gap: var(--sp-sm); margin-top: var(--sp-sm); flex-wrap: wrap; }
 .itin-link {
   display: inline-flex; align-items: center; gap: 4px;
-  padding: var(--sp-xs) var(--sp-sm);
-  background: var(--c-bg);
-  border-radius: var(--radius-sm);
-  font-size: var(--fs-sm); font-weight: 500;
+  padding: 6px 10px;
+  background: rgba(68,102,206,0.06);
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-sm); font-weight: 600;
   color: var(--c-primary);
   text-decoration: none;
   min-height: 32px;
+  transition: background var(--t-fast), transform 0.1s;
 }
-.itin-link:hover { background: #dbeafe; text-decoration: none; }
-.itin-event-actions { display: flex; gap: var(--sp-xs); margin-top: var(--sp-sm); justify-content: flex-end; }
+.itin-link:hover { background: rgba(68,102,206,0.1); text-decoration: none; }
+.itin-link:active { transform: scale(0.96); }
+.itin-event-actions { display: flex; gap: 6px; margin-top: var(--sp-sm); justify-content: flex-end; }
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 2px 6px rgba(34,197,94,0.25); }
+  50% { box-shadow: 0 2px 12px rgba(34,197,94,0.45); }
+}
 .next-badge {
   display: inline-block;
-  background: var(--c-success); color: #fff;
-  font-size: 0.7rem; font-weight: 700;
-  padding: 2px 8px; border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--c-success) 0%, #34d399 100%);
+  color: #fff;
+  font-size: 0.65rem; font-weight: 800;
+  padding: 3px 10px; border-radius: var(--radius-full);
+  animation: badgePulse 2s ease-in-out infinite;
   margin-left: var(--sp-sm);
+  box-shadow: 0 2px 6px rgba(34,197,94,0.25);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-/* ===== Sync Indicator ===== */
-.sync-indicator {
-  width: 10px; height: 10px;
+/* ===== Itinerary Filter — pill chips ===== */
+.itin-filter {
+  display: flex; gap: 8px; margin-bottom: var(--sp-md);
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 6px 14px; border-radius: var(--radius-full);
+  border: 1.5px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.6);
+  font-size: var(--fs-sm); font-weight: 600; cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), transform 0.1s, box-shadow var(--t-fast);
+}
+.filter-btn:hover { background: rgba(255,255,255,0.9); }
+.filter-btn:active { transform: scale(0.95); }
+.filter-btn.active {
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* ===== Sync Dot (inside button) ===== */
+.sync-dot {
+  position: absolute; top: 3px; right: 3px;
+  width: 9px; height: 9px;
   border-radius: 50%;
   background: #64748b;
-  display: inline-block;
-  margin-right: 2px;
+  border: 2px solid rgba(255,255,255,0.9);
   transition: background 0.3s;
+  pointer-events: none;
 }
-.sync-indicator.synced { background: #22c55e; }
-.sync-indicator.syncing { background: #f59e0b; animation: pulse 1s infinite; }
-.sync-indicator.error { background: #ef4444; }
-.sync-indicator.off { background: #64748b; }
+.sync-dot.synced { background: #22c55e; }
+.sync-dot.syncing { background: #f59e0b; animation: pulse 1s infinite; }
+.sync-dot.error { background: #ef4444; }
+.sync-dot.off { background: #94a3b8; }
 @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.icon-btn.syncing { animation: spin 1s linear infinite; }
 
-/* ===== Modal ===== */
+/* ===== Modal — glass card ===== */
 .modal-overlay {
   position: fixed; inset: 0;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: flex; align-items: center; justify-content: center;
   z-index: 200;
   padding: var(--sp-md);
+  animation: fadeIn 0.2s ease;
 }
 .modal-overlay[hidden] { display: none !important; }
 .modal {
-  background: var(--c-surface);
+  background: var(--c-surface-solid);
   border-radius: var(--radius-lg);
   padding: var(--sp-xl);
   max-width: 360px; width: 100%;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-lg);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  animation: modalPop 0.3s cubic-bezier(0.34,1.56,0.64,1);
 }
-.modal-message { font-size: var(--fs-base); font-weight: 500; margin-bottom: var(--sp-lg); line-height: 1.5; }
+@keyframes modalPop { from { opacity: 0; transform: scale(0.9) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.modal-message { font-size: var(--fs-base); font-weight: 600; margin-bottom: var(--sp-lg); line-height: 1.5; }
 .modal-actions { display: flex; gap: var(--sp-sm); justify-content: flex-end; }
 
-/* ===== Toast ===== */
+/* ===== Toast — pill with shadow ===== */
 .toast {
   position: fixed;
   bottom: calc(var(--tab-h) + var(--sp-lg) + env(safe-area-inset-bottom, 0px));
   left: 50%; transform: translateX(-50%) translateY(20px);
   opacity: 0;
-  background: var(--c-text);
+  background: rgba(26,34,51,0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: #fff;
-  padding: var(--sp-sm) var(--sp-lg);
+  padding: 10px var(--sp-lg);
   border-radius: var(--radius-full);
-  font-size: var(--fs-sm); font-weight: 500;
-  transition: opacity 0.3s, transform 0.3s;
+  font-size: var(--fs-sm); font-weight: 600;
+  transition: opacity 0.3s, transform var(--t-spring);
   z-index: 300;
   pointer-events: none;
   white-space: nowrap;
+  box-shadow: var(--shadow-lg);
 }
 .toast[hidden] { display: none; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ===== Mobile compact ===== */
+@media (max-width: 480px) {
+  :root {
+    --sp-sm: 6px;
+    --sp-md: 10px;
+    --sp-lg: 14px;
+    --sp-xl: 20px;
+    --tap: 38px;
+    --header-h: 48px;
+    --tab-h: 52px;
+    --fs-sm: 0.75rem;
+    --fs-base: 0.8125rem;
+    --fs-lg: 0.9375rem;
+    --fs-xl: 1.0625rem;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+  }
+  body { font-size: 0.8125rem; }
+  .tab-content { padding: 8px; }
+  .card { padding: 14px; margin-bottom: 10px; overflow: hidden; }
+  .card-title { font-size: 0.9rem; margin-bottom: 10px; }
+  .card-desc { font-size: 0.7rem; margin-bottom: 8px; }
+  .form-group { margin-bottom: 10px; }
+  .form-group > label { font-size: 0.7rem; margin-bottom: 3px; }
+  .form-input { min-height: 36px; padding: 7px 10px; font-size: 0.8rem; }
+  input[type="date"].form-input,
+  input[type="time"].form-input {
+    padding: 7px 6px; font-size: 0.75rem;
+    -webkit-appearance: none; appearance: none;
+    min-width: 0 !important; max-width: 100% !important;
+  }
+  textarea.form-input { min-height: 48px; }
+  .form-row { gap: 6px; }
+  .form-row .form-group { margin-bottom: 10px; overflow: hidden; }
+  .card > form, .card form { width: 100%; overflow: hidden; }
+  .form-actions { margin-top: 10px; gap: 6px; }
+  .btn { min-height: 36px; padding: 7px 14px; font-size: 0.8rem; }
+  .btn-sm { min-height: 30px; padding: 4px 10px; font-size: 0.7rem; }
+  .btn-icon-sm { width: 30px; height: 30px; font-size: 0.8rem; }
+  .inline-form { gap: 6px; }
+  .inline-form .btn { padding: 7px 14px; }
+  .app-title { font-size: 1rem; }
+  .icon-btn { width: 34px; height: 34px; font-size: 1rem; }
+  .tab-btn { font-size: 0.6rem; }
+  .tab-icon { font-size: 1.1rem; }
+  .expense-item { padding: 10px 0; }
+  .expense-memo { font-size: 0.8rem; }
+  .expense-detail { font-size: 0.7rem; }
+  .empty-msg { font-size: 0.8rem; padding: 20px 8px; }
+  .item-list li { padding: 10px 0; }
+  .modal { padding: 20px; border-radius: var(--radius-lg); }
+  .modal-message { font-size: 0.85rem; }
+  .itin-event { border-radius: var(--radius-sm); padding: 12px; }
+  .itin-day-header { border-radius: var(--radius-xs); }
+}
+
+/* ===== Focus accessibility — soft glow ===== */
+:focus-visible {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+.btn:focus-visible, .btn-sm:focus-visible, .btn-icon-sm:focus-visible, .icon-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(68,102,206,0.25);
+}
+
+/* ===== Smooth entry for list items ===== */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.expense-item, .list-item, .balance-item, .settlement-item {
+  animation: slideUp 0.3s ease both;
+}
+.itin-event {
+  animation: slideUp 0.35s ease both;
+}
+.itin-day-group:nth-child(1) .itin-event:nth-child(1) { animation-delay: 0s; }
+.itin-day-group:nth-child(1) .itin-event:nth-child(2) { animation-delay: 0.04s; }
+.itin-day-group:nth-child(1) .itin-event:nth-child(3) { animation-delay: 0.08s; }
+.itin-day-group:nth-child(1) .itin-event:nth-child(4) { animation-delay: 0.12s; }
+.itin-day-group:nth-child(1) .itin-event:nth-child(5) { animation-delay: 0.16s; }
+
+/* ===== Hover lift for cards (touch devices no-op) ===== */
+@media (hover: hover) {
+  .itin-event:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .expense-item:hover {
+    background: rgba(68,102,206,0.02);
+    border-radius: var(--radius-sm);
+  }
+  .list-item:hover { background: rgba(0,0,0,0.015); }
+  .settlement-item:hover { background: rgba(68,102,206,0.08); }
+  .balance-item:hover { background: rgba(0,0,0,0.015); }
+}
+
+/* ===== Selection colors ===== */
+::selection { background: rgba(68,102,206,0.18); color: inherit; }
+
+/* ===== Scrollbar — thin & subtle ===== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.2); }
+
+/* ===== Empty state illustration ===== */
+.empty-msg {
+  position: relative;
+  padding: var(--sp-xl) var(--sp-md);
+}
+.empty-msg::before {
+  content: '';
+  display: block;
+  width: 48px; height: 48px;
+  margin: 0 auto 12px;
+  background: rgba(68,102,206,0.06);
+  border-radius: 50%;
+}
+
+/* ===== Card title emoji spacing ===== */
+.card-title > :first-child { margin-right: 2px; }
+
+/* ===== Day header shimmer for today ===== */
+@keyframes todayShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.itin-day-header.today {
+  background-size: 200% 100%;
+  background-image: linear-gradient(
+    90deg,
+    #22c55e 0%, #34d399 25%, #6ee7b7 50%, #34d399 75%, #22c55e 100%
+  );
+  animation: todayShimmer 6s linear infinite;
+}
+
+/* ===== Settlement arrow animation ===== */
+.settlement-arrow {
+  transition: transform var(--t-fast);
+}
+@media (hover: hover) {
+  .settlement-item:hover .settlement-arrow {
+    transform: translateX(3px);
+  }
+}
+
+/* ===== Improved toggle button transitions ===== */
+.toggle-btn {
+  position: relative;
+  overflow: hidden;
+}
+.toggle-btn::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.15);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+.toggle-btn:hover::after {
+  transform: translateX(0);
+}
+
+/* ===== Checkbox smooth check ===== */
+.checkbox-grid input[type="checkbox"] {
+  transition: transform 0.15s ease;
+}
+.checkbox-grid input[type="checkbox"]:checked {
+  transform: scale(1.1);
+}
 
 /* ===== Desktop ===== */
 @media (min-width: 768px) {
@@ -448,12 +796,80 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     border-bottom: 1px solid var(--c-border);
     max-width: var(--max-w);
     margin: 0 auto;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--c-surface-solid);
   }
   body { padding-bottom: var(--sp-xl); }
   .toast { bottom: var(--sp-xl); }
   .tab-btn.active::after { top: auto; bottom: 0; border-radius: 3px 3px 0 0; }
   .tab-btn { font-size: var(--fs-sm); }
   .tab-icon { font-size: 1.1rem; }
+  .card:hover { box-shadow: var(--shadow-lg); }
+}
+
+/* ===== Reduced motion ===== */
+/* ===== Checklist ===== */
+.checklist-section { margin-top: var(--sp-md); }
+.checklist-toggle { display:flex; align-items:center; gap:var(--sp-sm); cursor:pointer; padding:var(--sp-sm) 0; font-weight:600; color:var(--c-text); user-select:none; }
+.checklist-toggle .arrow { transition:transform var(--t-fast); font-size:0.7em; }
+.checklist-toggle.open .arrow { transform:rotate(90deg); }
+.checklist-progress { font-weight:400; font-size:var(--fs-sm); color:var(--c-text2); margin-left:auto; }
+.checklist-progress-bar { height:4px; background:rgba(0,0,0,0.06); border-radius:2px; margin-bottom:var(--sp-sm); overflow:hidden; }
+.checklist-progress-fill { height:100%; background:linear-gradient(90deg, var(--c-success) 0%, #34d399 100%); border-radius:2px; transition:width var(--t-smooth); }
+.checklist-body { display:none; }
+.checklist-body.open { display:block; }
+.checklist-add { display:flex; gap:var(--sp-sm); margin-bottom:var(--sp-sm); }
+.checklist-add input { flex:1; min-height:36px; padding:6px 12px; border:1.5px solid rgba(0,0,0,0.08); border-radius:var(--radius-sm); background:rgba(255,255,255,0.7); font-size:var(--fs-sm); }
+.checklist-add button { min-height:36px; padding:6px 14px; }
+.cl-cat-tabs { display:flex; gap:4px; margin-bottom:var(--sp-sm); flex-wrap:wrap; }
+.cl-cat-tab { padding:4px 10px; border-radius:var(--radius-full); border:1px solid rgba(0,0,0,0.08); background:rgba(0,0,0,0.03); font-size:var(--fs-xs); cursor:pointer; transition:background var(--t-fast); }
+.cl-cat-tab.active { background:var(--c-primary); color:#fff; border-color:var(--c-primary); }
+.cl-item { display:flex; align-items:center; gap:var(--sp-sm); padding:8px 4px; border-bottom:1px solid rgba(0,0,0,0.04); }
+.cl-item:last-child { border-bottom:none; }
+.cl-item input[type=checkbox] { width:20px; height:20px; accent-color:var(--c-success); flex-shrink:0; }
+.cl-item .cl-text { flex:1; font-size:var(--fs-sm); transition:opacity var(--t-fast); }
+.cl-item.checked .cl-text { text-decoration:line-through; opacity:0.45; }
+.cl-item .cl-assignee { font-size:var(--fs-xs); padding:2px 6px; border-radius:var(--radius-full); background:rgba(0,0,0,0.05); color:var(--c-text2); }
+.cl-item .cl-del { width:24px; height:24px; border:none; background:none; color:var(--c-text2); cursor:pointer; font-size:0.8rem; opacity:0.5; }
+.cl-item .cl-del:hover { opacity:1; color:var(--c-danger); }
+
+/* ===== Share / Copy Button ===== */
+.btn-share { display:inline-flex; align-items:center; gap:4px; padding:6px 14px; border-radius:var(--radius-full); background:rgba(0,0,0,0.05); border:1px solid rgba(0,0,0,0.08); font-size:var(--fs-sm); cursor:pointer; color:var(--c-text); transition:background var(--t-fast); }
+.btn-share:active { background:rgba(0,0,0,0.12); }
+
+/* ===== Dashboard (spending chart) ===== */
+.dashboard-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); margin-bottom:var(--sp-md); }
+.dash-stat { text-align:center; padding:var(--sp-md); background:rgba(0,0,0,0.02); border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,0.04); }
+.dash-stat .dash-val { font-size:var(--fs-xl); font-weight:800; color:var(--c-primary); }
+.dash-stat .dash-label { font-size:var(--fs-xs); color:var(--c-text2); margin-top:2px; }
+.cat-bar-list { display:flex; flex-direction:column; gap:6px; }
+.cat-bar-row { display:flex; align-items:center; gap:var(--sp-sm); font-size:var(--fs-sm); }
+.cat-bar-label { width:80px; text-align:right; flex-shrink:0; }
+.cat-bar-track { flex:1; height:16px; background:rgba(0,0,0,0.04); border-radius:8px; overflow:hidden; }
+.cat-bar-fill { height:100%; border-radius:8px; transition:width var(--t-smooth); }
+.cat-bar-val { width:70px; font-size:var(--fs-xs); color:var(--c-text2); }
+.daily-chart { display:flex; align-items:flex-end; gap:2px; height:80px; margin-top:var(--sp-sm); }
+.daily-bar { flex:1; min-width:0; background:linear-gradient(180deg, var(--c-primary) 0%, var(--c-primary-light) 100%); border-radius:3px 3px 0 0; transition:height var(--t-smooth); position:relative; }
+.daily-bar .daily-label { position:absolute; bottom:-18px; left:50%; transform:translateX(-50%); font-size:0.55rem; color:var(--c-text2); white-space:nowrap; }
+
+/* ===== Weather ===== */
+.weather-badge { display:inline-flex; align-items:center; gap:3px; font-size:var(--fs-xs); padding:2px 8px; border-radius:var(--radius-full); background:rgba(255,255,255,0.6); margin-left:var(--sp-sm); vertical-align:middle; }
+.weather-badge .w-temp { font-weight:600; }
+
+/* ===== Templates ===== */
+.tpl-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:var(--sp-sm); margin-bottom:var(--sp-md); }
+.tpl-card { padding:var(--sp-sm) var(--sp-md); background:rgba(0,0,0,0.02); border:1.5px solid rgba(0,0,0,0.06); border-radius:var(--radius-sm); cursor:pointer; transition:border-color var(--t-fast), background var(--t-fast); text-align:center; }
+.tpl-card:active, .tpl-card:hover { border-color:var(--c-primary); background:rgba(68,102,206,0.06); }
+.tpl-card .tpl-icon { font-size:1.4rem; }
+.tpl-card .tpl-name { font-size:var(--fs-xs); margin-top:2px; color:var(--c-text); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 </style>
 </head>
@@ -461,30 +877,26 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 <!-- ===== Header ===== -->
 <header class="app-header">
-  <h1 class="app-title">旅費割り勘</h1>
+  <h1 class="app-title">旅のしおり</h1>
   <div class="header-actions">
-    <span id="sync-status" class="sync-indicator" title="同期状態"></span>
-    <button id="btn-sync" class="icon-btn" title="クラウド同期">&#x1F504;</button>
-    <button id="btn-cloud-settings" class="icon-btn" title="クラウド設定">&#x2601;</button>
-    <button id="btn-export" class="icon-btn" title="データ書き出し">&#x1F4E4;</button>
-    <button id="btn-import" class="icon-btn" title="データ読み込み">&#x1F4E5;</button>
+    <button id="btn-sync" class="icon-btn" title="クラウド同期" style="position:relative;">
+      &#x1F504;
+      <span id="sync-status" class="sync-dot" title="同期状態"></span>
+    </button>
+    <button id="btn-cloud-settings" class="icon-btn" title="設定">&#x2699;</button>
     <input type="file" id="import-file" accept=".json" hidden>
   </div>
 </header>
 
 <!-- ===== Tab Navigation ===== -->
 <nav class="tab-nav" role="tablist">
-  <button class="tab-btn" data-tab="itinerary" role="tab">
+  <button class="tab-btn active" data-tab="itinerary" role="tab">
     <span class="tab-icon">&#x1F4CB;</span>
-    <span class="tab-label">しおり</span>
+    <span class="tab-label">スケジュール</span>
   </button>
   <button class="tab-btn" data-tab="itin-edit" role="tab">
     <span class="tab-icon">&#x270F;&#xFE0F;</span>
     <span class="tab-label">編集</span>
-  </button>
-  <button class="tab-btn active" data-tab="members" role="tab">
-    <span class="tab-icon">&#x1F465;</span>
-    <span class="tab-label">メンバー</span>
   </button>
   <button class="tab-btn" data-tab="expenses" role="tab">
     <span class="tab-icon">&#x1F4B0;</span>
@@ -494,19 +906,58 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     <span class="tab-icon">&#x1F4CA;</span>
     <span class="tab-label">精算</span>
   </button>
+  <button class="tab-btn" data-tab="members" role="tab">
+    <span class="tab-icon">&#x1F465;</span>
+    <span class="tab-label">メンバー</span>
+  </button>
 </nav>
 
-<!-- ===== Tab: しおり（表示専用） ===== -->
-<section id="tab-itinerary" class="tab-content">
+<!-- ===== Tab: スケジュール（表示専用） ===== -->
+<section id="tab-itinerary" class="tab-content active">
   <div class="card">
-    <h2 class="card-title">📋 スケジュール</h2>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-sm);">
+      <h2 class="card-title" style="margin-bottom:0;">📋 スケジュール</h2>
+      <button id="btn-share-schedule" class="btn-share" title="今日の予定をコピー">📤 共有</button>
+    </div>
+    <div id="itin-filter" class="itin-filter"></div>
     <div id="itinerary-list"></div>
     <p id="itinerary-empty" class="empty-msg">予定がありません<br><small style="color:var(--c-text2)">「✏️ 編集」タブから予定を追加してください</small></p>
+  </div>
+
+  <!-- 持ち物チェックリスト -->
+  <div class="card checklist-section">
+    <div id="checklist-header" class="checklist-toggle">
+      <span class="arrow">▶</span>
+      🧳 持ち物チェックリスト
+      <span id="checklist-progress" class="checklist-progress">0/0</span>
+    </div>
+    <div class="checklist-progress-bar"><div id="checklist-progress-fill" class="checklist-progress-fill" style="width:0%"></div></div>
+    <div id="checklist-body" class="checklist-body">
+      <div class="cl-cat-tabs" id="cl-cat-tabs">
+        <span class="cl-cat-tab active" data-cl-cat="all">すべて</span>
+        <span class="cl-cat-tab" data-cl-cat="essential">必需品</span>
+        <span class="cl-cat-tab" data-cl-cat="clothes">衣類</span>
+        <span class="cl-cat-tab" data-cl-cat="electronics">電子機器</span>
+        <span class="cl-cat-tab" data-cl-cat="toiletry">日用品</span>
+        <span class="cl-cat-tab" data-cl-cat="other">その他</span>
+      </div>
+      <div class="checklist-add">
+        <input type="text" id="cl-new-item" placeholder="アイテムを追加..." maxlength="50">
+        <button class="btn btn-primary btn-sm" id="cl-add-btn">追加</button>
+      </div>
+      <div id="checklist-list"></div>
+    </div>
   </div>
 </section>
 
 <!-- ===== Tab: 編集（スケジュール入力・管理） ===== -->
 <section id="tab-itin-edit" class="tab-content">
+  <!-- Templates -->
+  <div class="card">
+    <h2 class="card-title">📝 テンプレートから追加</h2>
+    <div class="tpl-grid" id="template-grid"></div>
+  </div>
+
   <!-- Add/Edit Form -->
   <div class="card">
     <h2 class="card-title" id="itin-form-title">予定を追加</h2>
@@ -549,6 +1000,15 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       </div>
 
       <div class="form-group">
+        <label>参加メンバー</label>
+        <div class="split-controls">
+          <button type="button" id="btn-itin-select-all" class="btn-sm">全選択</button>
+          <button type="button" id="btn-itin-deselect-all" class="btn-sm">全解除</button>
+        </div>
+        <div id="itin-participants" class="checkbox-grid"></div>
+      </div>
+
+      <div class="form-group">
         <label for="itin-memo">メモ</label>
         <textarea id="itin-memo" class="form-input" placeholder="詳細メモ（任意）" maxlength="500" rows="2"></textarea>
       </div>
@@ -584,7 +1044,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 </section>
 
 <!-- ===== Tab: メンバー管理 ===== -->
-<section id="tab-members" class="tab-content active">
+<section id="tab-members" class="tab-content">
   <div class="card">
     <h2 class="card-title">メンバー追加</h2>
     <form id="form-add-member" class="inline-form">
@@ -656,6 +1116,18 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 <!-- ===== Tab: 精算 ===== -->
 <section id="tab-settlement" class="tab-content">
+  <!-- 支出ダッシュボード -->
+  <div class="card">
+    <h2 class="card-title">📊 支出サマリー</h2>
+    <div id="dashboard-stats" class="dashboard-grid"></div>
+    <div id="dashboard-category" class="cat-bar-list"></div>
+    <div style="margin-top:var(--sp-md);">
+      <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:4px;">日別支出</p>
+      <div id="dashboard-daily" class="daily-chart"></div>
+    </div>
+    <p id="dashboard-empty" class="empty-msg" hidden>支払いデータがありません</p>
+  </div>
+
   <div class="card">
     <h2 class="card-title">為替レート</h2>
     <div class="exchange-rate-form">
@@ -696,19 +1168,42 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   </div>
 </div>
 
-<!-- ===== Cloud Settings Modal ===== -->
+<!-- ===== Settings Modal ===== -->
 <div id="cloud-modal-overlay" class="modal-overlay" hidden>
-  <div class="modal" role="dialog" aria-modal="true">
-    <p class="modal-message" style="font-weight:700;margin-bottom:8px;">クラウド同期設定</p>
-    <p style="font-size:var(--fs-sm);color:var(--c-text2);margin-bottom:var(--sp-md);line-height:1.5;">Google Apps Script のデプロイURLを貼り付けてください。設定するとスプレッドシートとデータが自動同期されます。</p>
-    <div class="form-group">
-      <label for="gas-url-input">GAS デプロイURL</label>
-      <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off">
+  <div class="modal" role="dialog" aria-modal="true" style="max-width:400px;">
+    <p class="modal-message" style="font-weight:700;margin-bottom:12px;">設定</p>
+
+    <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:4px;">クラウド同期</p>
+    <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:12px;line-height:1.4;">✅ スプレッドシートと自動同期中です。すべての端末でURLを開くだけでデータが共有されます。</p>
+    <!-- GAS URL設定（通常は非表示・開発者向け） -->
+    <div id="gas-url-section" hidden>
+      <div class="form-group" style="margin-bottom:8px;">
+        <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off" style="font-size:0.75rem;">
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:16px;">
+        <button id="cloud-modal-save" class="btn btn-primary" style="flex:1;font-size:var(--fs-sm);">URL保存</button>
+        <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:0.75rem;padding:6px 10px;">削除</button>
+      </div>
     </div>
+
+    <div style="border-top:1px solid var(--c-border);padding-top:12px;margin-bottom:12px;">
+      <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:8px;">データの表示</p>
+      <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:8px;line-height:1.4;">データの確認・一括投入はスプレッドシートから行えます。</p>
+      <div id="spreadsheet-link-area" style="margin-bottom:8px;">
+        <a id="spreadsheet-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%;font-size:var(--fs-sm);text-decoration:none;text-align:center;display:none;">📊 スプレッドシートを開く</a>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid var(--c-border);padding-top:12px;margin-bottom:12px;">
+      <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:8px;">データ管理</p>
+      <div style="display:flex;gap:8px;">
+        <button id="btn-export" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);">📤 書き出し</button>
+        <button id="btn-import" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);">📥 読み込み</button>
+      </div>
+    </div>
+
     <div class="modal-actions">
-      <button id="cloud-modal-cancel" class="btn btn-secondary">キャンセル</button>
-      <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:var(--fs-sm)">URL削除</button>
-      <button id="cloud-modal-save" class="btn btn-primary">保存</button>
+      <button id="cloud-modal-cancel" class="btn btn-secondary" style="width:100%;">閉じる</button>
     </div>
   </div>
 </div>
@@ -729,6 +1224,7 @@ const CATEGORY_LABELS = {
   food: '食事', transport: '交通', other: 'その他'
 };
 const DAY_NAMES = ['日','月','火','水','木','金','土'];
+const MEMBER_COLORS = ['#4466ce','#e05688','#16a34a','#e97c1f','#8b5cf6','#0891b2','#dc2626','#6d28d9'];
 
 /* ===== State ===== */
 let state = createDefaultState();
@@ -740,11 +1236,13 @@ function createDefaultState() {
     members: [],
     expenses: [],
     itinerary: [],
+    checklist: [],
     exchangeRate: 95,
     settleCurrency: 'JPY',
     nextMemberId: 1,
     nextExpenseId: 1,
-    nextItineraryId: 1
+    nextItineraryId: 1,
+    nextChecklistId: 1
   };
 }
 
@@ -757,23 +1255,33 @@ function loadState() {
       if (parsed && Array.isArray(parsed.members) && Array.isArray(parsed.expenses)) {
         state = parsed;
         if (!Array.isArray(state.itinerary)) state.itinerary = [];
+        if (!Array.isArray(state.checklist)) state.checklist = [];
         if (!state.nextItineraryId) state.nextItineraryId = 1;
+        const maxClIdLocal = state.checklist.length > 0 ? Math.max(...state.checklist.map(i => Number(i.id) || 0)) : 0;
+        if (!state.nextChecklistId || state.nextChecklistId <= maxClIdLocal) state.nextChecklistId = maxClIdLocal + 1;
+        // Ensure all members have a color
+        state.members.forEach((m, i) => {
+          if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
+        });
       }
     }
   } catch (e) { /* keep default */ }
 }
 
+let cloudSyncReady = false; // syncFromCloud完了まではsyncToCloudを抑制
 function saveState() {
   localStorage.setItem(APP_KEY, JSON.stringify(state));
-  debouncedSyncToCloud();
+  if (cloudSyncReady) debouncedSyncToCloud();
 }
 
 /* ===== Cloud Sync (GAS) ===== */
 const GAS_URL_KEY = 'travel-app-gas-url';
+const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbwRfvJ_K6qwcIrZc7KCzrg0RTPhx_I-cTJhj9JmpYUe5FJuPjdYPR0_rNolf3nWzeJx/exec';
+const DEFAULT_SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1p3axqRtW8ePEyhFHh0KSIcCfn9Zil-9krnvXBAZt0do/edit';
 let syncTimer = null;
 
 function getGasUrl() {
-  return localStorage.getItem(GAS_URL_KEY) || '';
+  return localStorage.getItem(GAS_URL_KEY) || DEFAULT_GAS_URL;
 }
 
 function setGasUrl(url) {
@@ -784,9 +1292,15 @@ function setGasUrl(url) {
 function setSyncStatus(status) {
   const el = document.getElementById('sync-status');
   if (!el) return;
-  el.className = 'sync-indicator ' + status;
+  el.className = 'sync-dot ' + status;
   const titles = { off: '未設定', syncing: '同期中...', synced: '同期済', error: '同期エラー' };
   el.title = titles[status] || '';
+  // Sync button spin animation
+  const btn = document.getElementById('btn-sync');
+  if (btn) {
+    if (status === 'syncing') btn.classList.add('syncing');
+    else btn.classList.remove('syncing');
+  }
 }
 
 function debouncedSyncToCloud() {
@@ -828,11 +1342,66 @@ async function syncFromCloud() {
     const result = await res.json();
     if (result.success && result.data) {
       const cloud = result.data;
+      // Save spreadsheet URL if provided
+      if (cloud.spreadsheetUrl) {
+        localStorage.setItem('travel-app-spreadsheet-url', cloud.spreadsheetUrl);
+        updateSpreadsheetLink();
+      }
       if (cloud.members && cloud.members.length > 0 || cloud.expenses && cloud.expenses.length > 0 || cloud.itinerary && cloud.itinerary.length > 0) {
+        // Workaround: GASのヘッダーずれでparticipants列が空文字キー""に
+        // 格納される問題への対策
+        if (Array.isArray(cloud.itinerary)) {
+          cloud.itinerary.forEach(e => {
+            // 空文字キーにJSON文字列がある場合（GASヘッダーずれ）
+            if ((!e.participants || e.participants.length === 0) && e[''] && typeof e[''] === 'string') {
+              try { e.participants = JSON.parse(e['']); } catch(ex) {}
+              delete e[''];
+            }
+            // participantsがまだ文字列の場合はパース
+            if (typeof e.participants === 'string' && e.participants) {
+              try { e.participants = JSON.parse(e.participants); } catch(ex) { e.participants = []; }
+            }
+            if (!Array.isArray(e.participants)) e.participants = [];
+          });
+        }
+        // 同様にexpensesのsplitWithも修復
+        if (Array.isArray(cloud.expenses)) {
+          cloud.expenses.forEach(e => {
+            if ((!e.splitWith || e.splitWith.length === 0) && e[''] && typeof e[''] === 'string') {
+              try { e.splitWith = JSON.parse(e['']); } catch(ex) {}
+              delete e[''];
+            }
+            if (typeof e.splitWith === 'string' && e.splitWith) {
+              try { e.splitWith = JSON.parse(e.splitWith); } catch(ex) { e.splitWith = []; }
+            }
+            if (!Array.isArray(e.splitWith)) e.splitWith = [];
+          });
+        }
+        // フォールバック: 上記で修復できなかった場合、ローカルデータからマージ
+        if (Array.isArray(cloud.itinerary) && cloud.itinerary.length > 0) {
+          const allEmpty = cloud.itinerary.every(e => !e.participants || e.participants.length === 0);
+          if (allEmpty && Array.isArray(state.itinerary) && state.itinerary.length > 0) {
+            const localMap = {};
+            state.itinerary.forEach(e => { localMap[e.id] = e.participants; });
+            cloud.itinerary.forEach(e => {
+              if (localMap[e.id] && localMap[e.id].length > 0) {
+                e.participants = localMap[e.id];
+              }
+            });
+          }
+        }
         state = cloud;
         if (!Array.isArray(state.members)) state.members = [];
         if (!Array.isArray(state.expenses)) state.expenses = [];
         if (!Array.isArray(state.itinerary)) state.itinerary = [];
+        if (!Array.isArray(state.checklist)) state.checklist = [];
+        // nextChecklistId: GASから正しく返らない場合、既存データから算出
+        const maxClId = state.checklist.length > 0 ? Math.max(...state.checklist.map(i => Number(i.id) || 0)) : 0;
+        if (!state.nextChecklistId || state.nextChecklistId <= maxClId) state.nextChecklistId = maxClId + 1;
+        // Ensure all members have a color
+        state.members.forEach((m, i) => {
+          if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
+        });
         localStorage.setItem(APP_KEY, JSON.stringify(state));
         renderAll();
       }
@@ -844,6 +1413,7 @@ async function syncFromCloud() {
     setSyncStatus('error');
     console.error('Sync load failed:', e);
   }
+  cloudSyncReady = true;
 }
 
 /* ===== Utilities ===== */
@@ -921,9 +1491,17 @@ function addMember(name) {
   const trimmed = name.trim();
   if (!trimmed) { showToast('名前を入力してください'); return false; }
   if (state.members.some(m => m.name === trimmed)) { showToast('同じ名前のメンバーがいます'); return false; }
-  state.members.push({ id: generateMemberId(), name: trimmed });
+  const colorIdx = state.members.length % MEMBER_COLORS.length;
+  state.members.push({ id: generateMemberId(), name: trimmed, color: MEMBER_COLORS[colorIdx] });
   saveState();
   return true;
+}
+
+function getMemberColor(memberId) {
+  const m = state.members.find(m => m.id === memberId);
+  if (m && m.color) return m.color;
+  const idx = state.members.findIndex(m => m.id === memberId);
+  return MEMBER_COLORS[idx >= 0 ? idx % MEMBER_COLORS.length : 0];
 }
 
 function removeMember(memberId) {
@@ -985,7 +1563,8 @@ function addItineraryEvent(data) {
     memo: data.memo || '',
     url: data.url || '',
     location: data.location || '',
-    mapUrl: data.mapUrl || ''
+    mapUrl: data.mapUrl || '',
+    participants: data.participants || []
   });
   saveState();
   return true;
@@ -1055,12 +1634,16 @@ function renderMembers() {
   document.getElementById('member-count').textContent = state.members.length;
   if (state.members.length === 0) { list.innerHTML = ''; empty.hidden = false; return; }
   empty.hidden = true;
-  list.innerHTML = state.members.map(m => `
+  list.innerHTML = state.members.map(m => {
+    const color = m.color || getMemberColor(m.id);
+    return `
     <li class="list-item">
-      <span class="member-name">${escapeHtml(m.name)}</span>
+      <span class="member-color-dot" style="background:${color}"></span>
+      <span class="member-name" style="color:${color};font-weight:700;">${escapeHtml(m.name)}</span>
+      <input type="color" class="member-color-picker" data-color-member="${m.id}" value="${color}" title="テーマカラー変更">
       <button class="btn-icon-sm danger" data-delete-member="${m.id}" title="削除">&#x2716;</button>
-    </li>
-  `).join('');
+    </li>`;
+  }).join('');
 }
 
 /* ===== Rendering: Expenses ===== */
@@ -1078,6 +1661,34 @@ function renderSplitCheckboxes(selected) {
   container.innerHTML = state.members.map(m => `
     <label><input type="checkbox" name="split" value="${m.id}" ${allIds.includes(m.id) ? 'checked' : ''}> ${escapeHtml(m.name)}</label>
   `).join('');
+}
+
+function renderItinParticipants(selected) {
+  const container = document.getElementById('itin-participants');
+  const allIds = selected || state.members.map(m => m.id);
+  container.innerHTML = state.members.map(m => `
+    <label><input type="checkbox" name="itin-participant" value="${m.id}" ${allIds.includes(m.id) ? 'checked' : ''}> ${escapeHtml(m.name)}</label>
+  `).join('');
+}
+
+function getParticipantNames(participantIds) {
+  if (!participantIds || participantIds.length === 0) return '';
+  if (participantIds.length === state.members.length) return '';
+  return participantIds.map(id => {
+    const m = state.members.find(m => m.id === id);
+    return m ? m.name : '';
+  }).filter(Boolean).join(', ');
+}
+
+function getParticipantBadges(participantIds) {
+  if (!participantIds || participantIds.length === 0) return '';
+  if (participantIds.length === state.members.length) return '';
+  return participantIds.map(id => {
+    const m = state.members.find(m => m.id === id);
+    if (!m) return '';
+    const color = getMemberColor(m.id);
+    return `<span class="member-badge" style="background:${color}">${escapeHtml(m.name)}</span>`;
+  }).filter(Boolean).join('');
 }
 
 function renderExpenses() {
@@ -1158,13 +1769,46 @@ function renderSettlement() {
 }
 
 /* ===== Rendering: Itinerary ===== */
+let itinFilterMember = 'all';
+
+function renderItinFilter() {
+  const container = document.getElementById('itin-filter');
+  if (state.members.length === 0) { container.innerHTML = ''; return; }
+  let html = `<button class="filter-btn ${itinFilterMember === 'all' ? 'active' : ''}" data-filter="all">全員</button>`;
+  state.members.forEach(m => {
+    const color = getMemberColor(m.id);
+    const isActive = itinFilterMember === m.id;
+    const style = isActive
+      ? `background:${color};color:#fff;border-color:${color}`
+      : `border-color:${color};color:${color}`;
+    html += `<button class="filter-btn ${isActive ? 'active' : ''}" data-filter="${m.id}" style="${style}">${escapeHtml(m.name)}</button>`;
+  });
+  container.innerHTML = html;
+}
+
+function isEventForMember(ev, memberId) {
+  if (memberId === 'all') return true;
+  if (!ev.participants || ev.participants.length === 0) return true;
+  return ev.participants.includes(memberId);
+}
+
 function renderItinerary() {
   const container = document.getElementById('itinerary-list');
   const empty = document.getElementById('itinerary-empty');
 
-  if (state.itinerary.length === 0) {
+  renderItinFilter();
+
+  // Filter by selected member
+  const filtered = state.itinerary.filter(ev => isEventForMember(ev, itinFilterMember));
+
+  if (filtered.length === 0) {
     container.innerHTML = '';
     empty.hidden = false;
+    if (state.itinerary.length > 0 && itinFilterMember !== 'all') {
+      empty.innerHTML = 'このメンバーの予定はありません';
+    } else {
+      empty.innerHTML = '予定がありません<br><small style="color:var(--c-text2)">「✏️ 編集」タブから予定を追加してください</small>';
+    }
     return;
   }
   empty.hidden = true;
@@ -1174,7 +1818,7 @@ function renderItinerary() {
   const nowTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 
   // Sort by date then time
-  const sorted = [...state.itinerary].sort((a, b) => {
+  const sorted = [...filtered].sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);
     return (a.time || '99:99').localeCompare(b.time || '99:99');
   });
@@ -1235,26 +1879,39 @@ function renderItinerary() {
       // Title
       html += `<div class="itin-event-title">${escapeHtml(ev.title)}</div>`;
 
+      // Participants (show only when not all members)
+      const pBadges = getParticipantBadges(ev.participants);
+      if (pBadges) {
+        html += `<div class="itin-event-participants">👥 ${pBadges}</div>`;
+      }
+
       // Location
       if (ev.location) {
         html += `<div class="itin-event-location">📍 ${escapeHtml(ev.location)}</div>`;
       }
 
-      // Memo
-      if (ev.memo) {
-        html += `<div class="itin-event-memo">${escapeHtml(ev.memo)}</div>`;
-      }
-
-      // Links
+      // Links & Memo badge row
       const hasLinks = ev.url || ev.mapUrl;
-      if (hasLinks) {
+      if (hasLinks || ev.memo) {
         html += `<div class="itin-event-links">`;
         if (ev.url) html += `<a href="${escapeHtml(ev.url)}" target="_blank" rel="noopener" class="itin-link">📎 リンク</a>`;
         if (ev.mapUrl) html += `<a href="${escapeHtml(ev.mapUrl)}" target="_blank" rel="noopener" class="itin-link">📍 地図</a>`;
+        if (ev.memo) html += `<span class="itin-memo-badge" data-memo-toggle="${ev.id}">📝 メモあり</span>`;
         html += `</div>`;
       }
 
+      // Memo (hidden by default, toggled by badge tap)
+      if (ev.memo) {
+        html += `<div class="itin-event-memo" id="itin-memo-${ev.id}">${escapeHtml(ev.memo)}</div>`;
+      }
+
       html += `</div></div>`; // close body, top
+
+      // Edit / Delete actions on schedule view
+      html += `<div class="itin-event-actions">`;
+      html += `<button class="btn-icon-sm" data-view-edit-itin="${ev.id}" title="編集">&#x270E;</button>`;
+      html += `<button class="btn-icon-sm danger" data-view-delete-itin="${ev.id}" title="削除">&#x2716;</button>`;
+      html += `</div>`;
 
       html += `</div>`; // close event
     });
@@ -1271,6 +1928,9 @@ function renderItinerary() {
       setTimeout(() => nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
     }
   }
+
+  // Inject weather badges (async, non-blocking)
+  injectWeatherBadges();
 }
 
 /* ===== Rendering: Itinerary Edit List ===== */
@@ -1300,11 +1960,12 @@ function renderItinEditList() {
       <div class="expense-top">
         <div class="expense-info">
           <div class="expense-memo">${icon} ${escapeHtml(ev.title)}</div>
-          <div class="expense-detail">${formatDate(ev.date)} ${timeStr ? timeStr : ''} ${ev.location ? '📍' + escapeHtml(ev.location) : ''}</div>
+          <div class="expense-detail">${formatDate(ev.date)} ${timeStr ? timeStr : ''} ${ev.location ? '📍' + escapeHtml(ev.location) : ''}${getParticipantBadges(ev.participants) ? '<br>👥 ' + getParticipantBadges(ev.participants) : ''}</div>
         </div>
       </div>
       <div class="expense-actions">
         <button class="btn-icon-sm" data-edit-itin="${ev.id}" title="編集">&#x270E;</button>
+        <button class="btn-icon-sm" data-clone-itin="${ev.id}" title="複製して作成">&#x1F4CB;</button>
         <button class="btn-icon-sm danger" data-delete-itin="${ev.id}" title="削除">&#x2716;</button>
       </div>
     </div>`;
@@ -1368,6 +2029,8 @@ function startEditExpense(expenseId) {
 
 /* ===== Itinerary Form Helpers ===== */
 function getItineraryFormData() {
+  const participantChecks = document.querySelectorAll('#itin-participants input[type="checkbox"]:checked');
+  const participants = Array.from(participantChecks).map(cb => cb.value);
   return {
     date: document.getElementById('itin-date').value,
     time: document.getElementById('itin-time').value,
@@ -1377,7 +2040,8 @@ function getItineraryFormData() {
     memo: document.getElementById('itin-memo').value,
     url: document.getElementById('itin-url').value,
     location: document.getElementById('itin-location').value,
-    mapUrl: document.getElementById('itin-mapurl').value
+    mapUrl: document.getElementById('itin-mapurl').value,
+    participants: participants
   };
 }
 
@@ -1395,6 +2059,7 @@ function resetItineraryForm() {
   document.getElementById('itin-form-title').textContent = '予定を追加';
   document.getElementById('itin-submit-btn').textContent = '追加する';
   document.getElementById('btn-cancel-itin-edit').style.display = 'none';
+  renderItinParticipants(); // 全選択
 }
 
 function startEditItineraryEvent(eventId) {
@@ -1413,6 +2078,7 @@ function startEditItineraryEvent(eventId) {
   document.getElementById('itin-form-title').textContent = '予定を編集';
   document.getElementById('itin-submit-btn').textContent = '更新する';
   document.getElementById('btn-cancel-itin-edit').style.display = '';
+  renderItinParticipants(ev.participants && ev.participants.length > 0 ? ev.participants : null);
   document.getElementById('itin-form-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -1453,17 +2119,400 @@ function handleImport(e) {
   e.target.value = '';
 }
 
+/* ===== Spreadsheet Link ===== */
+function updateSpreadsheetLink() {
+  const url = localStorage.getItem('travel-app-spreadsheet-url') || DEFAULT_SPREADSHEET_URL;
+  const link = document.getElementById('spreadsheet-link');
+  link.href = url;
+  link.style.display = 'block';
+}
+
+/* ===== Feature 1: Checklist (持ち物チェックリスト) ===== */
+let clFilterCat = 'all';
+
+function generateChecklistId() { return state.nextChecklistId++; }
+
+function renderChecklist() {
+  const list = document.getElementById('checklist-list');
+  const progressEl = document.getElementById('checklist-progress');
+  const fillEl = document.getElementById('checklist-progress-fill');
+  const header = document.getElementById('checklist-header');
+  const body = document.getElementById('checklist-body');
+  const items = state.checklist || [];
+  const filtered = clFilterCat === 'all' ? items : items.filter(i => i.category === clFilterCat);
+  const total = items.length;
+  const checked = items.filter(i => i.checked).length;
+  progressEl.textContent = `${checked}/${total}`;
+  fillEl.style.width = total > 0 ? `${Math.round(checked / total * 100)}%` : '0%';
+
+  // Auto-open if checklist has items
+  if (total > 0 && !body.classList.contains('open')) {
+    body.classList.add('open');
+    header.classList.add('open');
+  }
+
+  // Update active tab
+  document.querySelectorAll('.cl-cat-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.clCat === clFilterCat);
+  });
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<p style="text-align:center;color:var(--c-text2);font-size:var(--fs-sm);padding:var(--sp-md) 0;">${total === 0 ? 'アイテムを追加してください' : 'このカテゴリにアイテムはありません'}</p>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(item => {
+    const assigneeName = item.assignee ? getMemberName(item.assignee) : '';
+    return `<div class="cl-item ${item.checked ? 'checked' : ''}">
+      <input type="checkbox" ${item.checked ? 'checked' : ''} data-cl-toggle="${item.id}">
+      <span class="cl-text">${escapeHtml(item.text)}</span>
+      ${assigneeName ? `<span class="cl-assignee">${escapeHtml(assigneeName)}</span>` : ''}
+      <button class="cl-del" data-cl-delete="${item.id}" title="削除">&times;</button>
+    </div>`;
+  }).join('');
+}
+
+function addChecklistItem(text, category) {
+  const trimmed = (text || '').trim();
+  if (!trimmed) return false;
+  state.checklist.push({
+    id: generateChecklistId(),
+    text: trimmed,
+    checked: false,
+    assignee: '',
+    category: category && category !== 'all' ? category : 'other'
+  });
+  saveState();
+  return true;
+}
+
+function toggleChecklistItem(id) {
+  const item = state.checklist.find(i => i.id === id);
+  if (item) { item.checked = !item.checked; saveState(); }
+}
+
+function deleteChecklistItem(id) {
+  state.checklist = state.checklist.filter(i => i.id !== id);
+  saveState();
+}
+
+/* ===== Feature 2: Share Today's Schedule (今日の予定をテキストコピー) ===== */
+function shareSchedule() {
+  const today = getTodayString();
+  const todayEvents = state.itinerary
+    .filter(ev => ev.date === today)
+    .sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
+
+  if (todayEvents.length === 0) {
+    showToast('今日の予定はありません');
+    return;
+  }
+
+  const dates = [...new Set(state.itinerary.map(e => e.date))].sort();
+  const firstDate = dates[0];
+  const dayNum = firstDate ? Math.floor((new Date(today) - new Date(firstDate)) / 86400000) + 1 : 1;
+
+  let text = `📋 Day ${dayNum} - ${formatDateFull(today)} の予定\n`;
+  text += '━'.repeat(24) + '\n\n';
+
+  todayEvents.forEach(ev => {
+    const icon = CATEGORY_ICONS[ev.category] || '📌';
+    let line = icon + ' ';
+    if (ev.time) {
+      line += ev.time;
+      if (ev.endTime) line += '〜' + ev.endTime;
+      line += '  ';
+    }
+    line += ev.title;
+    text += line + '\n';
+    if (ev.location) text += `   📍 ${ev.location}\n`;
+    if (ev.memo) text += `   📝 ${ev.memo}\n`;
+    text += '\n';
+  });
+
+  text += '━'.repeat(24) + '\n';
+  text += `✨ 旅のしおりアプリ より`;
+
+  if (navigator.share) {
+    navigator.share({ title: `Day ${dayNum} の予定`, text: text }).catch(() => {
+      copyToClipboard(text);
+    });
+  } else {
+    copyToClipboard(text);
+  }
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('📋 クリップボードにコピーしました');
+    }).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast('📋 クリップボードにコピーしました'); }
+  catch(e) { showToast('コピーに失敗しました'); }
+  document.body.removeChild(ta);
+}
+
+/* ===== Feature 3: Spending Dashboard (支出サマリーダッシュボード) ===== */
+function renderDashboard() {
+  const statsEl = document.getElementById('dashboard-stats');
+  const catEl = document.getElementById('dashboard-category');
+  const dailyEl = document.getElementById('dashboard-daily');
+  const emptyEl = document.getElementById('dashboard-empty');
+
+  if (!state.expenses || state.expenses.length === 0) {
+    statsEl.innerHTML = '';
+    catEl.innerHTML = '';
+    dailyEl.innerHTML = '';
+    emptyEl.hidden = false;
+    return;
+  }
+  emptyEl.hidden = true;
+
+  const rate = state.exchangeRate || 95;
+
+  // Convert all to JPY for unified stats
+  function toJPY(amount, currency) {
+    return currency === 'AUD' ? amount * rate : amount;
+  }
+
+  const totalJPY = state.expenses.reduce((s, e) => s + toJPY(e.amount, e.currency), 0);
+  const perPerson = state.members.length > 0 ? totalJPY / state.members.length : totalJPY;
+  const totalAUD = state.expenses.filter(e => e.currency === 'AUD').reduce((s, e) => s + e.amount, 0);
+  const totalJPYonly = state.expenses.filter(e => e.currency === 'JPY').reduce((s, e) => s + e.amount, 0);
+
+  // Stats grid
+  statsEl.innerHTML = `
+    <div class="dash-stat"><div class="dash-val">${formatAmount(Math.round(totalJPY), 'JPY')}</div><div class="dash-label">総支出(円換算)</div></div>
+    <div class="dash-stat"><div class="dash-val">${state.expenses.length}件</div><div class="dash-label">支払い回数</div></div>
+    <div class="dash-stat"><div class="dash-val">${formatAmount(Math.round(perPerson), 'JPY')}</div><div class="dash-label">1人あたり</div></div>
+    <div class="dash-stat"><div class="dash-val">${totalAUD > 0 ? formatAmount(totalAUD, 'AUD') : '-'}</div><div class="dash-label">AUD支出合計</div></div>
+  `;
+
+  // Category breakdown - use expense memos to infer categories
+  // Group by payer (or we'll just do total per-person breakdown)
+  // Actually, expenses don't have categories, so let's do per-person spending
+  const perPersonMap = {};
+  state.members.forEach(m => { perPersonMap[m.id] = 0; });
+  state.expenses.forEach(e => {
+    if (perPersonMap[e.payerId] !== undefined) {
+      perPersonMap[e.payerId] += toJPY(e.amount, e.currency);
+    }
+  });
+
+  const maxSpent = Math.max(...Object.values(perPersonMap), 1);
+  const barColors = ['#4466ce', '#e05688', '#16a34a', '#e97c1f', '#8b5cf6', '#0891b2'];
+
+  catEl.innerHTML = `<p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:4px;">支払い者別</p>` +
+    state.members.map((m, i) => {
+      const spent = perPersonMap[m.id] || 0;
+      const pct = maxSpent > 0 ? (spent / maxSpent * 100) : 0;
+      const color = m.color || barColors[i % barColors.length];
+      return `<div class="cat-bar-row">
+        <span class="cat-bar-label">${escapeHtml(m.name)}</span>
+        <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        <span class="cat-bar-val">${formatAmount(Math.round(spent), 'JPY')}</span>
+      </div>`;
+    }).join('');
+
+  // Daily chart
+  const dailyMap = {};
+  state.expenses.forEach(e => {
+    if (!e.date) return;
+    if (!dailyMap[e.date]) dailyMap[e.date] = 0;
+    dailyMap[e.date] += toJPY(e.amount, e.currency);
+  });
+  const dailyDates = Object.keys(dailyMap).sort();
+  if (dailyDates.length === 0) { dailyEl.innerHTML = ''; return; }
+  const maxDaily = Math.max(...Object.values(dailyMap), 1);
+
+  dailyEl.innerHTML = dailyDates.map(d => {
+    const val = dailyMap[d];
+    const h = Math.max(4, val / maxDaily * 100);
+    const [, m, day] = d.split('-');
+    return `<div class="daily-bar" style="height:${h}%" title="${formatDate(d)}: ${formatAmount(Math.round(val), 'JPY')}"><span class="daily-label">${Number(m)}/${Number(day)}</span></div>`;
+  }).join('');
+}
+
+/* ===== Feature 4: Weather (天気予報連携) ===== */
+let weatherCache = {};
+
+async function fetchWeather(date) {
+  // Only fetch for dates within 7 days from now
+  const now = new Date();
+  const target = new Date(date);
+  const diffDays = Math.floor((target - now) / 86400000);
+  if (diffDays < -1 || diffDays > 6) return null;
+
+  if (weatherCache[date]) return weatherCache[date];
+
+  try {
+    // Open-Meteo free API (no key needed)
+    // Default: Sydney coordinates (can be customized)
+    const lat = localStorage.getItem('travel-app-weather-lat') || '-33.87';
+    const lon = localStorage.getItem('travel-app-weather-lon') || '151.21';
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&start_date=${date}&end_date=${date}`,
+      { signal: AbortSignal.timeout(5000) }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.daily && data.daily.time && data.daily.time.includes(date)) {
+      const idx = data.daily.time.indexOf(date);
+      const wcode = data.daily.weathercode[idx];
+      const tmax = Math.round(data.daily.temperature_2m_max[idx]);
+      const tmin = Math.round(data.daily.temperature_2m_min[idx]);
+      const weather = { icon: weatherCodeToEmoji(wcode), tmax, tmin, code: wcode };
+      weatherCache[date] = weather;
+      return weather;
+    }
+  } catch(e) { /* ignore */ }
+  return null;
+}
+
+function weatherCodeToEmoji(code) {
+  if (code === 0) return '☀️';
+  if (code <= 3) return '⛅';
+  if (code <= 48) return '🌫️';
+  if (code <= 57) return '🌦️';
+  if (code <= 67) return '🌧️';
+  if (code <= 77) return '❄️';
+  if (code <= 82) return '🌧️';
+  if (code <= 86) return '❄️';
+  if (code <= 99) return '⛈️';
+  return '🌤️';
+}
+
+async function injectWeatherBadges() {
+  const headers = document.querySelectorAll('.itin-day-header');
+  for (const header of headers) {
+    // Extract date from header text
+    const text = header.textContent;
+    // Find the date by matching against itinerary dates
+    const dates = [...new Set(state.itinerary.map(e => e.date))].sort();
+    const dayMatch = text.match(/Day\s+(\d+)/);
+    if (!dayMatch) continue;
+    const dayNum = parseInt(dayMatch[1]);
+    const firstDate = dates[0];
+    if (!firstDate) continue;
+    const targetDate = new Date(firstDate);
+    targetDate.setDate(targetDate.getDate() + dayNum - 1);
+    const dateStr = targetDate.getFullYear() + '-' + String(targetDate.getMonth() + 1).padStart(2, '0') + '-' + String(targetDate.getDate()).padStart(2, '0');
+
+    // Remove existing weather badge
+    const existing = header.querySelector('.weather-badge');
+    if (existing) existing.remove();
+
+    const weather = await fetchWeather(dateStr);
+    if (weather) {
+      const badge = document.createElement('span');
+      badge.className = 'weather-badge';
+      badge.innerHTML = `${weather.icon} <span class="w-temp">${weather.tmin}°〜${weather.tmax}°</span>`;
+      header.appendChild(badge);
+    }
+  }
+}
+
+/* ===== Feature 5: Templates (テンプレート機能) ===== */
+const TEMPLATES = [
+  { icon: '✈️', name: '空港→ホテル', events: [
+    { time: '08:00', endTime: '12:00', title: '空港出発 → 到着', category: 'flight' },
+    { time: '13:00', endTime: '14:00', title: 'ホテルチェックイン', category: 'hotel' }
+  ]},
+  { icon: '🗺️', name: '観光1日', events: [
+    { time: '09:00', endTime: '12:00', title: '午前の観光スポット', category: 'sightseeing' },
+    { time: '12:00', endTime: '13:00', title: 'ランチ', category: 'food' },
+    { time: '13:30', endTime: '17:00', title: '午後の観光スポット', category: 'sightseeing' },
+    { time: '18:00', endTime: '19:30', title: 'ディナー', category: 'food' }
+  ]},
+  { icon: '🏖️', name: 'ビーチ日', events: [
+    { time: '09:00', endTime: '12:00', title: 'ビーチアクティビティ', category: 'sightseeing' },
+    { time: '12:30', endTime: '13:30', title: 'シーサイドランチ', category: 'food' },
+    { time: '14:00', endTime: '16:00', title: '自由時間', category: 'other' }
+  ]},
+  { icon: '🛍️', name: 'ショッピング', events: [
+    { time: '10:00', endTime: '12:30', title: 'ショッピングモール', category: 'sightseeing' },
+    { time: '12:30', endTime: '13:30', title: 'ランチ', category: 'food' },
+    { time: '14:00', endTime: '17:00', title: 'マーケット巡り', category: 'sightseeing' }
+  ]},
+  { icon: '🏨', name: 'チェックアウト', events: [
+    { time: '08:00', endTime: '09:00', title: '朝食', category: 'food' },
+    { time: '10:00', endTime: '10:30', title: 'チェックアウト', category: 'hotel' },
+    { time: '11:00', endTime: '15:00', title: '空港へ移動 → 出発', category: 'flight' }
+  ]},
+  { icon: '🍽️', name: 'グルメツアー', events: [
+    { time: '09:00', endTime: '10:00', title: 'モーニングカフェ', category: 'food' },
+    { time: '11:30', endTime: '13:00', title: 'ローカルフード巡り', category: 'food' },
+    { time: '15:00', endTime: '16:00', title: 'スイーツ＆カフェ', category: 'food' },
+    { time: '18:30', endTime: '20:00', title: 'ディナーレストラン', category: 'food' }
+  ]}
+];
+
+function renderTemplates() {
+  const grid = document.getElementById('template-grid');
+  grid.innerHTML = TEMPLATES.map((tpl, i) => `
+    <div class="tpl-card" data-tpl-idx="${i}">
+      <div class="tpl-icon">${tpl.icon}</div>
+      <div class="tpl-name">${escapeHtml(tpl.name)}</div>
+    </div>
+  `).join('');
+}
+
+function applyTemplate(idx) {
+  const tpl = TEMPLATES[idx];
+  if (!tpl) return;
+  const dateInput = document.getElementById('itin-date');
+  const date = dateInput.value || getTodayString();
+  const allMembers = state.members.map(m => m.id);
+
+  tpl.events.forEach(ev => {
+    addItineraryEvent({
+      date: date,
+      time: ev.time || '',
+      endTime: ev.endTime || '',
+      title: ev.title,
+      category: ev.category || 'other',
+      memo: '',
+      url: '',
+      location: ev.location || '',
+      mapUrl: '',
+      participants: [...allMembers]
+    });
+  });
+
+  renderItinerary();
+  renderItinEditList();
+  showToast(`「${tpl.name}」テンプレートを追加しました (${tpl.events.length}件)`);
+}
+
 /* ===== Render All ===== */
 function renderAll() {
   renderMembers();
   renderPayerSelect();
   renderSplitCheckboxes();
+  renderItinParticipants();
   renderExpenses();
   renderSettlement();
   renderItinerary();
   renderItinEditList();
+  renderChecklist();
+  renderDashboard();
+  renderTemplates();
   document.getElementById('exchange-rate').value = state.exchangeRate;
   updateCurrencyToggle(document.getElementById('settle-currency-toggle'), state.settleCurrency, 'settle');
+  // Weather injection (async, non-blocking)
+  injectWeatherBadges();
 }
 
 /* ===== Event Listeners ===== */
@@ -1478,10 +2527,10 @@ function initEventListeners() {
     document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
     document.getElementById('tab-' + tabId).classList.add('active');
     if (tabId === 'expenses') { renderPayerSelect(); renderSplitCheckboxes(); renderExpenses(); }
-    if (tabId === 'settlement') renderSettlement();
+    if (tabId === 'settlement') { renderSettlement(); renderDashboard(); }
     if (tabId === 'members') renderMembers();
-    if (tabId === 'itinerary') renderItinerary();
-    if (tabId === 'itin-edit') renderItinEditList();
+    if (tabId === 'itinerary') { renderItinerary(); renderChecklist(); injectWeatherBadges(); }
+    if (tabId === 'itin-edit') { renderItinEditList(); renderItinParticipants(); renderTemplates(); }
   });
 
   // Add member
@@ -1510,6 +2559,22 @@ function initEventListeners() {
       }
       closeModal();
     });
+  });
+
+  // Member color picker change
+  document.getElementById('member-list').addEventListener('input', function(e) {
+    if (!e.target.matches('.member-color-picker')) return;
+    const id = e.target.dataset.colorMember;
+    const color = e.target.value;
+    const m = state.members.find(m => m.id === id);
+    if (m) {
+      m.color = color;
+      saveState();
+      renderMembers();
+      renderItinerary();
+      renderItinFilter();
+      renderItinEditList();
+    }
   });
 
   // Expense form submit
@@ -1582,11 +2647,90 @@ function initEventListeners() {
 
   document.getElementById('btn-cancel-itin-edit').addEventListener('click', resetItineraryForm);
 
+  // Itinerary participant select all / deselect all
+  document.getElementById('btn-itin-select-all').addEventListener('click', function() {
+    document.querySelectorAll('#itin-participants input[type="checkbox"]').forEach(cb => cb.checked = true);
+  });
+  document.getElementById('btn-itin-deselect-all').addEventListener('click', function() {
+    document.querySelectorAll('#itin-participants input[type="checkbox"]').forEach(cb => cb.checked = false);
+  });
+
+  // Itinerary filter (delegated)
+  document.getElementById('itin-filter').addEventListener('click', function(e) {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    itinFilterMember = btn.dataset.filter;
+    renderItinerary();
+  });
+
+  // Itinerary view: memo badge toggle + edit/delete from schedule tab
+  document.getElementById('itinerary-list').addEventListener('click', function(e) {
+    // Memo badge toggle
+    const badge = e.target.closest('.itin-memo-badge');
+    if (badge) {
+      const id = badge.dataset.memoToggle;
+      const memo = document.getElementById('itin-memo-' + id);
+      if (memo) {
+        memo.classList.toggle('open');
+        badge.classList.toggle('open');
+      }
+      return;
+    }
+
+    // Edit from schedule view → switch to edit tab with form populated
+    const editBtn = e.target.closest('[data-view-edit-itin]');
+    if (editBtn) {
+      const id = Number(editBtn.dataset.viewEditItin);
+      // Switch to edit tab
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.tab-btn[data-tab="itin-edit"]').classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+      document.getElementById('tab-itin-edit').classList.add('active');
+      renderItinEditList();
+      renderItinParticipants();
+      // Populate form
+      startEditItineraryEvent(id);
+      return;
+    }
+
+    // Delete from schedule view
+    const deleteBtn = e.target.closest('[data-view-delete-itin]');
+    if (deleteBtn) {
+      const id = Number(deleteBtn.dataset.viewDeleteItin);
+      showModal('この予定を削除しますか？', '削除する', function() {
+        deleteItineraryEvent(id);
+        renderItinerary();
+        renderItinEditList();
+        closeModal();
+        showToast('予定を削除しました');
+      });
+      return;
+    }
+  });
+
   // Itinerary edit list actions
   document.getElementById('itin-edit-list').addEventListener('click', function(e) {
     const editBtn = e.target.closest('[data-edit-itin]');
+    const cloneBtn = e.target.closest('[data-clone-itin]');
     const deleteBtn = e.target.closest('[data-delete-itin]');
     if (editBtn) { startEditItineraryEvent(Number(editBtn.dataset.editItin)); }
+    else if (cloneBtn) {
+      const id = Number(cloneBtn.dataset.cloneItin);
+      const src = state.itinerary.find(ev => ev.id === id);
+      if (src) {
+        const cloned = {
+          date: src.date, time: src.time, endTime: src.endTime,
+          title: src.title + '（コピー）', category: src.category,
+          memo: src.memo, url: src.url, location: src.location,
+          mapUrl: src.mapUrl, participants: [...(src.participants || [])]
+        };
+        if (addItineraryEvent(cloned)) {
+          renderItinerary();
+          renderItinEditList();
+          showToast('予定を複製しました');
+        }
+      }
+    }
     else if (deleteBtn) {
       const id = Number(deleteBtn.dataset.deleteItin);
       showModal('この予定を削除しますか？', '削除する', function() {
@@ -1609,48 +2753,103 @@ function initEventListeners() {
   document.getElementById('btn-import').addEventListener('click', function() { document.getElementById('import-file').click(); });
   document.getElementById('import-file').addEventListener('change', handleImport);
 
-  // Cloud sync button
-  document.getElementById('btn-sync').addEventListener('click', async function() {
-    if (!getGasUrl()) { showToast('クラウド設定でURLを設定してください'); return; }
-    showToast('同期中...');
-    await syncFromCloud();
-    showToast('同期完了');
-  });
+  // Cloud sync button (tap=同期, 長押し=キャッシュクリア＋同期)
+  {
+    const syncBtn = document.getElementById('btn-sync');
+    let pressTimer = null;
+    let longPressed = false;
+    syncBtn.addEventListener('pointerdown', function() {
+      longPressed = false;
+      pressTimer = setTimeout(async () => {
+        longPressed = true;
+        if (confirm('ローカルデータをクリアしてクラウドから再取得しますか？')) {
+          localStorage.removeItem(APP_KEY);
+          state = createDefaultState();
+          showToast('クリア＆同期中...');
+          await syncFromCloud();
+          showToast('再同期完了！');
+        }
+      }, 1500);
+    });
+    syncBtn.addEventListener('pointerup', async function() {
+      clearTimeout(pressTimer);
+      if (!longPressed) {
+        showToast('同期中...');
+        await syncFromCloud();
+        showToast('同期完了');
+      }
+    });
+    syncBtn.addEventListener('pointerleave', function() { clearTimeout(pressTimer); });
+  }
 
   // Cloud settings modal
   document.getElementById('btn-cloud-settings').addEventListener('click', function() {
-    document.getElementById('gas-url-input').value = getGasUrl();
+    updateSpreadsheetLink();
     document.getElementById('cloud-modal-overlay').hidden = false;
   });
   document.getElementById('cloud-modal-cancel').addEventListener('click', function() {
-    document.getElementById('cloud-modal-overlay').hidden = false;
     document.getElementById('cloud-modal-overlay').hidden = true;
-  });
-  document.getElementById('cloud-modal-save').addEventListener('click', function() {
-    const url = document.getElementById('gas-url-input').value.trim();
-    if (url && !url.startsWith('https://script.google.com/')) {
-      showToast('正しいGAS URLを入力してください');
-      return;
-    }
-    setGasUrl(url);
-    document.getElementById('cloud-modal-overlay').hidden = true;
-    if (url) {
-      showToast('URL保存 - 同期を開始します');
-      syncToCloud();
-    } else {
-      setSyncStatus('off');
-      showToast('URL設定をクリアしました');
-    }
-  });
-  document.getElementById('cloud-modal-clear').addEventListener('click', function() {
-    setGasUrl('');
-    document.getElementById('gas-url-input').value = '';
-    document.getElementById('cloud-modal-overlay').hidden = true;
-    setSyncStatus('off');
-    showToast('クラウド設定を削除しました');
   });
   document.getElementById('cloud-modal-overlay').addEventListener('click', function(e) {
     if (e.target === this) this.hidden = true;
+  });
+
+  // ===== Feature 1: Checklist event listeners =====
+  // Checklist accordion toggle
+  document.getElementById('checklist-header').addEventListener('click', function() {
+    this.classList.toggle('open');
+    document.getElementById('checklist-body').classList.toggle('open');
+  });
+
+  // Checklist category tabs
+  document.getElementById('cl-cat-tabs').addEventListener('click', function(e) {
+    const tab = e.target.closest('.cl-cat-tab');
+    if (!tab) return;
+    clFilterCat = tab.dataset.clCat;
+    renderChecklist();
+  });
+
+  // Checklist add item
+  document.getElementById('cl-add-btn').addEventListener('click', function() {
+    const input = document.getElementById('cl-new-item');
+    if (addChecklistItem(input.value, clFilterCat)) {
+      input.value = '';
+      renderChecklist();
+    } else {
+      showToast('アイテム名を入力してください');
+    }
+  });
+  document.getElementById('cl-new-item').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('cl-add-btn').click();
+    }
+  });
+
+  // Checklist toggle (via checkbox change) & delete (via click)
+  document.getElementById('checklist-list').addEventListener('change', function(e) {
+    if (e.target.matches('[data-cl-toggle]')) {
+      toggleChecklistItem(Number(e.target.dataset.clToggle));
+      renderChecklist();
+    }
+  });
+  document.getElementById('checklist-list').addEventListener('click', function(e) {
+    const del = e.target.closest('[data-cl-delete]');
+    if (del) {
+      deleteChecklistItem(Number(del.dataset.clDelete));
+      renderChecklist();
+    }
+  });
+
+  // ===== Feature 2: Share schedule button =====
+  document.getElementById('btn-share-schedule').addEventListener('click', shareSchedule);
+
+  // ===== Feature 5: Template grid click =====
+  document.getElementById('template-grid').addEventListener('click', function(e) {
+    const card = e.target.closest('.tpl-card');
+    if (!card) return;
+    const idx = Number(card.dataset.tplIdx);
+    applyTemplate(idx);
   });
 }
 
@@ -1689,16 +2888,23 @@ async function fetchExchangeRate() {
 /* ===== Init ===== */
 function init() {
   loadState();
+
+  // === サンプルデータはGASスプレッドシートに投入済み ===
+  // クラウド同期時に自動で読み込まれます
+  // 復元する場合: ./restore-data.sh を実行
+
   initEventListeners();
   document.getElementById('expense-date').value = getTodayString();
   document.getElementById('itin-date').value = getTodayString();
   renderAll();
+  updateSpreadsheetLink();
   fetchExchangeRate();
   // クラウド同期（設定済みなら）
   if (getGasUrl()) {
     syncFromCloud();
   } else {
     setSyncStatus('off');
+    cloudSyncReady = true;
   }
 }
 
