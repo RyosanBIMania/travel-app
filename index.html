@@ -70,7 +70,7 @@ body {
   background: var(--c-bg);
   color: var(--c-text);
   padding-top: var(--header-h);
-  padding-bottom: calc(var(--tab-h) + 20px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px));
   min-height: 100dvh;
   -webkit-tap-highlight-color: transparent;
   line-height: 1.55;
@@ -115,7 +115,7 @@ a:hover { text-decoration: underline; }
 .icon-btn:active { transform: scale(0.92); }
 
 /* ===== App Credit Footer ===== */
-.app-credit { position:fixed; bottom:var(--tab-h); left:0; right:0; text-align:center; font-size:0.65rem; color:var(--c-text2); padding:4px 0; background:rgba(255,255,255,0.9); border-top:1px solid rgba(0,0,0,0.04); z-index:99; letter-spacing:0.01em; padding-bottom:env(safe-area-inset-bottom,0); }
+.app-credit { text-align:center; font-size:0.65rem; color:var(--c-text2); padding:12px 0 4px; letter-spacing:0.01em; }
 .app-credit a { color:var(--c-primary); text-decoration:none; font-weight:600; }
 .app-credit a:active { opacity:0.7; }
 
@@ -1053,7 +1053,6 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   </button>
 </nav>
 
-<footer class="app-credit">Powered by <a href="https://data-parade.com/" target="_blank" rel="noopener">Data Parade co.ltd.</a> with Claude</footer>
 
 <!-- ===== Tab: ホーム（ダッシュボード） ===== -->
 <section id="tab-home" class="tab-content active">
@@ -1085,6 +1084,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     </div>
     <div id="home-money-body"></div>
   </div>
+  <footer class="app-credit">Powered by <a href="https://data-parade.com/" target="_blank" rel="noopener">Data Parade co.ltd.</a> with Claude</footer>
 </section>
 
 <!-- ===== Tab: 旅程（スケジュール閲覧＋編集） ===== -->
@@ -1190,6 +1190,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     <div id="itinerary-list"></div>
     <p id="itinerary-empty" class="empty-msg">予定がありません<br><small style="color:var(--c-text2)">上の「✏️ 予定を追加・編集」を開いて追加してください</small></p>
   </div>
+  <footer class="app-credit">Powered by <a href="https://data-parade.com/" target="_blank" rel="noopener">Data Parade co.ltd.</a> with Claude</footer>
 </section>
 
 <!-- ===== Tab: 持ち物（チェックリスト） ===== -->
@@ -1252,6 +1253,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       </div>
     </div>
   </div>
+  <footer class="app-credit">Powered by <a href="https://data-parade.com/" target="_blank" rel="noopener">Data Parade co.ltd.</a> with Claude</footer>
 </section>
 
 <!-- ===== Tab: お金（支払い＋精算） ===== -->
@@ -1335,6 +1337,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       </div>
     </div>
   </div>
+  <footer class="app-credit">Powered by <a href="https://data-parade.com/" target="_blank" rel="noopener">Data Parade co.ltd.</a> with Claude</footer>
 </section>
 
 <!-- ===== Tab: 設定 ===== -->
@@ -1421,6 +1424,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     </div>
     <input type="file" id="import-file" accept=".json" hidden>
   </div>
+  <footer class="app-credit">Powered by <a href="https://data-parade.com/" target="_blank" rel="noopener">Data Parade co.ltd.</a> with Claude</footer>
 </section>
 
 <!-- ===== Modal ===== -->
