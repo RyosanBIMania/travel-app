@@ -1352,8 +1352,8 @@ function loadState() {
 let cloudSyncReady = false; // syncFromCloud完了まではsyncToCloudを抑制
 function saveState() {
   localStorage.setItem(APP_KEY, JSON.stringify(state));
-  // クラウドへの自動アップロードは行わない（クラウドを正とする設計）
-  // 手動で「クラウドに保存」ボタンを押した時のみアップロード
+  // クラウド初回読み込み完了後は自動アップロード（1.5秒デバウンス）
+  if (cloudSyncReady) debouncedSyncToCloud();
 }
 
 /* ===== Cloud Sync (GAS) ===== */
