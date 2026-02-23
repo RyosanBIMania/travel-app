@@ -772,6 +772,33 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   border-left: 3px solid rgba(78,175,120,0.6);
 }
 
+/* ===== Help Modal ===== */
+.help-modal { background:#fff; border-radius:var(--radius-lg); width:100%; max-width:520px; max-height:88vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,20,0.4); }
+.help-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:linear-gradient(135deg,var(--c-primary),var(--c-primary-light)); color:#fff; flex-shrink:0; }
+.help-title { font-size:1.15rem; font-weight:800; margin:0; }
+.help-close-btn { background:none; border:none; color:#fff; font-size:1.6rem; cursor:pointer; width:36px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:background 0.2s; }
+.help-close-btn:active { background:rgba(255,255,255,0.2); }
+.help-body { overflow-y:auto; padding:16px 20px 24px; -webkit-overflow-scrolling:touch; }
+.help-section { margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.06); }
+.help-section:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.help-section-icon { font-size:1.8rem; margin-bottom:4px; }
+.help-section h3 { font-size:1.05rem; font-weight:800; color:var(--c-primary); margin:0 0 8px; }
+.help-section h4 { font-size:0.9rem; font-weight:700; color:var(--c-text); margin:16px 0 8px; padding-left:2px; border-left:3px solid var(--c-gold); padding-left:8px; }
+.help-section p { font-size:var(--fs-sm); color:var(--c-text); line-height:1.7; margin:0 0 10px; }
+.help-tip { background:rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.25); border-radius:var(--radius-sm); padding:10px 12px; font-size:var(--fs-sm); line-height:1.6; color:var(--c-text); }
+.help-item { display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; font-size:var(--fs-sm); line-height:1.6; color:var(--c-text); }
+.help-icon-badge { width:32px; height:32px; min-width:32px; border-radius:50%; background:var(--c-gold); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:700; flex-shrink:0; margin-top:2px; }
+.help-item strong { color:var(--c-primary); }
+.help-item em { font-style:normal; background:rgba(201,168,76,0.15); padding:1px 5px; border-radius:4px; font-size:0.8em; }
+.help-start-guide { background:linear-gradient(135deg,rgba(26,35,126,0.04),rgba(201,168,76,0.06)); border-radius:var(--radius-md); padding:16px; border:1px solid rgba(201,168,76,0.15); }
+.help-step { display:flex; gap:12px; align-items:center; margin-bottom:10px; font-size:var(--fs-sm); line-height:1.5; }
+.help-step:last-child { margin-bottom:0; }
+.help-step-num { width:28px; height:28px; min-width:28px; border-radius:50%; background:var(--c-primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:800; }
+@media (max-width:600px) {
+  .help-modal { max-width:100%; max-height:92vh; border-radius:var(--radius-md) var(--radius-md) 0 0; margin-top:auto; }
+  .help-body { padding:14px 16px 20px; }
+}
+
 /* ===== Settlement arrow animation ===== */
 .settlement-arrow {
   transition: transform var(--t-fast);
@@ -997,6 +1024,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       <span id="sync-status" class="sync-dot" title="同期状態"></span>
     </button>
     <button id="btn-cloud-upload" class="icon-btn" title="クラウドに保存">&#x2601;</button>
+    <button id="btn-help" class="icon-btn" title="使い方ガイド">&#x2753;</button>
     <button id="btn-cloud-settings" class="icon-btn" title="設定">&#x2699;</button>
   </div>
 </header>
@@ -1412,6 +1440,223 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     </div>
     <div class="modal-actions">
       <button id="cloud-modal-cancel" class="btn btn-secondary" style="width:100%;">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Help / Manual Modal ===== -->
+<div id="help-modal-overlay" class="modal-overlay" hidden>
+  <div class="help-modal" role="dialog" aria-modal="true">
+    <div class="help-header">
+      <h2 class="help-title">📖 使い方ガイド</h2>
+      <button id="help-modal-close" class="help-close-btn">&times;</button>
+    </div>
+    <div class="help-body">
+
+      <!-- 全体の説明 -->
+      <div class="help-section">
+        <div class="help-section-icon">✈️</div>
+        <h3>旅のしおり とは？</h3>
+        <p>旅行の<strong>予定・持ち物・お金</strong>をまとめて管理できるアプリです。メンバー全員で共有でき、旅行の準備から精算まで、これ1つで完結します。</p>
+        <div class="help-tip">💡 まずは<strong>設定タブ</strong>で旅行の基本情報とメンバーを登録しましょう！</div>
+      </div>
+
+      <!-- ヘッダー -->
+      <div class="help-section">
+        <div class="help-section-icon">🔝</div>
+        <h3>画面上部のボタン</h3>
+        <div class="help-item">
+          <span class="help-icon-badge">🔄</span>
+          <div><strong>クラウドから取得</strong><br>クラウド（スプレッドシート）の最新データを読み込みます。<em>長押し</em>するとローカルデータを消去して完全に再取得します。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">☁️</span>
+          <div><strong>クラウドに保存</strong><br>今のデータをクラウドに保存します。他のメンバーの端末と同期したいときに使います。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">❓</span>
+          <div><strong>使い方ガイド</strong><br>この画面です。いつでも確認できます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">⚙️</span>
+          <div><strong>設定</strong><br>設定タブを開きます。</div>
+        </div>
+      </div>
+
+      <!-- ホームタブ -->
+      <div class="help-section">
+        <div class="help-section-icon">🏠</div>
+        <h3>ホームタブ</h3>
+        <p>旅行のダッシュボードです。すべての情報がひと目でわかります。</p>
+        <div class="help-item">
+          <span class="help-icon-badge">🎌</span>
+          <div><strong>旅行バナー</strong><br>旅行タイトル・行き先・日程・出発までのカウントダウンが表示されます。旅行中は「旅行○日目」と表示されます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">🗺️</span>
+          <div><strong>今日の予定カード</strong><br>今日のスケジュールが時間順に表示されます。次の予定には <span style="background:#00c853;color:#fff;padding:1px 6px;border-radius:8px;font-size:0.7em;font-weight:700;">NEXT</span> バッジがつきます。<strong>タップ</strong>すると旅程タブへ移動します。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">🧳</span>
+          <div><strong>持ち物カード</strong><br>準備の進捗（%）とメンバーごとの達成度が表示されます。<strong>タップ</strong>すると持ち物タブへ移動します。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">💰</span>
+          <div><strong>お金カード</strong><br>合計支出・支払い件数・1人あたりの平均、メンバーごとの支出バーが表示されます。<strong>タップ</strong>するとお金タブへ移動します。</div>
+        </div>
+      </div>
+
+      <!-- 旅程タブ -->
+      <div class="help-section">
+        <div class="help-section-icon">🗺️</div>
+        <h3>旅程タブ</h3>
+        <p>旅行のスケジュールを登録・閲覧するタブです。</p>
+
+        <h4>📝 予定の追加・編集</h4>
+        <p>上部のアコーディオンを開くと、入力フォームが表示されます。</p>
+        <div class="help-item">
+          <span class="help-icon-badge">📋</span>
+          <div><strong>テンプレート</strong><br>「空港→ホテル」「観光1日」など6種類のテンプレートをタップすると、よくあるスケジュールが自動で入力されます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">✏️</span>
+          <div><strong>入力項目</strong><br>日付・時間・タイトル・カテゴリ・参加メンバー・メモ・リンクURL・場所名を入力して「追加する」で登録。場所を入力すると🗺️ボタンでGoogleマップを確認できます。</div>
+        </div>
+
+        <h4>📅 スケジュール表示</h4>
+        <div class="help-item">
+          <span class="help-icon-badge">👤</span>
+          <div><strong>メンバーフィルター</strong><br>上部のメンバー名をタップすると、そのメンバーの予定だけに絞り込めます。「全員」で元に戻ります。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">📅</span>
+          <div><strong>Day ヘッダー</strong><br>日付ごとに「Day 1」「Day 2」…と表示されます。当日は緑色でハイライト。天気予報（気温・天気アイコン）も自動表示されます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">📌</span>
+          <div><strong>各予定カード</strong><br>カテゴリ別に色分けされたタイムラインで表示。「📝メモあり」をタップするとメモが展開されます。✏️で編集、✖️で削除できます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">📤</span>
+          <div><strong>共有ボタン</strong><br>「📤 共有」をタップすると、今日の予定をテキストでコピー／共有できます。LINEなどに貼り付けられます。</div>
+        </div>
+      </div>
+
+      <!-- 持ち物タブ -->
+      <div class="help-section">
+        <div class="help-section-icon">🧳</div>
+        <h3>持ち物タブ</h3>
+        <p>持ち物リストをメンバーごとにチェック管理できるタブです。</p>
+
+        <h4>➕ 持ち物の追加</h4>
+        <div class="help-item">
+          <span class="help-icon-badge">＋</span>
+          <div><strong>「＋ 持ち物を追加する」ボタン</strong><br>タップするとフォームが開きます。アイテム名・カテゴリ・対象メンバーを選んで「追加する」で登録。アイテム名を入力するだけでカテゴリが自動判定されます（例:「パスポート」→必需品）。</div>
+        </div>
+
+        <h4>✅ チェックの使い方</h4>
+        <div class="help-item">
+          <span class="help-icon-badge" style="background:var(--c-primary);">タ</span>
+          <div><strong>メンバードット（頭文字アイコン）</strong><br>各アイテムの下にメンバーの頭文字が丸いボタンで表示されます。<strong>自分のアイコンをタップ</strong>すると、その持ち物の準備完了をチェックできます。チェック済みは✓マークと緑のリングに変わります。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">🎉</span>
+          <div><strong>全員チェック完了</strong><br>すべてのメンバーがチェックすると、アイテム名に<span style="text-decoration:line-through;text-decoration-color:var(--c-success);">取り消し線</span>が入り「全員完了！」と通知されます。</div>
+        </div>
+
+        <h4>🔍 フィルター機能</h4>
+        <div class="help-item">
+          <span class="help-icon-badge">👤</span>
+          <div><strong>メンバーフィルター</strong><br>上部のメンバー名をタップすると、そのメンバーに割り当てられたアイテムだけ表示されます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">🏷️</span>
+          <div><strong>カテゴリフィルター</strong><br>「必需品」「衣類」「電子機器」などのタブで、種類別に絞り込めます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">📊</span>
+          <div><strong>プログレスバー</strong><br>画面上部に全体の進捗％、各メンバーの達成状況が表示されます。メンバー名のバッジをタップしてもフィルターが切り替わります。</div>
+        </div>
+      </div>
+
+      <!-- お金タブ -->
+      <div class="help-section">
+        <div class="help-section-icon">💰</div>
+        <h3>お金タブ</h3>
+        <p>旅行中の支払いを記録して、最後に精算できるタブです。</p>
+
+        <h4>💳 支払いの登録</h4>
+        <div class="help-item">
+          <span class="help-icon-badge">✏️</span>
+          <div><strong>入力フォーム</strong><br>日付・支払った人・金額・通貨（JPY/AUD切替）・メモ・割り勘メンバーを入力して「追加する」で登録します。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">💱</span>
+          <div><strong>通貨の切替</strong><br>金額欄の横にある「JPY」「AUD」ボタンで通貨を切り替えます。為替レートは設定タブで変更できます。</div>
+        </div>
+
+        <h4>📋 支払い一覧</h4>
+        <div class="help-item">
+          <span class="help-icon-badge">📋</span>
+          <div><strong>支払い一覧アコーディオン</strong><br>登録した支払いが新しい順に表示されます。各明細の✏️で編集、✖️で削除できます。3件以上ある場合は「すべて表示」で展開できます。</div>
+        </div>
+
+        <h4>🔄 精算</h4>
+        <div class="help-item">
+          <span class="help-icon-badge">📊</span>
+          <div><strong>個人収支</strong><br>各メンバーの立替金額と、使った金額の差額が表示されます。<span style="color:var(--c-success);">プラス（緑）</span>＝もらえるお金、<span style="color:var(--c-danger);">マイナス（赤）</span>＝払うお金です。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">💸</span>
+          <div><strong>精算プラン</strong><br>「誰が誰にいくら払えば全員チャラになるか」を最小回数で自動計算します。旅行後にこの通りに精算すればOKです。</div>
+        </div>
+      </div>
+
+      <!-- 設定タブ -->
+      <div class="help-section">
+        <div class="help-section-icon">⚙️</div>
+        <h3>設定タブ</h3>
+        <p>アプリ全体の基本設定を行うタブです。<strong>最初にここを設定してください。</strong></p>
+        <div class="help-item">
+          <span class="help-icon-badge">🌍</span>
+          <div><strong>旅行基本情報</strong><br>旅行タイトル・行き先・出発日・帰国日・カバー画像URLを設定します。ここを設定するとホーム画面にバナーが表示されます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">💱</span>
+          <div><strong>通貨・為替設定</strong><br>為替レート（1 AUD＝○円）と精算通貨（JPY/AUD）を設定します。為替レートは起動時に自動取得されます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">👥</span>
+          <div><strong>メンバー管理</strong><br>旅行メンバーを追加・編集・色変更・削除できます。名前をタップすると名前の編集、カラー丸をタップするとテーマカラーの変更ができます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">☁️</span>
+          <div><strong>クラウド同期</strong><br>Googleスプレッドシートとデータを同期する機能です。全メンバーの端末で同じデータを共有できます。</div>
+        </div>
+        <div class="help-item">
+          <span class="help-icon-badge">💾</span>
+          <div><strong>データ管理</strong><br>データのエクスポート（JSON書き出し）とインポート（JSON読み込み）ができます。バックアップに使えます。</div>
+        </div>
+      </div>
+
+      <!-- はじめに -->
+      <div class="help-section help-start-guide">
+        <div class="help-section-icon">🚀</div>
+        <h3>はじめかた（3ステップ）</h3>
+        <div class="help-step">
+          <span class="help-step-num">1</span>
+          <div><strong>設定タブ</strong>で旅行情報とメンバーを登録</div>
+        </div>
+        <div class="help-step">
+          <span class="help-step-num">2</span>
+          <div><strong>旅程タブ</strong>でスケジュール、<strong>持ち物タブ</strong>でリスト、<strong>お金タブ</strong>で支払いを入力</div>
+        </div>
+        <div class="help-step">
+          <span class="help-step-num">3</span>
+          <div><strong>ホームタブ</strong>でいつでも全体を確認！</div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -3538,6 +3783,17 @@ function initEventListeners() {
     showToast('クラウドに保存中...');
     await syncToCloud();
     showToast('クラウドに保存完了！');
+  });
+
+  // Help button → open help modal
+  document.getElementById('btn-help').addEventListener('click', function() {
+    document.getElementById('help-modal-overlay').hidden = false;
+  });
+  document.getElementById('help-modal-close').addEventListener('click', function() {
+    document.getElementById('help-modal-overlay').hidden = true;
+  });
+  document.getElementById('help-modal-overlay').addEventListener('click', function(e) {
+    if (e.target === this) this.hidden = true;
   });
 
   // Settings button → switch to settings tab
