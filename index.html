@@ -841,13 +841,14 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .cl-cat-tab.active { background:var(--c-primary); color:#fff; border-color:var(--c-primary); }
 /* Member filter row */
 .cl-member-filter { display:flex; gap:4px; margin-bottom:var(--sp-sm); flex-wrap:wrap; align-items:center; }
-.cl-member-filter-btn { padding:3px 10px; border-radius:var(--radius-full); font-size:var(--fs-xs); cursor:pointer; transition:all var(--t-fast); color:#fff; font-weight:600; opacity:0.45; border:none; }
+.cl-member-filter-btn { padding:5px 12px; border-radius:var(--radius-full); font-size:var(--fs-xs); cursor:pointer; transition:all var(--t-fast); color:#fff; font-weight:600; opacity:0.5; border:none; -webkit-tap-highlight-color:transparent; }
 .cl-member-filter-btn.active { opacity:1; box-shadow:0 1px 4px rgba(0,0,0,0.15); }
 /* Progress summary */
 .cl-progress-summary { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:var(--sp-sm); align-items:center; }
 .cl-progress-overall { font-size:var(--fs-sm); color:var(--c-text2); margin-right:auto; }
-.cl-progress-member { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:var(--radius-full); font-size:var(--fs-xs); font-weight:600; color:#fff; opacity:0.75; }
+.cl-progress-member { display:inline-flex; align-items:center; gap:3px; padding:2px 8px; border-radius:var(--radius-full); font-size:var(--fs-xs); font-weight:600; color:#fff; opacity:0.75; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 .cl-progress-member.done { opacity:1; }
+.cl-progress-member.filter-active { opacity:1; box-shadow:0 0 0 2px #fff, 0 0 0 4px currentColor; }
 .cl-progress-member .cl-pm-count { font-weight:400; opacity:0.85; }
 /* Add form meta (category + member select) */
 .cl-add-meta { display:flex; flex-direction:column; gap:6px; padding:8px 0 4px; animation:cl-slide-down 0.2s ease; }
@@ -2388,7 +2389,8 @@ function renderChecklist() {
     const mp = memberProgress[m.id];
     if (mp && mp.total > 0) {
       const done = mp.done === mp.total;
-      sumH += `<span class="cl-progress-member${done ? ' done' : ''}" style="background:${m.color||'#888'}">${escapeHtml(m.name)} <span class="cl-pm-count">${mp.done}/${mp.total}</span></span>`;
+      const filterActive = clFilterMember === m.id ? ' filter-active' : '';
+      sumH += `<span class="cl-progress-member${done ? ' done' : ''}${filterActive}" data-cl-member="${m.id}" style="background:${m.color||'#888'}">${escapeHtml(m.name)} <span class="cl-pm-count">${mp.done}/${mp.total}</span></span>`;
     }
   });
   if (summaryEl) summaryEl.innerHTML = sumH;
@@ -3200,12 +3202,23 @@ function initEventListeners() {
     renderChecklist();
   });
 
-  // Member filter
+  // Member filter (filter bar)
   document.getElementById('cl-member-filter').addEventListener('click', function(e) {
     const btn = e.target.closest('.cl-member-filter-btn');
     if (!btn) return;
     const val = btn.dataset.clMember;
     clFilterMember = val === 'all' ? 'all' : Number(val);
+    renderChecklist();
+  });
+
+  // Member filter (progress badge tap)
+  document.getElementById('cl-progress-summary').addEventListener('click', function(e) {
+    const badge = e.target.closest('.cl-progress-member');
+    if (!badge) return;
+    const val = badge.dataset.clMember;
+    if (!val) return;
+    const mid = Number(val);
+    clFilterMember = clFilterMember === mid ? 'all' : mid;
     renderChecklist();
   });
 
