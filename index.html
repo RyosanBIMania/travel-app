@@ -2242,13 +2242,6 @@ function renderItinerary() {
 
   container.innerHTML = html;
 
-  // Auto-scroll to today or next-up
-  if (nextUpId) {
-    const nextEl = container.querySelector('.itin-event.next-up');
-    if (nextEl) {
-      setTimeout(() => nextEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
-    }
-  }
 
   // Inject weather badges (async, non-blocking)
   injectWeatherBadges();
