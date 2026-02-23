@@ -117,6 +117,7 @@ a:hover { text-decoration: underline; }
   max-width: var(--max-w);
   margin: 0 auto;
   padding: var(--sp-md);
+  overflow-x: hidden;
 }
 .tab-content.active { display: block; }
 
@@ -138,7 +139,7 @@ a:hover { text-decoration: underline; }
 
 /* ===== Forms ===== */
 .form-input {
-  width: 100%;
+  width: 100%; max-width: 100%;
   min-height: var(--tap);
   padding: var(--sp-sm) var(--sp-md);
   border: 1.5px solid var(--c-border);
@@ -495,13 +496,17 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   .card-desc { font-size: 0.7rem; margin-bottom: 8px; }
   .form-group { margin-bottom: 8px; }
   .form-group > label { font-size: 0.7rem; margin-bottom: 1px; }
-  .form-input { min-height: 34px; padding: 5px 6px; font-size: 0.8rem; width: 100%; }
+  .form-input { min-height: 34px; padding: 5px 6px; font-size: 0.8rem; }
   input[type="date"].form-input,
-  input[type="time"].form-input { padding: 5px 4px; font-size: 0.75rem; }
+  input[type="time"].form-input {
+    padding: 5px 2px; font-size: 0.7rem;
+    -webkit-appearance: none; appearance: none;
+    min-width: 0 !important; max-width: 100% !important;
+  }
   textarea.form-input { min-height: 44px; }
-  .form-row { gap: 6px; width: 100%; }
-  .form-row .form-group { margin-bottom: 8px; }
-  form { max-width: 100%; overflow: hidden; }
+  .form-row { gap: 6px; }
+  .form-row .form-group { margin-bottom: 8px; overflow: hidden; }
+  .card > form, .card form { width: 100%; overflow: hidden; }
   .form-actions { margin-top: 8px; gap: 6px; }
   .btn { min-height: 34px; padding: 5px 10px; font-size: 0.8rem; }
   .btn-sm { min-height: 28px; padding: 3px 6px; font-size: 0.7rem; }
