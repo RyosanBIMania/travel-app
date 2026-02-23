@@ -237,12 +237,23 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 /* ===== Item Lists ===== */
 .item-list { list-style: none; }
 .list-item {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; gap: var(--sp-sm);
   padding: var(--sp-md) 0;
   border-bottom: 1px solid var(--c-border);
 }
 .list-item:last-child { border-bottom: none; }
-.member-name { font-weight: 600; }
+.member-name { font-weight: 700; flex: 1; }
+.member-color-dot {
+  width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0;
+}
+.member-color-picker {
+  width: 28px; height: 28px; border: none; padding: 0;
+  border-radius: var(--radius-sm); cursor: pointer; background: none;
+}
+.member-badge {
+  display: inline-block; padding: 2px 8px; border-radius: var(--radius-full);
+  font-size: 0.7rem; font-weight: 700; color: #fff; margin-right: 4px;
+}
 .empty-msg { text-align: center; color: var(--c-text2); padding: var(--sp-xl) 0; font-size: var(--fs-sm); }
 
 /* ===== Expense Items ===== */
@@ -367,7 +378,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .itin-event-time { font-size: var(--fs-sm); color: var(--c-text2); font-weight: 600; }
 .itin-event-title { font-weight: 700; margin-top: 2px; word-break: break-word; }
 .itin-event-location { font-size: var(--fs-sm); color: var(--c-text2); margin-top: 2px; }
-.itin-event-participants { font-size: 0.75rem; color: var(--c-primary); margin-top: 2px; }
+.itin-event-participants { font-size: 0.75rem; color: var(--c-primary); margin-top: 4px; display: flex; align-items: center; flex-wrap: wrap; gap: 2px; }
 .itin-event-memo { font-size: var(--fs-sm); color: var(--c-text2); margin-top: var(--sp-xs); white-space: pre-wrap; word-break: break-word;
   background: var(--c-bg); border-radius: var(--radius-sm); padding: var(--sp-sm) var(--sp-md);
   display: none; border-left: 3px solid var(--c-primary);
@@ -415,9 +426,9 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   font-size: var(--fs-sm); font-weight: 500; cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
-.filter-btn:hover { background: var(--c-bg); }
+.filter-btn:hover { opacity: 0.85; }
 .filter-btn.active {
-  background: var(--c-primary); color: #fff; border-color: var(--c-primary);
+  font-weight: 700;
 }
 
 /* ===== Sync Dot (inside button) ===== */
@@ -852,6 +863,7 @@ const CATEGORY_LABELS = {
   food: '食事', transport: '交通', other: 'その他'
 };
 const DAY_NAMES = ['日','月','火','水','木','金','土'];
+const MEMBER_COLORS = ['#4466ce','#e05688','#16a34a','#e97c1f','#8b5cf6','#0891b2','#dc2626','#6d28d9'];
 
 /* ===== State ===== */
 let state = createDefaultState();
@@ -881,6 +893,10 @@ function loadState() {
         state = parsed;
         if (!Array.isArray(state.itinerary)) state.itinerary = [];
         if (!state.nextItineraryId) state.nextItineraryId = 1;
+        // Ensure all members have a color
+        state.members.forEach((m, i) => {
+          if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
+        });
       }
     }
   } catch (e) { /* keep default */ }
@@ -963,6 +979,10 @@ async function syncFromCloud() {
         if (!Array.isArray(state.members)) state.members = [];
         if (!Array.isArray(state.expenses)) state.expenses = [];
         if (!Array.isArray(state.itinerary)) state.itinerary = [];
+        // Ensure all members have a color
+        state.members.forEach((m, i) => {
+          if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
+        });
         localStorage.setItem(APP_KEY, JSON.stringify(state));
         renderAll();
       }
@@ -1051,9 +1071,17 @@ function addMember(name) {
   const trimmed = name.trim();
   if (!trimmed) { showToast('名前を入力してください'); return false; }
   if (state.members.some(m => m.name === trimmed)) { showToast('同じ名前のメンバーがいます'); return false; }
-  state.members.push({ id: generateMemberId(), name: trimmed });
+  const colorIdx = state.members.length % MEMBER_COLORS.length;
+  state.members.push({ id: generateMemberId(), name: trimmed, color: MEMBER_COLORS[colorIdx] });
   saveState();
   return true;
+}
+
+function getMemberColor(memberId) {
+  const m = state.members.find(m => m.id === memberId);
+  if (m && m.color) return m.color;
+  const idx = state.members.findIndex(m => m.id === memberId);
+  return MEMBER_COLORS[idx >= 0 ? idx % MEMBER_COLORS.length : 0];
 }
 
 function removeMember(memberId) {
@@ -1186,12 +1214,16 @@ function renderMembers() {
   document.getElementById('member-count').textContent = state.members.length;
   if (state.members.length === 0) { list.innerHTML = ''; empty.hidden = false; return; }
   empty.hidden = true;
-  list.innerHTML = state.members.map(m => `
+  list.innerHTML = state.members.map(m => {
+    const color = m.color || getMemberColor(m.id);
+    return `
     <li class="list-item">
-      <span class="member-name">${escapeHtml(m.name)}</span>
+      <span class="member-color-dot" style="background:${color}"></span>
+      <span class="member-name" style="color:${color};font-weight:700;">${escapeHtml(m.name)}</span>
+      <input type="color" class="member-color-picker" data-color-member="${m.id}" value="${color}" title="テーマカラー変更">
       <button class="btn-icon-sm danger" data-delete-member="${m.id}" title="削除">&#x2716;</button>
-    </li>
-  `).join('');
+    </li>`;
+  }).join('');
 }
 
 /* ===== Rendering: Expenses ===== */
@@ -1226,6 +1258,17 @@ function getParticipantNames(participantIds) {
     const m = state.members.find(m => m.id === id);
     return m ? m.name : '';
   }).filter(Boolean).join(', ');
+}
+
+function getParticipantBadges(participantIds) {
+  if (!participantIds || participantIds.length === 0) return '';
+  if (participantIds.length === state.members.length) return '';
+  return participantIds.map(id => {
+    const m = state.members.find(m => m.id === id);
+    if (!m) return '';
+    const color = getMemberColor(m.id);
+    return `<span class="member-badge" style="background:${color}">${escapeHtml(m.name)}</span>`;
+  }).filter(Boolean).join('');
 }
 
 function renderExpenses() {
@@ -1313,7 +1356,12 @@ function renderItinFilter() {
   if (state.members.length === 0) { container.innerHTML = ''; return; }
   let html = `<button class="filter-btn ${itinFilterMember === 'all' ? 'active' : ''}" data-filter="all">全員</button>`;
   state.members.forEach(m => {
-    html += `<button class="filter-btn ${itinFilterMember === m.id ? 'active' : ''}" data-filter="${m.id}">${escapeHtml(m.name)}</button>`;
+    const color = getMemberColor(m.id);
+    const isActive = itinFilterMember === m.id;
+    const style = isActive
+      ? `background:${color};color:#fff;border-color:${color}`
+      : `border-color:${color};color:${color}`;
+    html += `<button class="filter-btn ${isActive ? 'active' : ''}" data-filter="${m.id}" style="${style}">${escapeHtml(m.name)}</button>`;
   });
   container.innerHTML = html;
 }
@@ -1412,9 +1460,9 @@ function renderItinerary() {
       html += `<div class="itin-event-title">${escapeHtml(ev.title)}</div>`;
 
       // Participants (show only when not all members)
-      const pNames = getParticipantNames(ev.participants);
-      if (pNames) {
-        html += `<div class="itin-event-participants">👥 ${escapeHtml(pNames)}</div>`;
+      const pBadges = getParticipantBadges(ev.participants);
+      if (pBadges) {
+        html += `<div class="itin-event-participants">👥 ${pBadges}</div>`;
       }
 
       // Location
@@ -1483,7 +1531,7 @@ function renderItinEditList() {
       <div class="expense-top">
         <div class="expense-info">
           <div class="expense-memo">${icon} ${escapeHtml(ev.title)}</div>
-          <div class="expense-detail">${formatDate(ev.date)} ${timeStr ? timeStr : ''} ${ev.location ? '📍' + escapeHtml(ev.location) : ''}${getParticipantNames(ev.participants) ? ' 👥' + getParticipantNames(ev.participants) : ''}</div>
+          <div class="expense-detail">${formatDate(ev.date)} ${timeStr ? timeStr : ''} ${ev.location ? '📍' + escapeHtml(ev.location) : ''}${getParticipantBadges(ev.participants) ? '<br>👥 ' + getParticipantBadges(ev.participants) : ''}</div>
         </div>
       </div>
       <div class="expense-actions">
@@ -1708,6 +1756,22 @@ function initEventListeners() {
       }
       closeModal();
     });
+  });
+
+  // Member color picker change
+  document.getElementById('member-list').addEventListener('input', function(e) {
+    if (!e.target.matches('.member-color-picker')) return;
+    const id = e.target.dataset.colorMember;
+    const color = e.target.value;
+    const m = state.members.find(m => m.id === id);
+    if (m) {
+      m.color = color;
+      saveState();
+      renderMembers();
+      renderItinerary();
+      renderItinFilter();
+      renderItinEditList();
+    }
   });
 
   // Expense form submit
