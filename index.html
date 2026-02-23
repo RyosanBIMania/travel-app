@@ -576,7 +576,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 /* ===== Sync Dot (inside button) ===== */
 .sync-dot {
-  position: absolute; top: 3px; right: 3px;
+  position: absolute; top: -2px; right: -2px;
   width: 9px; height: 9px;
   border-radius: 50%;
   background: #64748b;
@@ -1019,11 +1019,6 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 <header class="app-header">
   <h1 class="app-title">旅のしおり</h1>
   <div class="header-actions">
-    <button id="btn-sync" class="icon-btn" title="クラウドから取得" style="position:relative;">
-      &#x1F504;
-      <span id="sync-status" class="sync-dot" title="同期状態"></span>
-    </button>
-    <button id="btn-cloud-upload" class="icon-btn" title="クラウドに保存">&#x2601;</button>
     <button id="btn-help" class="icon-btn" title="使い方ガイド">&#x1F4D6;</button>
   </div>
 </header>
@@ -1400,8 +1395,13 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   </div>
   <div class="card">
     <h2 class="card-title">☁️ クラウド同期</h2>
-    <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:12px;line-height:1.4;">スプレッドシートと同期中。🔄で取得、☁で保存できます。</p>
-    <div id="spreadsheet-link-area" style="margin-bottom:8px;">
+    <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:12px;line-height:1.4;">Googleスプレッドシートとデータを同期します。</p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <button id="btn-sync" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);position:relative;">🔄 クラウドから取得 <span id="sync-status" class="sync-dot" title="同期状態"></span></button>
+      <button id="btn-cloud-upload" class="btn btn-secondary" style="flex:1;font-size:var(--fs-sm);">☁️ クラウドに保存</button>
+    </div>
+    <p style="font-size:0.7rem;color:var(--c-text2);line-height:1.4;margin-bottom:10px;">💡 「クラウドから取得」を<em style="font-style:normal;font-weight:600;">長押し</em>すると、ローカルデータを消去して完全に再取得します。</p>
+    <div id="spreadsheet-link-area" style="margin-bottom:0;">
       <a id="spreadsheet-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%;font-size:var(--fs-sm);text-decoration:none;text-align:center;display:none;">📊 スプレッドシートを開く</a>
     </div>
   </div>
