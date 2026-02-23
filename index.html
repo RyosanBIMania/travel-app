@@ -155,7 +155,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .form-group > label { display: block; font-size: var(--fs-sm); font-weight: 600; color: var(--c-text2); margin-bottom: var(--sp-xs); }
 .form-row { display: flex; gap: var(--sp-md); align-items: flex-end; }
 .form-row .form-group { margin-bottom: var(--sp-md); }
-.flex-grow { flex: 1; }
+.flex-grow { flex: 1; min-width: 0; }
 .form-actions { margin-top: var(--sp-md); display: flex; flex-direction: column; gap: var(--sp-sm); }
 
 /* ===== Buttons ===== */
@@ -495,9 +495,11 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   .card-desc { font-size: 0.7rem; margin-bottom: 8px; }
   .form-group { margin-bottom: 8px; }
   .form-group > label { font-size: 0.7rem; margin-bottom: 1px; }
-  .form-input { min-height: 34px; padding: 5px 8px; font-size: 0.8rem; }
+  .form-input { min-height: 34px; padding: 5px 6px; font-size: 0.8rem; max-width: 100%; box-sizing: border-box; }
+  input[type="date"].form-input,
+  input[type="time"].form-input { padding: 5px 4px; font-size: 0.75rem; }
   textarea.form-input { min-height: 44px; }
-  .form-row { gap: 8px; }
+  .form-row { gap: 6px; overflow: hidden; }
   .form-row .form-group { margin-bottom: 8px; }
   .form-actions { margin-top: 8px; gap: 6px; }
   .btn { min-height: 34px; padding: 5px 10px; font-size: 0.8rem; }
