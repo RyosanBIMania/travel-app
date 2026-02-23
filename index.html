@@ -1068,16 +1068,6 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 <!-- ===== Tab: 旅程（スケジュール閲覧＋編集） ===== -->
 <section id="tab-itinerary" class="tab-content">
   <div id="trip-banner" class="trip-banner" hidden></div>
-  <div class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-sm);">
-      <h2 class="card-title" style="margin-bottom:0;">📋 スケジュール</h2>
-      <button id="btn-share-schedule" class="btn-share" title="今日の予定をコピー">📤 共有</button>
-    </div>
-    <div id="itin-filter" class="itin-filter"></div>
-    <div id="itinerary-list"></div>
-    <p id="itinerary-empty" class="empty-msg">予定がありません<br><small style="color:var(--c-text2)">下の「✏️ 予定を追加・編集」を開いて追加してください</small></p>
-  </div>
-
   <!-- 予定の追加・編集（アコーディオン） -->
   <div class="card">
     <div id="itin-edit-toggle" class="accordion-toggle">
@@ -1168,54 +1158,74 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       </div>
     </div>
   </div>
+  <!-- スケジュール表示 -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-sm);">
+      <h2 class="card-title" style="margin-bottom:0;">📋 スケジュール</h2>
+      <button id="btn-share-schedule" class="btn-share" title="今日の予定をコピー">📤 共有</button>
+    </div>
+    <div id="itin-filter" class="itin-filter"></div>
+    <div id="itinerary-list"></div>
+    <p id="itinerary-empty" class="empty-msg">予定がありません<br><small style="color:var(--c-text2)">上の「✏️ 予定を追加・編集」を開いて追加してください</small></p>
+  </div>
 </section>
 
 <!-- ===== Tab: 持ち物（チェックリスト） ===== -->
 <section id="tab-checklist" class="tab-content">
+  <!-- 持ち物を追加 -->
   <div class="card">
-    <h2 class="card-title">🧳 持ち物チェックリスト</h2>
-    <div class="checklist-progress-bar"><div id="checklist-progress-fill" class="checklist-progress-fill" style="width:0%"></div></div>
-    <div id="cl-progress-summary" class="cl-progress-summary"></div>
-    <div id="checklist-body" class="checklist-body">
-      <!-- メンバーフィルタ -->
-      <div id="cl-member-filter" class="cl-member-filter"></div>
-      <!-- カテゴリフィルタ -->
-      <div class="cl-cat-tabs" id="cl-cat-tabs">
-        <span class="cl-cat-tab active" data-cl-cat="all">すべて</span>
-        <span class="cl-cat-tab" data-cl-cat="essential">必需品</span>
-        <span class="cl-cat-tab" data-cl-cat="clothes">衣類</span>
-        <span class="cl-cat-tab" data-cl-cat="electronics">電子機器</span>
-        <span class="cl-cat-tab" data-cl-cat="toiletry">日用品</span>
-        <span class="cl-cat-tab" data-cl-cat="medicine">医薬品</span>
-        <span class="cl-cat-tab" data-cl-cat="food">食品</span>
-        <span class="cl-cat-tab" data-cl-cat="other">その他</span>
+    <h2 class="card-title">✏️ 持ち物を追加</h2>
+    <div class="checklist-add-form" id="cl-add-form">
+      <div class="checklist-add">
+        <input type="text" id="cl-new-item" placeholder="アイテムを追加..." maxlength="50" autocomplete="off">
+        <button class="btn btn-primary btn-sm" id="cl-add-btn">追加</button>
       </div>
-      <!-- 追加フォーム -->
-      <div class="checklist-add-form" id="cl-add-form">
-        <div class="checklist-add">
-          <input type="text" id="cl-new-item" placeholder="アイテムを追加..." maxlength="50" autocomplete="off">
-          <button class="btn btn-primary btn-sm" id="cl-add-btn">追加</button>
+      <div class="cl-add-meta" id="cl-add-meta" hidden>
+        <div class="cl-auto-cat">
+          <span class="cl-auto-cat-label">カテゴリ:</span>
+          <select id="cl-cat-select" class="cl-cat-select">
+            <option value="essential">必需品</option>
+            <option value="clothes">衣類</option>
+            <option value="electronics">電子機器</option>
+            <option value="toiletry">日用品</option>
+            <option value="medicine">医薬品</option>
+            <option value="food">食品</option>
+            <option value="other" selected>その他</option>
+          </select>
         </div>
-        <div class="cl-add-meta" id="cl-add-meta" hidden>
-          <div class="cl-auto-cat">
-            <span class="cl-auto-cat-label">カテゴリ:</span>
-            <select id="cl-cat-select" class="cl-cat-select">
-              <option value="essential">必需品</option>
-              <option value="clothes">衣類</option>
-              <option value="electronics">電子機器</option>
-              <option value="toiletry">日用品</option>
-              <option value="medicine">医薬品</option>
-              <option value="food">食品</option>
-              <option value="other" selected>その他</option>
-            </select>
-          </div>
-          <div class="cl-add-members">
-            <span class="cl-add-members-label">対象:</span>
-            <div id="cl-add-member-checks" class="cl-add-member-checks"></div>
-          </div>
+        <div class="cl-add-members">
+          <span class="cl-add-members-label">対象:</span>
+          <div id="cl-add-member-checks" class="cl-add-member-checks"></div>
         </div>
       </div>
-      <div id="checklist-list"></div>
+    </div>
+  </div>
+  <!-- チェックリスト一覧（アコーディオン） -->
+  <div class="card">
+    <div id="cl-list-toggle" class="accordion-toggle open">
+      <span class="arrow">▶</span>
+      🧳 チェックリスト
+      <span style="font-weight:400;font-size:var(--fs-sm);color:var(--c-text2);margin-left:auto;" id="cl-list-count"></span>
+    </div>
+    <div id="cl-list-body" class="accordion-body open">
+      <div class="checklist-progress-bar"><div id="checklist-progress-fill" class="checklist-progress-fill" style="width:0%"></div></div>
+      <div id="cl-progress-summary" class="cl-progress-summary"></div>
+      <div id="checklist-body" class="checklist-body">
+        <!-- メンバーフィルタ -->
+        <div id="cl-member-filter" class="cl-member-filter"></div>
+        <!-- カテゴリフィルタ -->
+        <div class="cl-cat-tabs" id="cl-cat-tabs">
+          <span class="cl-cat-tab active" data-cl-cat="all">すべて</span>
+          <span class="cl-cat-tab" data-cl-cat="essential">必需品</span>
+          <span class="cl-cat-tab" data-cl-cat="clothes">衣類</span>
+          <span class="cl-cat-tab" data-cl-cat="electronics">電子機器</span>
+          <span class="cl-cat-tab" data-cl-cat="toiletry">日用品</span>
+          <span class="cl-cat-tab" data-cl-cat="medicine">医薬品</span>
+          <span class="cl-cat-tab" data-cl-cat="food">食品</span>
+          <span class="cl-cat-tab" data-cl-cat="other">その他</span>
+        </div>
+        <div id="checklist-list"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -1268,43 +1278,38 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       </div>
     </form>
   </div>
-  <!-- 支払い一覧 -->
+  <!-- 支払い一覧（アコーディオン） -->
   <div class="card">
-    <h2 class="card-title">支払い一覧</h2>
-    <div id="expense-summary" class="summary-bar"></div>
-    <div id="expense-list"></div>
-    <p id="expense-empty" class="empty-msg">支払い記録がありません</p>
-  </div>
-  <!-- 為替レート -->
-  <div class="card">
-    <h2 class="card-title">為替レート</h2>
-    <div class="exchange-rate-form">
-      <span>1 AUD =</span>
-      <input type="number" id="exchange-rate" class="form-input" min="0.01" step="0.01" value="95" inputmode="decimal">
-      <span>円</span>
+    <div id="money-list-toggle" class="accordion-toggle open">
+      <span class="arrow">▶</span>
+      📋 支払い一覧
+      <span style="font-weight:400;font-size:var(--fs-sm);color:var(--c-text2);margin-left:auto;" id="money-list-count"></span>
     </div>
-    <div id="rate-status" class="rate-status"></div>
-  </div>
-  <!-- 精算通貨 -->
-  <div class="card">
-    <h2 class="card-title">精算通貨</h2>
-    <div class="currency-toggle" id="settle-currency-toggle">
-      <button type="button" class="toggle-btn active-jpy" data-settle="JPY">JPY で精算</button>
-      <button type="button" class="toggle-btn" data-settle="AUD">AUD で精算</button>
+    <div id="money-list-body" class="accordion-body open">
+      <div id="expense-summary" class="summary-bar"></div>
+      <div id="expense-list"></div>
+      <p id="expense-empty" class="empty-msg">支払い記録がありません</p>
     </div>
   </div>
-  <!-- 個人収支 -->
+  <!-- 精算（アコーディオン：個人収支＋精算プラン統合） -->
   <div class="card">
-    <h2 class="card-title">個人収支</h2>
-    <div id="balance-list"></div>
-    <p id="balance-empty" class="empty-msg">データがありません</p>
-  </div>
-  <!-- 精算プラン -->
-  <div class="card">
-    <h2 class="card-title">精算プラン</h2>
-    <p class="card-desc">最小限の送金回数で精算します</p>
-    <div id="settlement-plan"></div>
-    <p id="settlement-empty" class="empty-msg">精算するデータがありません</p>
+    <div id="money-settle-toggle" class="accordion-toggle">
+      <span class="arrow">▶</span>
+      🔄 精算
+    </div>
+    <div id="money-settle-body" class="accordion-body">
+      <div style="margin-top:var(--sp-sm);">
+        <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:var(--sp-sm);">個人収支</p>
+        <div id="balance-list"></div>
+        <p id="balance-empty" class="empty-msg">データがありません</p>
+      </div>
+      <div style="margin-top:var(--sp-md);padding-top:var(--sp-md);border-top:1px solid rgba(0,0,0,0.06);">
+        <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:var(--sp-sm);">精算プラン</p>
+        <p class="card-desc" style="margin-bottom:var(--sp-sm);">最小限の送金回数で精算します</p>
+        <div id="settlement-plan"></div>
+        <p id="settlement-empty" class="empty-msg">精算するデータがありません</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1340,6 +1345,26 @@ textarea.form-input { min-height: 60px; resize: vertical; }
         <button type="submit" class="btn btn-primary btn-block">保存する</button>
       </div>
     </form>
+  </div>
+  <!-- 通貨・為替設定 -->
+  <div class="card">
+    <h2 class="card-title">💱 通貨・為替設定</h2>
+    <div class="form-group">
+      <label>為替レート</label>
+      <div class="exchange-rate-form">
+        <span>1 AUD =</span>
+        <input type="number" id="exchange-rate" class="form-input" min="0.01" step="0.01" value="95" inputmode="decimal">
+        <span>円</span>
+      </div>
+      <div id="rate-status" class="rate-status"></div>
+    </div>
+    <div class="form-group" style="margin-top:var(--sp-md);">
+      <label>精算通貨</label>
+      <div class="currency-toggle" id="settle-currency-toggle">
+        <button type="button" class="toggle-btn active-jpy" data-settle="JPY">JPY で精算</button>
+        <button type="button" class="toggle-btn" data-settle="AUD">AUD で精算</button>
+      </div>
+    </div>
   </div>
   <!-- メンバー管理 -->
   <div class="card">
@@ -1943,6 +1968,9 @@ function renderExpenses() {
   const container = document.getElementById('expense-list');
   const empty = document.getElementById('expense-empty');
   const summary = document.getElementById('expense-summary');
+  // Update accordion count
+  const moneyCountEl = document.getElementById('money-list-count');
+  if (moneyCountEl) moneyCountEl.textContent = '(' + state.expenses.length + '件)';
   if (state.expenses.length === 0) { container.innerHTML = ''; empty.hidden = false; summary.innerHTML = ''; expShowAll = false; return; }
   empty.hidden = true;
   const totalJPY = state.expenses.filter(e => e.currency === 'JPY').reduce((s, e) => s + e.amount, 0);
@@ -2518,6 +2546,9 @@ function renderChecklist() {
   const fillEl = document.getElementById('checklist-progress-fill');
   const summaryEl = document.getElementById('cl-progress-summary');
   const items = state.checklist || [];
+  // Update accordion count
+  const clCountEl = document.getElementById('cl-list-count');
+  if (clCountEl) clCountEl.textContent = '(' + items.length + '件)';
 
   // Filter by category
   let filtered = clFilterCat === 'all' ? [...items] : items.filter(i => i.category === clFilterCat);
@@ -3158,7 +3189,7 @@ function initEventListeners() {
     if (tabId === 'itinerary') { renderItinerary(); renderItinEditList(); renderItinParticipants(); renderTemplates(); injectWeatherBadges(); }
     if (tabId === 'checklist') { renderChecklist(); }
     if (tabId === 'money') { renderPayerSelect(); renderSplitCheckboxes(); renderExpenses(); renderSettlement(); }
-    if (tabId === 'settings') { renderMembers(); updateSpreadsheetLink(); }
+    if (tabId === 'settings') { renderMembers(); updateSpreadsheetLink(); document.getElementById('exchange-rate').value = state.exchangeRate; updateCurrencyToggle(document.getElementById('settle-currency-toggle'), state.settleCurrency, 'settle'); }
   });
 
   // Home card navigation — tap card to go to detail tab
@@ -3512,10 +3543,22 @@ function initEventListeners() {
     if (e.target === this) this.hidden = true;
   });
 
-  // ===== Itinerary edit accordion toggle =====
+  // ===== Accordion toggles =====
   document.getElementById('itin-edit-toggle').addEventListener('click', function() {
     this.classList.toggle('open');
     document.getElementById('itin-edit-body').classList.toggle('open');
+  });
+  document.getElementById('cl-list-toggle').addEventListener('click', function() {
+    this.classList.toggle('open');
+    document.getElementById('cl-list-body').classList.toggle('open');
+  });
+  document.getElementById('money-list-toggle').addEventListener('click', function() {
+    this.classList.toggle('open');
+    document.getElementById('money-list-body').classList.toggle('open');
+  });
+  document.getElementById('money-settle-toggle').addEventListener('click', function() {
+    this.classList.toggle('open');
+    document.getElementById('money-settle-body').classList.toggle('open');
   });
 
   // ===== Feature 1: Checklist event listeners =====
