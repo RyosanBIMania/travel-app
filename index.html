@@ -898,33 +898,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .btn-share:active { background:rgba(0,0,0,0.12); }
 
 /* ===== Dashboard (spending chart) ===== */
-.dashboard-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); margin-bottom:var(--sp-md); }
-.dash-stat { text-align:center; padding:var(--sp-md); background:rgba(0,0,0,0.02); border-radius:var(--radius-sm); border:1px solid rgba(0,0,0,0.04); }
-.dash-stat .dash-val { font-size:var(--fs-xl); font-weight:800; color:var(--c-primary); letter-spacing:-0.02em; }
-.dash-stat .dash-label { font-size:var(--fs-xs); color:var(--c-text2); margin-top:2px; }
-.dash-section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
-.dash-section-title { font-size:var(--fs-sm); font-weight:600; margin:0; }
-.dash-currency-toggle { display:flex; gap:2px; background:rgba(0,0,0,0.05); border-radius:var(--radius-full); padding:2px; flex-shrink:0; }
-.dash-cur-btn { border:none; background:transparent; padding:2px 8px; border-radius:var(--radius-full); font-size:var(--fs-xs); font-weight:600; cursor:pointer; color:var(--c-text2); transition:all var(--t-fast); }
-.dash-cur-btn.active { background:#fff; color:var(--c-primary); box-shadow:0 1px 3px rgba(0,0,0,0.1); }
-.cat-bar-list { display:flex; flex-direction:column; gap:6px; }
-.cat-bar-row { display:flex; align-items:center; gap:6px; font-size:var(--fs-sm); }
-.cat-bar-label { width:60px; text-align:right; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:var(--fs-xs); }
-.cat-bar-track { flex:1; height:16px; background:rgba(0,0,0,0.04); border-radius:8px; overflow:hidden; min-width:40px; }
-.cat-bar-fill { height:100%; border-radius:8px; transition:width var(--t-smooth); }
-.cat-bar-val { width:70px; font-size:var(--fs-xs); color:var(--c-text2); flex-shrink:0; text-align:right; }
 /* Stacked daily chart */
-.daily-chart-stacked { display:flex; align-items:flex-end; gap:2px; margin-top:var(--sp-sm); padding-bottom:20px; padding-top:18px; position:relative; overflow:visible; }
-.daily-col { flex:1; min-width:0; display:flex; flex-direction:column-reverse; align-items:stretch; position:relative; height:100%; justify-content:flex-start; }
-.daily-seg { min-height:0; border-radius:0; transition:height var(--t-smooth); position:relative; }
-.daily-col .daily-seg:last-child { border-radius:3px 3px 0 0; }
-.daily-col .daily-seg:first-child { border-radius:0 0 3px 3px; }
-.daily-col .daily-seg:only-child { border-radius:3px; }
-.daily-col-label { position:absolute; bottom:-18px; left:50%; transform:translateX(-50%); font-size:0.5rem; color:var(--c-text2); white-space:nowrap; }
-.daily-col-total { position:absolute; top:-16px; left:50%; transform:translateX(-50%); font-size:0.45rem; font-weight:700; color:var(--c-text); white-space:nowrap; }
-.dash-legend { display:flex; flex-wrap:wrap; gap:8px; margin-top:var(--sp-sm); justify-content:center; }
-.dash-legend-item { display:flex; align-items:center; gap:3px; font-size:var(--fs-xs); color:var(--c-text2); }
-.dash-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
 /* ===== Trip Banner — Hero Section ===== */
 .trip-banner { position:relative; border-radius:var(--radius-lg); overflow:hidden; margin-bottom:var(--sp-md); padding:var(--sp-xl) var(--sp-lg) var(--sp-lg); background:linear-gradient(160deg, #000040 0%, #0a0f5c 30%, #1a237e 60%, #283593 100%); color:#fff; min-height:140px; display:flex; flex-direction:column; justify-content:flex-end; box-shadow:var(--shadow-lg); }
@@ -1300,31 +1274,6 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     <div id="expense-summary" class="summary-bar"></div>
     <div id="expense-list"></div>
     <p id="expense-empty" class="empty-msg">支払い記録がありません</p>
-  </div>
-  <!-- 支出ダッシュボード -->
-  <div class="card">
-    <h2 class="card-title">📊 支出サマリー</h2>
-    <div id="dashboard-stats" class="dashboard-grid"></div>
-    <div class="dash-section-header">
-      <p class="dash-section-title">支払い者別</p>
-      <div id="dash-currency-payer" class="dash-currency-toggle" data-currency="JPY">
-        <button class="dash-cur-btn active" data-cur="JPY">JPY</button>
-        <button class="dash-cur-btn" data-cur="AUD">AUD</button>
-      </div>
-    </div>
-    <div id="dashboard-category" class="cat-bar-list"></div>
-    <div style="margin-top:var(--sp-md);">
-      <div class="dash-section-header">
-        <p class="dash-section-title">日別支出</p>
-        <div id="dash-currency-daily" class="dash-currency-toggle" data-currency="JPY">
-          <button class="dash-cur-btn active" data-cur="JPY">JPY</button>
-          <button class="dash-cur-btn" data-cur="AUD">AUD</button>
-        </div>
-      </div>
-      <div id="dashboard-daily" class="daily-chart-stacked"></div>
-    </div>
-    <div id="dash-legend" class="dash-legend"></div>
-    <p id="dashboard-empty" class="empty-msg" hidden>支払いデータがありません</p>
   </div>
   <!-- 為替レート -->
   <div class="card">
@@ -2757,142 +2706,6 @@ function fallbackCopy(text) {
   document.body.removeChild(ta);
 }
 
-/* ===== Feature 3: Spending Dashboard (支出サマリーダッシュボード) ===== */
-let dashPayerCurrency = 'JPY';
-let dashDailyCurrency = 'JPY';
-
-function renderDashboard() {
-  const statsEl = document.getElementById('dashboard-stats');
-  const catEl = document.getElementById('dashboard-category');
-  const dailyEl = document.getElementById('dashboard-daily');
-  const emptyEl = document.getElementById('dashboard-empty');
-  const legendEl = document.getElementById('dash-legend');
-
-  if (!state.expenses || state.expenses.length === 0) {
-    statsEl.innerHTML = ''; catEl.innerHTML = ''; dailyEl.innerHTML = '';
-    if (legendEl) legendEl.innerHTML = '';
-    emptyEl.hidden = false;
-    return;
-  }
-  emptyEl.hidden = true;
-
-  const rate = state.exchangeRate || 95;
-  const barColors = ['#4466ce', '#e05688', '#16a34a', '#e97c1f', '#8b5cf6', '#0891b2', '#dc2626', '#6d28d9'];
-
-  // Currency conversion helpers
-  function toJPY(amount, currency) { return currency === 'AUD' ? amount * rate : amount; }
-  function toAUD(amount, currency) { return currency === 'JPY' ? amount / rate : amount; }
-  function convertTo(amount, currency, target) { return target === 'AUD' ? toAUD(amount, currency) : toJPY(amount, currency); }
-  function fmtCur(val, cur) { return cur === 'AUD' ? formatAmount(Math.round(val * 100) / 100, 'AUD') : formatAmount(Math.round(val), 'JPY'); }
-  function fmtShort(val, cur) {
-    if (cur === 'AUD') return '$' + (Math.round(val * 10) / 10);
-    if (val >= 10000) return '¥' + (Math.round(val / 1000)) + 'k';
-    return '¥' + Math.round(val);
-  }
-
-  // === Stats grid (always JPY-based summary) ===
-  const totalJPY = state.expenses.reduce((s, e) => s + toJPY(e.amount, e.currency), 0);
-  const perPerson = state.members.length > 0 ? totalJPY / state.members.length : totalJPY;
-  const totalAUD = state.expenses.filter(e => e.currency === 'AUD').reduce((s, e) => s + e.amount, 0);
-
-  statsEl.innerHTML = `
-    <div class="dash-stat"><div class="dash-val">${formatAmount(Math.round(totalJPY), 'JPY')}</div><div class="dash-label">総支出(円換算)</div></div>
-    <div class="dash-stat"><div class="dash-val">${state.expenses.length}件</div><div class="dash-label">支払い回数</div></div>
-    <div class="dash-stat"><div class="dash-val">${formatAmount(Math.round(perPerson), 'JPY')}</div><div class="dash-label">1人あたり</div></div>
-    <div class="dash-stat"><div class="dash-val">${totalAUD > 0 ? formatAmount(totalAUD, 'AUD') : '-'}</div><div class="dash-label">AUD支出合計</div></div>
-  `;
-
-  // === Update currency toggle active state ===
-  document.querySelectorAll('#dash-currency-payer .dash-cur-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.cur === dashPayerCurrency);
-  });
-  document.querySelectorAll('#dash-currency-daily .dash-cur-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.cur === dashDailyCurrency);
-  });
-
-  // === Per-person horizontal bars ===
-  const pCur = dashPayerCurrency;
-  const perPersonMap = {};
-  state.members.forEach(m => { perPersonMap[m.id] = 0; });
-  state.expenses.forEach(e => {
-    if (perPersonMap[e.payerId] !== undefined) {
-      perPersonMap[e.payerId] += convertTo(e.amount, e.currency, pCur);
-    }
-  });
-  const maxSpent = Math.max(...Object.values(perPersonMap), 0.01);
-
-  catEl.innerHTML = state.members.map((m, i) => {
-    const spent = perPersonMap[m.id] || 0;
-    const pct = maxSpent > 0 ? (spent / maxSpent * 100) : 0;
-    const color = m.color || barColors[i % barColors.length];
-    return `<div class="cat-bar-row">
-      <span class="cat-bar-label">${escapeHtml(m.name)}</span>
-      <div class="cat-bar-track"><div class="cat-bar-fill" style="width:${pct}%;background:${color}"></div></div>
-      <span class="cat-bar-val">${fmtCur(spent, pCur)}</span>
-    </div>`;
-  }).join('');
-
-  // === Daily stacked bar chart ===
-  const dCur = dashDailyCurrency;
-  // Build per-day per-member data
-  const dailyPersonMap = {}; // { date: { memberId: amount } }
-  state.expenses.forEach(e => {
-    if (!e.date) return;
-    if (!dailyPersonMap[e.date]) dailyPersonMap[e.date] = {};
-    const mid = e.payerId;
-    if (!dailyPersonMap[e.date][mid]) dailyPersonMap[e.date][mid] = 0;
-    dailyPersonMap[e.date][mid] += convertTo(e.amount, e.currency, dCur);
-  });
-  const dailyDates = Object.keys(dailyPersonMap).sort();
-  if (dailyDates.length === 0) { dailyEl.innerHTML = ''; if (legendEl) legendEl.innerHTML = ''; return; }
-
-  // Compute daily totals and find max
-  const dailyTotals = {};
-  dailyDates.forEach(d => {
-    dailyTotals[d] = Object.values(dailyPersonMap[d]).reduce((s, v) => s + v, 0);
-  });
-  const maxDaily = Math.max(...Object.values(dailyTotals), 0.01);
-
-  // Build stacked columns - adapt height to column count
-  const colCount = dailyDates.length;
-  const chartHeight = colCount <= 5 ? 130 : colCount <= 8 ? 110 : 90;
-  dailyEl.style.height = chartHeight + 'px';
-  // Shorter format for many columns (no currency symbol)
-  function fmtDailyLabel(val, cur) {
-    if (cur === 'AUD') return Math.round(val) + '';
-    if (val >= 10000) return Math.round(val / 1000) + 'k';
-    if (val >= 1000) return (Math.round(val / 100) / 10) + 'k';
-    return Math.round(val) + '';
-  }
-
-  dailyEl.innerHTML = dailyDates.map(d => {
-    const total = dailyTotals[d];
-    const colH = Math.max(4, total / maxDaily * 100);
-    const [, mo, day] = d.split('-');
-    // Segments for each member (bottom to top)
-    const segs = state.members.map((m, i) => {
-      const val = (dailyPersonMap[d] && dailyPersonMap[d][m.id]) || 0;
-      if (val <= 0) return '';
-      const segH = (val / total) * colH;
-      const color = m.color || barColors[i % barColors.length];
-      return `<div class="daily-seg" style="height:${segH}%;background:${color}" title="${escapeHtml(m.name)}: ${fmtCur(val, dCur)}"></div>`;
-    }).join('');
-    const topLabel = colCount <= 7 ? fmtShort(total, dCur) : fmtDailyLabel(total, dCur);
-    return `<div class="daily-col" style="height:100%;">
-      <div style="display:flex;flex-direction:column-reverse;height:${colH}%;width:100%;">${segs}</div>
-      <span class="daily-col-total">${topLabel}</span>
-      <span class="daily-col-label">${Number(day)}</span>
-    </div>`;
-  }).join('');
-
-  // === Legend ===
-  if (legendEl) {
-    legendEl.innerHTML = state.members.map((m, i) => {
-      const color = m.color || barColors[i % barColors.length];
-      return `<span class="dash-legend-item"><span class="dash-legend-dot" style="background:${color}"></span>${escapeHtml(m.name)}</span>`;
-    }).join('');
-  }
-}
 
 /* ===== Feature 4: Weather (天気予報連携) ===== */
 let weatherCache = {};
@@ -3321,7 +3134,6 @@ function renderAll() {
   renderItinerary();
   renderItinEditList();
   renderChecklist();
-  renderDashboard();
   renderTemplates();
   document.getElementById('exchange-rate').value = state.exchangeRate;
   updateCurrencyToggle(document.getElementById('settle-currency-toggle'), state.settleCurrency, 'settle');
@@ -3345,7 +3157,7 @@ function initEventListeners() {
     if (tabId === 'home') { renderHome(); }
     if (tabId === 'itinerary') { renderItinerary(); renderItinEditList(); renderItinParticipants(); renderTemplates(); injectWeatherBadges(); }
     if (tabId === 'checklist') { renderChecklist(); }
-    if (tabId === 'money') { renderPayerSelect(); renderSplitCheckboxes(); renderExpenses(); renderSettlement(); renderDashboard(); }
+    if (tabId === 'money') { renderPayerSelect(); renderSplitCheckboxes(); renderExpenses(); renderSettlement(); }
     if (tabId === 'settings') { renderMembers(); updateSpreadsheetLink(); }
   });
 
@@ -3793,19 +3605,6 @@ function initEventListeners() {
     applyTemplate(idx);
   });
 
-  // ===== Feature 3: Dashboard currency toggles =====
-  document.getElementById('dash-currency-payer').addEventListener('click', function(e) {
-    const btn = e.target.closest('.dash-cur-btn');
-    if (!btn) return;
-    dashPayerCurrency = btn.dataset.cur;
-    renderDashboard();
-  });
-  document.getElementById('dash-currency-daily').addEventListener('click', function(e) {
-    const btn = e.target.closest('.dash-cur-btn');
-    if (!btn) return;
-    dashDailyCurrency = btn.dataset.cur;
-    renderDashboard();
-  });
 }
 
 /* ===== Fetch Live Exchange Rate ===== */
