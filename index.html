@@ -2552,7 +2552,7 @@ function renderChecklistMemberFilter() {
   const allCls = clFilterMember === 'all' ? 'active' : '';
   let h = `<span class="cl-member-filter-btn ${allCls}" data-cl-member="all" style="background:var(--c-text)">全員</span>`;
   state.members.forEach(m => {
-    const active = clFilterMember === m.id ? 'active' : '';
+    const active = String(clFilterMember) === String(m.id) ? 'active' : '';
     h += `<span class="cl-member-filter-btn ${active}" data-cl-member="${m.id}" style="background:${m.color||'#888'}">${escapeHtml(m.name)}</span>`;
   });
   c.innerHTML = h;
@@ -2577,9 +2577,10 @@ function renderChecklist() {
 
   // Filter by category
   let filtered = clFilterCat === 'all' ? [...items] : items.filter(i => i.category === clFilterCat);
-  // Filter by member
+  // Filter by member (use String comparison to handle mixed id types)
   if (clFilterMember !== 'all') {
-    filtered = filtered.filter(i => (i.members || []).includes(clFilterMember));
+    const filterKey = String(clFilterMember);
+    filtered = filtered.filter(i => (i.members || []).some(mid => String(mid) === filterKey));
   }
 
   // Calculate overall progress (total member-checks across all items)
@@ -2611,7 +2612,7 @@ function renderChecklist() {
     const mp = memberProgress[m.id];
     if (mp && mp.total > 0) {
       const done = mp.done === mp.total;
-      const filterActive = clFilterMember === m.id ? ' filter-active' : '';
+      const filterActive = String(clFilterMember) === String(m.id) ? ' filter-active' : '';
       sumH += `<span class="cl-progress-member${done ? ' done' : ''}${filterActive}" data-cl-member="${m.id}" style="background:${m.color||'#888'}">${escapeHtml(m.name)} <span class="cl-pm-count">${mp.done}/${mp.total}</span></span>`;
     }
   });
@@ -3601,7 +3602,7 @@ function initEventListeners() {
     const btn = e.target.closest('.cl-member-filter-btn');
     if (!btn) return;
     const val = btn.dataset.clMember;
-    clFilterMember = val === 'all' ? 'all' : (isNaN(Number(val)) ? val : Number(val));
+    clFilterMember = val === 'all' ? 'all' : val;
     renderChecklist();
   });
 
@@ -3611,8 +3612,7 @@ function initEventListeners() {
     if (!badge) return;
     const val = badge.dataset.clMember;
     if (!val) return;
-    const mid = isNaN(Number(val)) ? val : Number(val);
-    clFilterMember = clFilterMember === mid ? 'all' : mid;
+    clFilterMember = String(clFilterMember) === val ? 'all' : val;
     renderChecklist();
   });
 
