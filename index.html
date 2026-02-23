@@ -802,13 +802,16 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     <p class="modal-message" style="font-weight:700;margin-bottom:12px;">設定</p>
 
     <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:4px;">クラウド同期</p>
-    <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:8px;line-height:1.4;">GAS デプロイURLを設定するとスプレッドシートと自動同期されます。</p>
-    <div class="form-group" style="margin-bottom:8px;">
-      <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off" style="font-size:0.75rem;">
-    </div>
-    <div style="display:flex;gap:6px;margin-bottom:16px;">
-      <button id="cloud-modal-save" class="btn btn-primary" style="flex:1;font-size:var(--fs-sm);">URL保存</button>
-      <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:0.75rem;padding:6px 10px;">削除</button>
+    <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:12px;line-height:1.4;">✅ スプレッドシートと自動同期中です。すべての端末でURLを開くだけでデータが共有されます。</p>
+    <!-- GAS URL設定（通常は非表示・開発者向け） -->
+    <div id="gas-url-section" hidden>
+      <div class="form-group" style="margin-bottom:8px;">
+        <input type="url" id="gas-url-input" class="form-input" placeholder="https://script.google.com/macros/s/..." autocomplete="off" style="font-size:0.75rem;">
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:16px;">
+        <button id="cloud-modal-save" class="btn btn-primary" style="flex:1;font-size:var(--fs-sm);">URL保存</button>
+        <button id="cloud-modal-clear" class="btn btn-danger" style="font-size:0.75rem;padding:6px 10px;">削除</button>
+      </div>
     </div>
 
     <div style="border-top:1px solid var(--c-border);padding-top:12px;margin-bottom:12px;">
@@ -816,13 +819,6 @@ textarea.form-input { min-height: 60px; resize: vertical; }
       <p style="font-size:0.75rem;color:var(--c-text2);margin-bottom:8px;line-height:1.4;">データの確認・一括投入はスプレッドシートから行えます。</p>
       <div id="spreadsheet-link-area" style="margin-bottom:8px;">
         <a id="spreadsheet-link" href="#" target="_blank" rel="noopener" class="btn btn-secondary" style="width:100%;font-size:var(--fs-sm);text-decoration:none;text-align:center;display:none;">📊 スプレッドシートを開く</a>
-      </div>
-      <div class="form-group" style="margin-bottom:4px;">
-        <input type="url" id="spreadsheet-url-input" class="form-input" placeholder="スプレッドシートのURLを貼り付け" autocomplete="off" style="font-size:0.75rem;">
-      </div>
-      <div style="display:flex;gap:6px;margin-bottom:4px;">
-        <button id="spreadsheet-url-save" class="btn btn-primary" style="flex:1;font-size:var(--fs-sm);">URL保存</button>
-        <button id="spreadsheet-url-clear" class="btn btn-danger" style="font-size:0.75rem;padding:6px 10px;">削除</button>
       </div>
     </div>
 
@@ -898,6 +894,7 @@ function saveState() {
 /* ===== Cloud Sync (GAS) ===== */
 const GAS_URL_KEY = 'travel-app-gas-url';
 const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbx3nSzUALfR5rKavXvAv7zFxL8vN_WvWTSb7RSLnnT02UQ-z_soB5CEKFPzM__wkkNK/exec';
+const DEFAULT_SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1p3axqRtW8ePEyhFHh0KSIcCfn9Zil-9krnvXBAZt0do/edit';
 let syncTimer = null;
 
 function getGasUrl() {
@@ -1646,14 +1643,10 @@ function handleImport(e) {
 
 /* ===== Spreadsheet Link ===== */
 function updateSpreadsheetLink() {
-  const url = localStorage.getItem('travel-app-spreadsheet-url');
+  const url = localStorage.getItem('travel-app-spreadsheet-url') || DEFAULT_SPREADSHEET_URL;
   const link = document.getElementById('spreadsheet-link');
-  if (url) {
-    link.href = url;
-    link.style.display = 'block';
-  } else {
-    link.style.display = 'none';
-  }
+  link.href = url;
+  link.style.display = 'block';
 }
 
 /* ===== Render All ===== */
@@ -1843,7 +1836,6 @@ function initEventListeners() {
 
   // Cloud sync button
   document.getElementById('btn-sync').addEventListener('click', async function() {
-    if (!getGasUrl()) { showToast('クラウド設定でURLを設定してください'); return; }
     showToast('同期中...');
     await syncFromCloud();
     showToast('同期完了');
@@ -1851,53 +1843,12 @@ function initEventListeners() {
 
   // Cloud settings modal
   document.getElementById('btn-cloud-settings').addEventListener('click', function() {
-    document.getElementById('gas-url-input').value = getGasUrl();
-    document.getElementById('spreadsheet-url-input').value = localStorage.getItem('travel-app-spreadsheet-url') || '';
     updateSpreadsheetLink();
     document.getElementById('cloud-modal-overlay').hidden = false;
   });
   document.getElementById('cloud-modal-cancel').addEventListener('click', function() {
-    document.getElementById('cloud-modal-overlay').hidden = false;
     document.getElementById('cloud-modal-overlay').hidden = true;
   });
-  document.getElementById('cloud-modal-save').addEventListener('click', function() {
-    const url = document.getElementById('gas-url-input').value.trim();
-    if (url && !url.startsWith('https://script.google.com/')) {
-      showToast('正しいGAS URLを入力してください');
-      return;
-    }
-    setGasUrl(url);
-    document.getElementById('cloud-modal-overlay').hidden = true;
-    if (url) {
-      showToast('URL保存 - 同期を開始します');
-      syncToCloud();
-    } else {
-      setSyncStatus('off');
-      showToast('URL設定をクリアしました');
-    }
-  });
-  document.getElementById('cloud-modal-clear').addEventListener('click', function() {
-    setGasUrl('');
-    document.getElementById('gas-url-input').value = '';
-    document.getElementById('cloud-modal-overlay').hidden = true;
-    setSyncStatus('off');
-    showToast('クラウド設定を削除しました');
-  });
-  document.getElementById('spreadsheet-url-save').addEventListener('click', function() {
-    const url = document.getElementById('spreadsheet-url-input').value.trim();
-    if (url) {
-      localStorage.setItem('travel-app-spreadsheet-url', url);
-      showToast('スプレッドシートURLを保存しました');
-    }
-    updateSpreadsheetLink();
-  });
-  document.getElementById('spreadsheet-url-clear').addEventListener('click', function() {
-    localStorage.removeItem('travel-app-spreadsheet-url');
-    document.getElementById('spreadsheet-url-input').value = '';
-    updateSpreadsheetLink();
-    showToast('スプレッドシートURLを削除しました');
-  });
-
   document.getElementById('cloud-modal-overlay').addEventListener('click', function(e) {
     if (e.target === this) this.hidden = true;
   });
