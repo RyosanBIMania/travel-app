@@ -893,10 +893,11 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 <header class="app-header">
   <h1 class="app-title">旅のしおり</h1>
   <div class="header-actions">
-    <button id="btn-sync" class="icon-btn" title="クラウド同期" style="position:relative;">
+    <button id="btn-sync" class="icon-btn" title="クラウドから取得" style="position:relative;">
       &#x1F504;
       <span id="sync-status" class="sync-dot" title="同期状態"></span>
     </button>
+    <button id="btn-cloud-upload" class="icon-btn" title="クラウドに保存">&#x2601;</button>
     <button id="btn-cloud-settings" class="icon-btn" title="設定">&#x2699;</button>
     <input type="file" id="import-file" accept=".json" hidden>
   </div>
@@ -1299,7 +1300,8 @@ function loadState() {
 let cloudSyncReady = false; // syncFromCloud完了まではsyncToCloudを抑制
 function saveState() {
   localStorage.setItem(APP_KEY, JSON.stringify(state));
-  if (cloudSyncReady) debouncedSyncToCloud();
+  // クラウドへの自動アップロードは行わない（クラウドを正とする設計）
+  // 手動で「クラウドに保存」ボタンを押した時のみアップロード
 }
 
 /* ===== Cloud Sync (GAS) ===== */
@@ -1375,65 +1377,57 @@ async function syncFromCloud() {
         localStorage.setItem('travel-app-spreadsheet-url', cloud.spreadsheetUrl);
         updateSpreadsheetLink();
       }
-      if (cloud.members && cloud.members.length > 0 || cloud.expenses && cloud.expenses.length > 0 || cloud.itinerary && cloud.itinerary.length > 0) {
-        // Workaround: GASのヘッダーずれでparticipants列が空文字キー""に
-        // 格納される問題への対策
-        if (Array.isArray(cloud.itinerary)) {
-          cloud.itinerary.forEach(e => {
-            // 空文字キーにJSON文字列がある場合（GASヘッダーずれ）
-            if ((!e.participants || e.participants.length === 0) && e[''] && typeof e[''] === 'string') {
-              try { e.participants = JSON.parse(e['']); } catch(ex) {}
-              delete e[''];
-            }
-            // participantsがまだ文字列の場合はパース
-            if (typeof e.participants === 'string' && e.participants) {
-              try { e.participants = JSON.parse(e.participants); } catch(ex) { e.participants = []; }
-            }
-            if (!Array.isArray(e.participants)) e.participants = [];
-          });
-        }
-        // 同様にexpensesのsplitWithも修復
-        if (Array.isArray(cloud.expenses)) {
-          cloud.expenses.forEach(e => {
-            if ((!e.splitWith || e.splitWith.length === 0) && e[''] && typeof e[''] === 'string') {
-              try { e.splitWith = JSON.parse(e['']); } catch(ex) {}
-              delete e[''];
-            }
-            if (typeof e.splitWith === 'string' && e.splitWith) {
-              try { e.splitWith = JSON.parse(e.splitWith); } catch(ex) { e.splitWith = []; }
-            }
-            if (!Array.isArray(e.splitWith)) e.splitWith = [];
-          });
-        }
-        // フォールバック: 上記で修復できなかった場合、ローカルデータからマージ
-        if (Array.isArray(cloud.itinerary) && cloud.itinerary.length > 0) {
-          const allEmpty = cloud.itinerary.every(e => !e.participants || e.participants.length === 0);
-          if (allEmpty && Array.isArray(state.itinerary) && state.itinerary.length > 0) {
-            const localMap = {};
-            state.itinerary.forEach(e => { localMap[e.id] = e.participants; });
-            cloud.itinerary.forEach(e => {
-              if (localMap[e.id] && localMap[e.id].length > 0) {
-                e.participants = localMap[e.id];
-              }
-            });
+      // === クラウドを正とする: クラウドにデータがあれば常にローカルを上書き ===
+      // Workaround: GASのヘッダーずれでparticipants列が空文字キー""に格納される問題への対策
+      if (Array.isArray(cloud.itinerary)) {
+        cloud.itinerary.forEach(e => {
+          if ((!e.participants || e.participants.length === 0) && e[''] && typeof e[''] === 'string') {
+            try { e.participants = JSON.parse(e['']); } catch(ex) {}
+            delete e[''];
           }
-        }
-        state = cloud;
-        if (!Array.isArray(state.members)) state.members = [];
-        if (!Array.isArray(state.expenses)) state.expenses = [];
-        if (!Array.isArray(state.itinerary)) state.itinerary = [];
-        if (!Array.isArray(state.checklist)) state.checklist = [];
-        // nextChecklistId: GASから正しく返らない場合、既存データから算出
-        const maxClId = state.checklist.length > 0 ? Math.max(...state.checklist.map(i => Number(i.id) || 0)) : 0;
-        if (!state.nextChecklistId || state.nextChecklistId <= maxClId) state.nextChecklistId = maxClId + 1;
-        // Ensure all members have a color
-        state.members.forEach((m, i) => {
-          if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
+          if (typeof e.participants === 'string' && e.participants) {
+            try { e.participants = JSON.parse(e.participants); } catch(ex) { e.participants = []; }
+          }
+          if (!Array.isArray(e.participants)) e.participants = [];
         });
-        localStorage.setItem(APP_KEY, JSON.stringify(state));
-        renderAll();
       }
+      // 同様にexpensesのsplitWithも修復
+      if (Array.isArray(cloud.expenses)) {
+        cloud.expenses.forEach(e => {
+          if ((!e.splitWith || e.splitWith.length === 0) && e[''] && typeof e[''] === 'string') {
+            try { e.splitWith = JSON.parse(e['']); } catch(ex) {}
+            delete e[''];
+          }
+          if (typeof e.splitWith === 'string' && e.splitWith) {
+            try { e.splitWith = JSON.parse(e.splitWith); } catch(ex) { e.splitWith = []; }
+          }
+          if (!Array.isArray(e.splitWith)) e.splitWith = [];
+        });
+      }
+      // checklistも修復
+      if (Array.isArray(cloud.checklist)) {
+        cloud.checklist.forEach(e => {
+          if (typeof e.checked === 'string') e.checked = e.checked === 'true' || e.checked === 'TRUE';
+        });
+      }
+
+      // クラウドのデータでstateを完全上書き
+      state = cloud;
+      if (!Array.isArray(state.members)) state.members = [];
+      if (!Array.isArray(state.expenses)) state.expenses = [];
+      if (!Array.isArray(state.itinerary)) state.itinerary = [];
+      if (!Array.isArray(state.checklist)) state.checklist = [];
+      // nextChecklistId: GASから正しく返らない場合、既存データから算出
+      const maxClId = state.checklist.length > 0 ? Math.max(...state.checklist.map(i => Number(i.id) || 0)) : 0;
+      if (!state.nextChecklistId || state.nextChecklistId <= maxClId) state.nextChecklistId = maxClId + 1;
+      // Ensure all members have a color
+      state.members.forEach((m, i) => {
+        if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
+      });
+      localStorage.setItem(APP_KEY, JSON.stringify(state));
+      renderAll();
       setSyncStatus('synced');
+      console.log('[sync] クラウドからデータ取得完了 (クラウド=正)');
     } else {
       setSyncStatus('error');
     }
@@ -2825,7 +2819,8 @@ function initEventListeners() {
   document.getElementById('btn-import').addEventListener('click', function() { document.getElementById('import-file').click(); });
   document.getElementById('import-file').addEventListener('change', handleImport);
 
-  // Cloud sync button (tap=同期, 長押し=キャッシュクリア＋同期)
+  // Cloud sync button: タップ=クラウドから取得（クラウドが正）
+  // 長押し=ローカルクリア＆クラウドから再取得
   {
     const syncBtn = document.getElementById('btn-sync');
     let pressTimer = null;
@@ -2837,22 +2832,30 @@ function initEventListeners() {
         if (confirm('ローカルデータをクリアしてクラウドから再取得しますか？')) {
           localStorage.removeItem(APP_KEY);
           state = createDefaultState();
-          showToast('クリア＆同期中...');
+          showToast('クリア＆再取得中...');
           await syncFromCloud();
-          showToast('再同期完了！');
+          showToast('クラウドから再取得完了！');
         }
       }, 1500);
     });
     syncBtn.addEventListener('pointerup', async function() {
       clearTimeout(pressTimer);
       if (!longPressed) {
-        showToast('同期中...');
+        showToast('クラウドから取得中...');
         await syncFromCloud();
-        showToast('同期完了');
+        showToast('クラウドから取得完了');
       }
     });
     syncBtn.addEventListener('pointerleave', function() { clearTimeout(pressTimer); });
   }
+
+  // Cloud upload button: クラウドに保存（明示的操作のみ）
+  document.getElementById('btn-cloud-upload').addEventListener('click', async function() {
+    if (!confirm('現在のローカルデータをクラウド（Googleスプレッドシート）に保存しますか？\n\n⚠️ クラウドのデータが上書きされます。')) return;
+    showToast('クラウドに保存中...');
+    await syncToCloud();
+    showToast('クラウドに保存完了！');
+  });
 
   // Cloud settings modal
   document.getElementById('btn-cloud-settings').addEventListener('click', function() {
