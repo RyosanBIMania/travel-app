@@ -940,6 +940,50 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .trip-banner-countdown .countdown-num { font-size:var(--fs-lg); font-weight:800; color:#fff; }
 @keyframes bannerShimmer { 0%{background-position:-200% center;} 100%{background-position:200% center;} }
 .trip-banner-title { background-size:200% auto; background-image:linear-gradient(90deg, #fff 0%, #fff 40%, var(--c-gold-light) 50%, #fff 60%, #fff 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:bannerShimmer 8s linear infinite; }
+/* ===== Home Tab ===== */
+.home-welcome-card { text-align:center; padding:var(--sp-xl) var(--sp-lg); }
+.home-welcome-icon { font-size:3rem; margin-bottom:var(--sp-sm); }
+.home-welcome-title { font-size:var(--fs-xl); font-weight:800; color:var(--c-primary); margin-bottom:var(--sp-sm); }
+.home-welcome-desc { font-size:var(--fs-sm); color:var(--c-text2); margin-bottom:var(--sp-md); }
+.home-welcome-btn { margin:0 auto; }
+.home-card { cursor:pointer; transition:box-shadow var(--t-smooth), transform var(--t-smooth); }
+.home-card:active { transform:scale(0.98); box-shadow:var(--shadow-sm); }
+.home-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:var(--sp-sm); }
+.home-card-title { font-size:var(--fs-lg); font-weight:800; color:var(--c-primary); display:flex; align-items:center; gap:var(--sp-sm); margin:0; }
+.home-card-arrow { font-size:var(--fs-base); color:var(--c-text2); opacity:0.4; transition:transform var(--t-fast); }
+.home-card:active .home-card-arrow { transform:translateX(3px); }
+/* Home: Itinerary events */
+.home-event { display:flex; align-items:flex-start; gap:var(--sp-sm); padding:var(--sp-sm) 0; border-bottom:1px solid var(--c-border); }
+.home-event:last-child { border-bottom:none; }
+.home-event-icon { flex-shrink:0; font-size:1rem; width:24px; text-align:center; }
+.home-event-time { font-size:var(--fs-xs); color:var(--c-text2); font-weight:700; min-width:42px; flex-shrink:0; }
+.home-event-title { font-size:var(--fs-sm); font-weight:600; color:var(--c-text); flex:1; line-height:1.35; }
+.home-event.next-up { background:rgba(26,35,126,0.04); border-radius:var(--radius-xs); padding:var(--sp-sm); margin:2px calc(-1 * var(--sp-sm)); }
+.home-next-badge { display:inline-block; font-size:0.55rem; font-weight:700; color:#fff; background:linear-gradient(135deg, var(--c-primary), var(--c-gold)); padding:1px 6px; border-radius:var(--radius-full); margin-left:6px; vertical-align:middle; letter-spacing:0.04em; }
+.home-event-empty { text-align:center; color:var(--c-text2); font-size:var(--fs-sm); padding:var(--sp-md) 0; }
+.home-more-link { text-align:center; font-size:var(--fs-xs); color:var(--c-primary); padding:var(--sp-sm) 0 0; font-weight:600; }
+/* Home: Checklist progress */
+.home-cl-progress { margin-bottom:var(--sp-sm); }
+.home-cl-bar-track { height:8px; background:rgba(0,0,0,0.06); border-radius:4px; overflow:hidden; margin-bottom:var(--sp-sm); }
+.home-cl-bar-fill { height:100%; background:linear-gradient(90deg, var(--c-success) 0%, #69f0ae 100%); border-radius:4px; transition:width var(--t-smooth); }
+.home-cl-stats { display:flex; align-items:center; gap:var(--sp-sm); font-size:var(--fs-sm); color:var(--c-text2); }
+.home-cl-pct { font-size:var(--fs-xl); font-weight:800; color:var(--c-primary); }
+.home-cl-members { display:flex; flex-wrap:wrap; gap:6px; margin-top:var(--sp-sm); }
+.home-cl-member-badge { display:inline-flex; align-items:center; gap:3px; padding:3px 10px; border-radius:var(--radius-full); font-size:var(--fs-xs); font-weight:600; color:#fff; }
+.home-cl-member-badge.done { opacity:1; }
+.home-cl-member-badge:not(.done) { opacity:0.65; }
+/* Home: Money summary */
+.home-money-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--sp-sm); margin-bottom:var(--sp-md); }
+.home-money-stat { text-align:center; padding:var(--sp-sm); background:rgba(0,0,0,0.02); border-radius:var(--radius-xs); border:1px solid rgba(0,0,0,0.04); }
+.home-money-val { font-size:var(--fs-lg); font-weight:800; color:var(--c-primary); letter-spacing:-0.02em; }
+.home-money-label { font-size:var(--fs-xs); color:var(--c-text2); margin-top:2px; }
+.home-money-bars { display:flex; flex-direction:column; gap:4px; }
+.home-money-bar-row { display:flex; align-items:center; gap:6px; font-size:var(--fs-xs); }
+.home-money-bar-name { width:50px; text-align:right; flex-shrink:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.home-money-bar-track { flex:1; height:12px; background:rgba(0,0,0,0.04); border-radius:6px; overflow:hidden; min-width:30px; }
+.home-money-bar-fill { height:100%; border-radius:6px; transition:width var(--t-smooth); }
+.home-money-bar-val { width:60px; flex-shrink:0; text-align:right; color:var(--c-text2); }
+
 /* ===== Map Auto Link ===== */
 .itin-link-auto { background:rgba(0,139,183,0.08); color:var(--c-accent); border:1px dashed rgba(0,139,183,0.3); }
 .itin-link-auto:hover { background:rgba(0,139,183,0.14); }
@@ -993,7 +1037,11 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 <!-- ===== Tab Navigation ===== -->
 <nav class="tab-nav" role="tablist">
-  <button class="tab-btn active" data-tab="itinerary" role="tab">
+  <button class="tab-btn active" data-tab="home" role="tab">
+    <span class="tab-icon">&#x1F3E0;</span>
+    <span class="tab-label">ホーム</span>
+  </button>
+  <button class="tab-btn" data-tab="itinerary" role="tab">
     <span class="tab-icon">&#x1F5FA;</span>
     <span class="tab-label">旅程</span>
   </button>
@@ -1011,8 +1059,40 @@ textarea.form-input { min-height: 60px; resize: vertical; }
   </button>
 </nav>
 
+<!-- ===== Tab: ホーム（ダッシュボード） ===== -->
+<section id="tab-home" class="tab-content active">
+  <div id="home-banner"></div>
+  <div id="home-welcome" class="card home-welcome-card" hidden>
+    <div class="home-welcome-icon">&#x2708;&#xFE0F;</div>
+    <h2 class="home-welcome-title">旅のしおりへようこそ</h2>
+    <p class="home-welcome-desc">設定タブで旅行情報を登録して始めましょう</p>
+    <button class="btn btn-primary home-welcome-btn" data-home-goto="settings">&#x2699; 設定を開く</button>
+  </div>
+  <div id="home-itinerary-card" class="card home-card" hidden data-home-goto="itinerary">
+    <div class="home-card-header">
+      <h3 class="home-card-title">&#x1F5FA; 今日の予定</h3>
+      <span class="home-card-arrow">&#x276F;</span>
+    </div>
+    <div id="home-itinerary-body"></div>
+  </div>
+  <div id="home-checklist-card" class="card home-card" hidden data-home-goto="checklist">
+    <div class="home-card-header">
+      <h3 class="home-card-title">&#x1F9F3; 持ち物チェック</h3>
+      <span class="home-card-arrow">&#x276F;</span>
+    </div>
+    <div id="home-checklist-body"></div>
+  </div>
+  <div id="home-money-card" class="card home-card" hidden data-home-goto="money">
+    <div class="home-card-header">
+      <h3 class="home-card-title">&#x1F4B0; 支出サマリー</h3>
+      <span class="home-card-arrow">&#x276F;</span>
+    </div>
+    <div id="home-money-body"></div>
+  </div>
+</section>
+
 <!-- ===== Tab: 旅程（スケジュール閲覧＋編集） ===== -->
-<section id="tab-itinerary" class="tab-content active">
+<section id="tab-itinerary" class="tab-content">
   <div id="trip-banner" class="trip-banner" hidden></div>
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-sm);">
@@ -2966,6 +3046,163 @@ function applyTemplate(idx) {
 }
 
 /* ===== Render All ===== */
+/* ===== Home Dashboard ===== */
+function renderHome() {
+  const bannerEl = document.getElementById('home-banner');
+  const welcomeEl = document.getElementById('home-welcome');
+  const itinCard = document.getElementById('home-itinerary-card');
+  const clCard = document.getElementById('home-checklist-card');
+  const moneyCard = document.getElementById('home-money-card');
+  if (!bannerEl) return;
+
+  const { tripTitle, tripDestination, tripStartDate, tripEndDate, tripImageUrl } = state;
+  const hasTripInfo = tripTitle || tripDestination;
+
+  // --- Trip Banner ---
+  if (hasTripInfo) {
+    welcomeEl.hidden = true;
+    let bHtml = '';
+    if (tripImageUrl) bHtml += `<div class="trip-banner-bg" style="background-image:url('${escapeHtml(tripImageUrl)}')"></div>`;
+    bHtml += `<div class="trip-banner-content">`;
+    if (tripTitle) bHtml += `<div class="trip-banner-title">${escapeHtml(tripTitle)}</div>`;
+    if (tripDestination) bHtml += `<div class="trip-banner-dest">${escapeHtml(tripDestination)}</div>`;
+    if (tripStartDate || tripEndDate) {
+      const start = tripStartDate ? formatDateFull(tripStartDate) : '';
+      const end = tripEndDate ? formatDateFull(tripEndDate) : '';
+      bHtml += `<div class="trip-banner-dates">📅 ${start && end ? start + ' → ' + end : start || end}</div>`;
+    }
+    if (tripStartDate) {
+      const td = new Date(); td.setHours(0,0,0,0);
+      const sd = new Date(tripStartDate + 'T00:00:00');
+      const ed = tripEndDate ? new Date(tripEndDate + 'T23:59:59') : null;
+      const diff = Math.ceil((sd - td) / 86400000);
+      if (diff > 0) bHtml += `<div class="trip-banner-countdown">🛫 出発まであと <span class="countdown-num">${diff}</span> 日</div>`;
+      else if (diff === 0) bHtml += `<div class="trip-banner-countdown">🎉 いよいよ今日出発！</div>`;
+      else if (ed && td <= ed) { const day = Math.floor((td - sd) / 86400000) + 1; bHtml += `<div class="trip-banner-countdown">✨ 旅行 <span class="countdown-num">${day}</span> 日目</div>`; }
+      else bHtml += `<div class="trip-banner-countdown">📸 旅の思い出</div>`;
+    }
+    bHtml += `</div>`;
+    bannerEl.innerHTML = `<div class="trip-banner">${bHtml}</div>`;
+  } else {
+    bannerEl.innerHTML = '';
+    welcomeEl.hidden = false;
+  }
+
+  // --- Itinerary snapshot ---
+  const todayStr = getTodayString();
+  const now = new Date();
+  const nowTime = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+  const allSorted = [...state.itinerary].sort((a,b) => {
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return (a.time||'99:99').localeCompare(b.time||'99:99');
+  });
+  const todayEvents = allSorted.filter(ev => ev.date === todayStr);
+  let nextUpEv = null;
+  for (const ev of allSorted) {
+    if (ev.date > todayStr || (ev.date === todayStr && (!ev.time || ev.time >= nowTime))) { nextUpEv = ev; break; }
+  }
+  const itinBody = document.getElementById('home-itinerary-body');
+  if (state.itinerary.length === 0) {
+    itinCard.hidden = true;
+  } else {
+    itinCard.hidden = false;
+    // Update card title based on context
+    const titleEl = itinCard.querySelector('.home-card-title');
+    let iHtml = '';
+    if (todayEvents.length > 0) {
+      titleEl.innerHTML = '&#x1F5FA; 今日の予定';
+      todayEvents.slice(0, 5).forEach(ev => {
+        const icon = CATEGORY_ICONS[ev.category] || '📌';
+        const isNext = nextUpEv && ev.id === nextUpEv.id;
+        iHtml += `<div class="home-event${isNext ? ' next-up' : ''}">`;
+        iHtml += `<span class="home-event-icon">${icon}</span>`;
+        iHtml += `<span class="home-event-time">${ev.time ? escapeHtml(ev.time) : '--:--'}</span>`;
+        iHtml += `<span class="home-event-title">${escapeHtml(ev.title)}${isNext ? '<span class="home-next-badge">NEXT</span>' : ''}</span></div>`;
+      });
+      if (todayEvents.length > 5) iHtml += `<div class="home-more-link">他 ${todayEvents.length - 5} 件の予定 ›</div>`;
+    } else if (nextUpEv) {
+      titleEl.innerHTML = '&#x1F5FA; 次の予定';
+      const icon = CATEGORY_ICONS[nextUpEv.category] || '📌';
+      iHtml += `<div class="home-event-empty">今日の予定はありません</div>`;
+      iHtml += `<div style="font-size:var(--fs-xs);color:var(--c-text2);margin-bottom:4px">次の予定:</div>`;
+      iHtml += `<div class="home-event next-up"><span class="home-event-icon">${icon}</span>`;
+      iHtml += `<span class="home-event-time">${formatDate(nextUpEv.date)} ${nextUpEv.time||''}</span>`;
+      iHtml += `<span class="home-event-title">${escapeHtml(nextUpEv.title)}<span class="home-next-badge">NEXT</span></span></div>`;
+    } else {
+      titleEl.innerHTML = '&#x1F5FA; 旅程';
+      iHtml += `<div class="home-event-empty">予定はすべて終了しました 🎉</div>`;
+    }
+    itinBody.innerHTML = iHtml;
+  }
+
+  // --- Checklist progress ---
+  const items = state.checklist || [];
+  if (items.length === 0) {
+    clCard.hidden = true;
+  } else {
+    clCard.hidden = false;
+    let totalChecks = 0, doneChecks = 0;
+    const mp = {};
+    state.members.forEach(m => { mp[m.id] = { total:0, done:0 }; });
+    items.forEach(item => {
+      (item.members||[]).forEach(mid => {
+        totalChecks++;
+        if (item.checkedBy && item.checkedBy[String(mid)]) doneChecks++;
+        if (mp[mid]) { mp[mid].total++; if (item.checkedBy && item.checkedBy[String(mid)]) mp[mid].done++; }
+      });
+    });
+    const pct = totalChecks > 0 ? Math.round(doneChecks / totalChecks * 100) : 0;
+    let cHtml = `<div class="home-cl-progress">`;
+    cHtml += `<div class="home-cl-bar-track"><div class="home-cl-bar-fill" style="width:${pct}%"></div></div>`;
+    cHtml += `<div class="home-cl-stats"><span class="home-cl-pct">${pct}%</span><span>${doneChecks}/${totalChecks} 完了</span></div></div>`;
+    cHtml += `<div class="home-cl-members">`;
+    state.members.forEach(m => {
+      const p = mp[m.id];
+      if (p && p.total > 0) {
+        const done = p.done === p.total;
+        cHtml += `<span class="home-cl-member-badge${done ? ' done' : ''}" style="background:${m.color||'#888'}">${escapeHtml(m.name)} ${p.done}/${p.total}${done ? ' ✓' : ''}</span>`;
+      }
+    });
+    cHtml += `</div>`;
+    document.getElementById('home-checklist-body').innerHTML = cHtml;
+  }
+
+  // --- Money summary ---
+  if (!state.expenses || state.expenses.length === 0) {
+    moneyCard.hidden = true;
+  } else {
+    moneyCard.hidden = false;
+    const rate = state.exchangeRate || 95;
+    const toJPY = (a, c) => c === 'AUD' ? a * rate : a;
+    const totalJPY = state.expenses.reduce((s, e) => s + toJPY(e.amount, e.currency), 0);
+    const perPerson = state.members.length > 0 ? totalJPY / state.members.length : totalJPY;
+    const totalAUD = state.expenses.filter(e => e.currency === 'AUD').reduce((s, e) => s + e.amount, 0);
+
+    let mHtml = `<div class="home-money-grid">`;
+    mHtml += `<div class="home-money-stat"><div class="home-money-val">${formatAmount(Math.round(totalJPY),'JPY')}</div><div class="home-money-label">総支出(円換算)</div></div>`;
+    mHtml += `<div class="home-money-stat"><div class="home-money-val">${state.expenses.length}件</div><div class="home-money-label">支払い回数</div></div>`;
+    mHtml += `<div class="home-money-stat"><div class="home-money-val">${formatAmount(Math.round(perPerson),'JPY')}</div><div class="home-money-label">1人あたり</div></div>`;
+    mHtml += `<div class="home-money-stat"><div class="home-money-val">${totalAUD > 0 ? formatAmount(totalAUD,'AUD') : '-'}</div><div class="home-money-label">AUD支出合計</div></div>`;
+    mHtml += `</div>`;
+
+    // Per-member bars
+    const perMember = {};
+    state.members.forEach(m => { perMember[m.id] = 0; });
+    state.expenses.forEach(e => { if (perMember[e.payerId] !== undefined) perMember[e.payerId] += toJPY(e.amount, e.currency); });
+    const maxSpent = Math.max(...Object.values(perMember), 0.01);
+    mHtml += `<div class="home-money-bars">`;
+    state.members.forEach(m => {
+      const spent = perMember[m.id] || 0;
+      const pctBar = maxSpent > 0 ? (spent / maxSpent * 100) : 0;
+      mHtml += `<div class="home-money-bar-row"><span class="home-money-bar-name">${escapeHtml(m.name)}</span>`;
+      mHtml += `<div class="home-money-bar-track"><div class="home-money-bar-fill" style="width:${pctBar}%;background:${m.color||'#888'}"></div></div>`;
+      mHtml += `<span class="home-money-bar-val">${formatAmount(Math.round(spent),'JPY')}</span></div>`;
+    });
+    mHtml += `</div>`;
+    document.getElementById('home-money-body').innerHTML = mHtml;
+  }
+}
+
 /* ===== Trip Banner & Info ===== */
 function renderTripBanner() {
   const banner = document.getElementById('trip-banner');
@@ -3027,6 +3264,7 @@ function saveTripInfo() {
   state.tripImageUrl = document.getElementById('trip-image-url').value.trim();
   saveState();
   renderTripBanner();
+  renderHome();
   showToast('旅行基本情報を保存しました');
   if (state.tripDestination && state.tripDestination !== oldDest) {
     geocodeDestination(state.tripDestination);
@@ -3073,6 +3311,7 @@ function applyGeocode(coords) {
 }
 
 function renderAll() {
+  renderHome();
   renderMembers();
   renderPayerSelect();
   renderSplitCheckboxes();
@@ -3103,10 +3342,27 @@ function initEventListeners() {
     btn.classList.add('active');
     document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
     document.getElementById('tab-' + tabId).classList.add('active');
+    if (tabId === 'home') { renderHome(); }
     if (tabId === 'itinerary') { renderItinerary(); renderItinEditList(); renderItinParticipants(); renderTemplates(); injectWeatherBadges(); }
     if (tabId === 'checklist') { renderChecklist(); }
     if (tabId === 'money') { renderPayerSelect(); renderSplitCheckboxes(); renderExpenses(); renderSettlement(); renderDashboard(); }
     if (tabId === 'settings') { renderMembers(); updateSpreadsheetLink(); }
+  });
+
+  // Home card navigation — tap card to go to detail tab
+  document.getElementById('tab-home').addEventListener('click', function(e) {
+    const card = e.target.closest('[data-home-goto]');
+    if (!card) return;
+    const targetTab = card.dataset.homeGoto;
+    const targetBtn = document.querySelector('.tab-btn[data-tab="' + targetTab + '"]');
+    if (targetBtn) targetBtn.click();
+  });
+  // Home welcome CTA
+  document.getElementById('tab-home').addEventListener('click', function(e) {
+    const cta = e.target.closest('#home-goto-settings');
+    if (!cta) return;
+    const settingsBtn = document.querySelector('.tab-btn[data-tab="settings"]');
+    if (settingsBtn) settingsBtn.click();
   });
 
   // Add member
