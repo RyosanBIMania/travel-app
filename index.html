@@ -911,6 +911,19 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 .dash-legend-item { display:flex; align-items:center; gap:3px; font-size:var(--fs-xs); color:var(--c-text2); }
 .dash-legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
+/* ===== Trip Banner ===== */
+.trip-banner { position:relative; border-radius:var(--radius-md); overflow:hidden; margin-bottom:var(--sp-md); padding:var(--sp-lg) var(--sp-lg) var(--sp-md); background:linear-gradient(135deg, #2d3a8c 0%, var(--c-primary) 60%, var(--c-primary-light) 100%); color:#fff; min-height:90px; display:flex; flex-direction:column; justify-content:flex-end; box-shadow:var(--shadow-lg); }
+.trip-banner-bg { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.3; z-index:0; }
+.trip-banner-content { position:relative; z-index:1; }
+.trip-banner-title { font-size:var(--fs-xl); font-weight:800; letter-spacing:-0.02em; text-shadow:0 1px 4px rgba(0,0,0,0.25); }
+.trip-banner-dest { font-size:var(--fs-base); font-weight:500; opacity:0.9; margin-top:2px; }
+.trip-banner-dates { font-size:var(--fs-sm); opacity:0.8; margin-top:var(--sp-xs); }
+/* ===== Map Auto Link ===== */
+.itin-link-auto { background:rgba(0,139,183,0.08); color:var(--c-accent); border:1px dashed rgba(0,139,183,0.3); }
+.itin-link-auto:hover { background:rgba(0,139,183,0.14); }
+/* ===== Input with Action ===== */
+.input-with-action { display:flex; gap:var(--sp-xs); align-items:center; }
+.input-with-action .form-input { flex:1; min-width:0; }
 /* ===== Weather ===== */
 .weather-badge { display:inline-flex; align-items:center; gap:3px; font-size:var(--fs-xs); padding:2px 8px; border-radius:var(--radius-full); background:rgba(255,255,255,0.6); margin-left:var(--sp-sm); vertical-align:middle; }
 .weather-badge .w-temp { font-weight:600; }
@@ -968,6 +981,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 <!-- ===== Tab: 旅程（スケジュール閲覧＋編集） ===== -->
 <section id="tab-itinerary" class="tab-content active">
+  <div id="trip-banner" class="trip-banner" hidden></div>
   <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-sm);">
       <h2 class="card-title" style="margin-bottom:0;">📋 スケジュール</h2>
@@ -1045,7 +1059,10 @@ textarea.form-input { min-height: 60px; resize: vertical; }
           </div>
           <div class="form-group">
             <label for="itin-location">場所名</label>
-            <input type="text" id="itin-location" class="form-input" placeholder="例: シドニー・オペラハウス（任意）" maxlength="100" autocomplete="off">
+            <div class="input-with-action">
+              <input type="text" id="itin-location" class="form-input" placeholder="例: シドニー・オペラハウス（任意）" maxlength="100" autocomplete="off">
+              <button type="button" id="btn-map-preview" class="btn-icon-sm" title="地図で確認">🗺️</button>
+            </div>
           </div>
           <div class="form-group">
             <label for="itin-mapurl">Google Maps URL</label>
@@ -1232,6 +1249,38 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 <!-- ===== Tab: 設定 ===== -->
 <section id="tab-settings" class="tab-content">
+  <!-- 旅行基本情報 -->
+  <div class="card">
+    <h2 class="card-title">🌍 旅行基本情報</h2>
+    <form id="form-trip-info">
+      <div class="form-group">
+        <label for="trip-title">旅行タイトル</label>
+        <input type="text" id="trip-title" class="form-input" placeholder="例: オーストラリア旅行 2025" maxlength="100" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="trip-destination">行き先</label>
+        <input type="text" id="trip-destination" class="form-input" placeholder="例: シドニー, オーストラリア" maxlength="100" autocomplete="off">
+      </div>
+      <div class="form-row">
+        <div class="form-group flex-grow">
+          <label for="trip-start-date">出発日</label>
+          <input type="date" id="trip-start-date" class="form-input">
+        </div>
+        <div class="form-group flex-grow">
+          <label for="trip-end-date">帰国日</label>
+          <input type="date" id="trip-end-date" class="form-input">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="trip-image-url">カバー画像URL（任意）</label>
+        <input type="url" id="trip-image-url" class="form-input" placeholder="https://example.com/cover.jpg" autocomplete="off">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-block">保存する</button>
+      </div>
+    </form>
+  </div>
+  <!-- メンバー管理 -->
   <div class="card">
     <h2 class="card-title">👥 メンバー管理</h2>
     <form id="form-add-member" class="inline-form" style="margin-bottom:var(--sp-md);">
@@ -1321,7 +1370,14 @@ function createDefaultState() {
     nextMemberId: 1,
     nextExpenseId: 1,
     nextItineraryId: 1,
-    nextChecklistId: 1
+    nextChecklistId: 1,
+    tripTitle: '',
+    tripDestination: '',
+    tripStartDate: '',
+    tripEndDate: '',
+    tripImageUrl: '',
+    weatherLat: '',
+    weatherLon: ''
   };
 }
 
@@ -1515,6 +1571,19 @@ async function syncFromCloud() {
         if (!m.color) m.color = MEMBER_COLORS[i % MEMBER_COLORS.length];
       });
       console.log('[sync] checklist items:', state.checklist.length, 'members:', state.members.length);
+      // Trip info defaults
+      if (!state.tripTitle) state.tripTitle = '';
+      if (!state.tripDestination) state.tripDestination = '';
+      if (!state.tripStartDate) state.tripStartDate = '';
+      if (!state.tripEndDate) state.tripEndDate = '';
+      if (!state.tripImageUrl) state.tripImageUrl = '';
+      if (!state.weatherLat) state.weatherLat = '';
+      if (!state.weatherLon) state.weatherLon = '';
+      // Sync weather coords to localStorage for backward compat
+      if (state.weatherLat && state.weatherLon) {
+        localStorage.setItem('travel-app-weather-lat', state.weatherLat);
+        localStorage.setItem('travel-app-weather-lon', state.weatherLon);
+      }
       // Migrate old checklist format to per-member format
       migrateChecklistItems();
       localStorage.setItem(APP_KEY, JSON.stringify(state));
@@ -2019,12 +2088,20 @@ function renderItinerary() {
         html += `<div class="itin-event-location">📍 ${escapeHtml(ev.location)}</div>`;
       }
 
-      // Links & Memo badge row
-      const hasLinks = ev.url || ev.mapUrl;
+      // Links & Memo badge row (auto-generate map link if location exists but no mapUrl)
+      const effectiveMapUrl = ev.mapUrl || (ev.location ? generateMapUrl(ev.location) : '');
+      const isAutoMap = !ev.mapUrl && !!ev.location;
+      const hasLinks = ev.url || effectiveMapUrl;
       if (hasLinks || ev.memo) {
         html += `<div class="itin-event-links">`;
         if (ev.url) html += `<a href="${escapeHtml(ev.url)}" target="_blank" rel="noopener" class="itin-link">📎 リンク</a>`;
-        if (ev.mapUrl) html += `<a href="${escapeHtml(ev.mapUrl)}" target="_blank" rel="noopener" class="itin-link">📍 地図</a>`;
+        if (effectiveMapUrl) {
+          if (isAutoMap) {
+            html += `<a href="${escapeHtml(effectiveMapUrl)}" target="_blank" rel="noopener" class="itin-link itin-link-auto">🔍 地図検索</a>`;
+          } else {
+            html += `<a href="${escapeHtml(effectiveMapUrl)}" target="_blank" rel="noopener" class="itin-link">📍 地図</a>`;
+          }
+        }
         if (ev.memo) html += `<span class="itin-memo-badge" data-memo-toggle="${ev.id}">📝 メモあり</span>`;
         html += `</div>`;
       }
@@ -2719,9 +2796,9 @@ async function fetchWeather(date) {
 
   try {
     // Open-Meteo free API (no key needed)
-    // Default: Sydney coordinates (can be customized)
-    const lat = localStorage.getItem('travel-app-weather-lat') || '-33.87';
-    const lon = localStorage.getItem('travel-app-weather-lon') || '151.21';
+    // Priority: state (synced) > localStorage > default Sydney
+    const lat = state.weatherLat || localStorage.getItem('travel-app-weather-lat') || '-33.87';
+    const lon = state.weatherLon || localStorage.getItem('travel-app-weather-lon') || '151.21';
     const res = await fetch(
       `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=auto&start_date=${date}&end_date=${date}`,
       { signal: AbortSignal.timeout(5000) }
@@ -2857,6 +2934,94 @@ function applyTemplate(idx) {
 }
 
 /* ===== Render All ===== */
+/* ===== Trip Banner & Info ===== */
+function renderTripBanner() {
+  const banner = document.getElementById('trip-banner');
+  if (!banner) return;
+  const { tripTitle, tripDestination, tripStartDate, tripEndDate, tripImageUrl } = state;
+  if (!tripTitle && !tripDestination) { banner.hidden = true; return; }
+  banner.hidden = false;
+  let html = '';
+  if (tripImageUrl) {
+    html += `<div class="trip-banner-bg" style="background-image:url('${escapeHtml(tripImageUrl)}')"></div>`;
+  }
+  html += `<div class="trip-banner-content">`;
+  if (tripTitle) html += `<div class="trip-banner-title">${escapeHtml(tripTitle)}</div>`;
+  if (tripDestination) html += `<div class="trip-banner-dest">${escapeHtml(tripDestination)}</div>`;
+  if (tripStartDate || tripEndDate) {
+    const start = tripStartDate ? formatDateFull(tripStartDate) : '';
+    const end = tripEndDate ? formatDateFull(tripEndDate) : '';
+    const dateStr = start && end ? `${start} → ${end}` : start || end;
+    html += `<div class="trip-banner-dates">${dateStr}</div>`;
+  }
+  html += `</div>`;
+  banner.innerHTML = html;
+}
+
+function loadTripInfoForm() {
+  const el = document.getElementById('trip-title');
+  if (!el) return;
+  el.value = state.tripTitle || '';
+  document.getElementById('trip-destination').value = state.tripDestination || '';
+  document.getElementById('trip-start-date').value = state.tripStartDate || '';
+  document.getElementById('trip-end-date').value = state.tripEndDate || '';
+  document.getElementById('trip-image-url').value = state.tripImageUrl || '';
+}
+
+function saveTripInfo() {
+  const oldDest = state.tripDestination;
+  state.tripTitle = document.getElementById('trip-title').value.trim();
+  state.tripDestination = document.getElementById('trip-destination').value.trim();
+  state.tripStartDate = document.getElementById('trip-start-date').value;
+  state.tripEndDate = document.getElementById('trip-end-date').value;
+  state.tripImageUrl = document.getElementById('trip-image-url').value.trim();
+  saveState();
+  renderTripBanner();
+  showToast('旅行基本情報を保存しました');
+  if (state.tripDestination && state.tripDestination !== oldDest) {
+    geocodeDestination(state.tripDestination);
+  }
+}
+
+/* ===== Google Maps Auto Link ===== */
+function generateMapUrl(location) {
+  if (!location) return '';
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(location);
+}
+
+/* ===== Geocoding for Weather ===== */
+let geocodeCache = {};
+
+async function geocodeDestination(destinationName) {
+  if (!destinationName) return;
+  if (geocodeCache[destinationName]) { applyGeocode(geocodeCache[destinationName]); return; }
+  try {
+    const res = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(destinationName)}&count=1&language=ja`,
+      { signal: AbortSignal.timeout(5000) }
+    );
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.results && data.results.length > 0) {
+      const r = data.results[0];
+      const coords = { lat: r.latitude, lon: r.longitude, name: r.name };
+      geocodeCache[destinationName] = coords;
+      applyGeocode(coords);
+      console.log(`[geocode] ${destinationName} -> ${coords.lat}, ${coords.lon} (${coords.name})`);
+    }
+  } catch (e) { console.warn('[geocode] Failed:', e); }
+}
+
+function applyGeocode(coords) {
+  state.weatherLat = String(coords.lat);
+  state.weatherLon = String(coords.lon);
+  saveState();
+  localStorage.setItem('travel-app-weather-lat', state.weatherLat);
+  localStorage.setItem('travel-app-weather-lon', state.weatherLon);
+  weatherCache = {};
+  injectWeatherBadges();
+}
+
 function renderAll() {
   renderMembers();
   renderPayerSelect();
@@ -2871,6 +3036,8 @@ function renderAll() {
   renderTemplates();
   document.getElementById('exchange-rate').value = state.exchangeRate;
   updateCurrencyToggle(document.getElementById('settle-currency-toggle'), state.settleCurrency, 'settle');
+  renderTripBanner();
+  loadTripInfoForm();
   // Weather injection (async, non-blocking)
   injectWeatherBadges();
 }
@@ -3154,6 +3321,19 @@ function initEventListeners() {
   document.getElementById('modal-cancel').addEventListener('click', closeModal);
   document.getElementById('modal-overlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
+  // Trip info form
+  document.getElementById('form-trip-info').addEventListener('submit', function(e) {
+    e.preventDefault();
+    saveTripInfo();
+  });
+
+  // Map preview button
+  document.getElementById('btn-map-preview').addEventListener('click', function() {
+    const loc = document.getElementById('itin-location').value.trim();
+    if (!loc) { showToast('場所名を入力してください'); return; }
+    window.open(generateMapUrl(loc), '_blank', 'noopener');
+  });
+
   // Export / Import
   document.getElementById('btn-export').addEventListener('click', handleExport);
   document.getElementById('btn-import').addEventListener('click', function() { document.getElementById('import-file').click(); });
@@ -3358,9 +3538,11 @@ async function fetchExchangeRate() {
 function init() {
   loadState();
 
-  // === サンプルデータはGASスプレッドシートに投入済み ===
-  // クラウド同期時に自動で読み込まれます
-  // 復元する場合: ./restore-data.sh を実行
+  // Restore weather coordinates from state to localStorage
+  if (state.weatherLat && state.weatherLon) {
+    localStorage.setItem('travel-app-weather-lat', state.weatherLat);
+    localStorage.setItem('travel-app-weather-lon', state.weatherLon);
+  }
 
   initEventListeners();
   document.getElementById('expense-date').value = getTodayString();
@@ -3368,6 +3550,10 @@ function init() {
   renderAll();
   updateSpreadsheetLink();
   fetchExchangeRate();
+  // Geocode destination if not yet done
+  if (state.tripDestination && !state.weatherLat) {
+    geocodeDestination(state.tripDestination);
+  }
   // クラウド同期（設定済みなら）
   if (getGasUrl()) {
     syncFromCloud();
