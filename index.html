@@ -1091,15 +1091,10 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 
 <!-- ===== Tab: 旅程（スケジュール閲覧＋編集） ===== -->
 <section id="tab-itinerary" class="tab-content">
-  <div id="trip-banner" class="trip-banner" hidden></div>
-  <!-- 予定の追加・編集（アコーディオン） -->
+  <!-- 予定を追加（ボタン+パネル方式） -->
   <div class="card">
-    <div id="itin-edit-toggle" class="accordion-toggle">
-      <span class="arrow">▶</span>
-      ✏️ 予定を追加・編集
-      <span style="font-weight:400;font-size:var(--fs-sm);color:var(--c-text2);margin-left:auto;">(<span id="itin-count">0</span>件)</span>
-    </div>
-    <div id="itin-edit-body" class="accordion-body">
+    <button id="itin-form-open-btn" class="btn btn-primary btn-block cl-form-open-btn">＋ 予定を追加する</button>
+    <div id="itin-edit-body" class="cl-add-panel" hidden>
       <!-- テンプレート -->
       <div style="margin-top:var(--sp-md);">
         <p style="font-size:var(--fs-sm);font-weight:600;margin-bottom:var(--sp-sm);">📝 テンプレートから追加</p>
@@ -1180,6 +1175,9 @@ textarea.form-input { min-height: 60px; resize: vertical; }
         <div id="itin-edit-list"></div>
         <p id="itin-edit-empty" class="empty-msg">予定がありません</p>
       </div>
+      <div style="margin-top:var(--sp-md);">
+        <button id="itin-form-close-btn" type="button" class="btn btn-secondary btn-block">閉じる</button>
+      </div>
     </div>
   </div>
   <!-- スケジュール表示 -->
@@ -1190,7 +1188,7 @@ textarea.form-input { min-height: 60px; resize: vertical; }
     </div>
     <div id="itin-filter" class="itin-filter"></div>
     <div id="itinerary-list"></div>
-    <p id="itinerary-empty" class="empty-msg">予定がありません<br><small style="color:var(--c-text2)">上の「✏️ 予定を追加・編集」を開いて追加してください</small></p>
+    <p id="itinerary-empty" class="empty-msg">予定がありません<br><small style="color:var(--c-text2)">上の「＋ 予定を追加する」を押して追加してください</small></p>
   </div>
   <footer class="app-credit">Powered by <a href="https://data-parade.com/" target="_blank" rel="noopener">Data Parade co.ltd.</a> with Claude</footer>
 </section>
@@ -2499,7 +2497,7 @@ function renderItinEditList() {
   const container = document.getElementById('itin-edit-list');
   const empty = document.getElementById('itin-edit-empty');
   const countEl = document.getElementById('itin-count');
-  countEl.textContent = state.itinerary.length;
+  if (countEl) countEl.textContent = state.itinerary.length;
 
   if (state.itinerary.length === 0) {
     container.innerHTML = '';
@@ -3672,12 +3670,12 @@ function initEventListeners() {
     const editBtn = e.target.closest('[data-view-edit-itin]');
     if (editBtn) {
       const id = Number(editBtn.dataset.viewEditItin);
-      // Open the edit accordion if closed
+      // Open the edit panel if closed
       const editBody = document.getElementById('itin-edit-body');
-      const editToggle = document.getElementById('itin-edit-toggle');
-      if (!editBody.classList.contains('open')) {
-        editBody.classList.add('open');
-        editToggle.classList.add('open');
+      const openBtn = document.getElementById('itin-form-open-btn');
+      if (editBody.hidden) {
+        editBody.hidden = false;
+        openBtn.hidden = true;
       }
       renderItinParticipants();
       // Populate form and scroll to it
@@ -3816,9 +3814,15 @@ function initEventListeners() {
   });
 
   // ===== Accordion toggles =====
-  document.getElementById('itin-edit-toggle').addEventListener('click', function() {
-    this.classList.toggle('open');
-    document.getElementById('itin-edit-body').classList.toggle('open');
+  document.getElementById('itin-form-open-btn').addEventListener('click', function() {
+    document.getElementById('itin-edit-body').hidden = false;
+    this.hidden = true;
+    renderItinParticipants();
+  });
+  document.getElementById('itin-form-close-btn').addEventListener('click', function() {
+    document.getElementById('itin-edit-body').hidden = true;
+    document.getElementById('itin-form-open-btn').hidden = false;
+    resetItineraryForm();
   });
   document.getElementById('cl-list-toggle').addEventListener('click', function() {
     this.classList.toggle('open');
