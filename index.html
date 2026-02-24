@@ -1260,6 +1260,8 @@ textarea.form-input { min-height: 60px; resize: vertical; }
 <section id="tab-money" class="tab-content">
   <!-- 支払いフォーム -->
   <div class="card">
+    <button id="money-form-open-btn" class="btn btn-primary btn-block cl-form-open-btn">＋ 支払いを追加する</button>
+    <div id="money-form-body" class="cl-add-panel" hidden>
     <h2 class="card-title" id="expense-form-title">支払いを追加</h2>
     <form id="form-expense">
       <input type="hidden" id="expense-edit-id" value="">
@@ -1303,6 +1305,10 @@ textarea.form-input { min-height: 60px; resize: vertical; }
         <button type="button" id="btn-cancel-edit" class="btn btn-secondary btn-block" style="display:none;">キャンセル</button>
       </div>
     </form>
+    <div style="margin-top:var(--sp-md);">
+      <button id="money-form-close-btn" type="button" class="btn btn-secondary btn-block">閉じる</button>
+    </div>
+    </div>
   </div>
   <!-- 支払い一覧（アコーディオン） -->
   <div class="card">
@@ -2583,6 +2589,12 @@ function startEditExpense(expenseId) {
   document.getElementById('expense-form-title').textContent = '支払いを編集';
   document.getElementById('expense-submit-btn').textContent = '更新する';
   document.getElementById('btn-cancel-edit').style.display = '';
+  const formBody = document.getElementById('money-form-body');
+  const openBtn = document.getElementById('money-form-open-btn');
+  if (formBody.hidden) {
+    formBody.hidden = false;
+    openBtn.hidden = true;
+  }
   document.getElementById('expense-form-title').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -3587,6 +3599,17 @@ function initEventListeners() {
   });
 
   document.getElementById('btn-cancel-edit').addEventListener('click', resetExpenseForm);
+
+  document.getElementById('money-form-open-btn').addEventListener('click', function() {
+    document.getElementById('money-form-body').hidden = false;
+    this.hidden = true;
+    renderSplitCheckboxes();
+  });
+  document.getElementById('money-form-close-btn').addEventListener('click', function() {
+    document.getElementById('money-form-body').hidden = true;
+    document.getElementById('money-form-open-btn').hidden = false;
+    resetExpenseForm();
+  });
 
   // Currency toggle
   document.getElementById('currency-toggle').addEventListener('click', function(e) {
